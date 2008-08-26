@@ -1,0 +1,21 @@
+#summary What is foom?
+#labels Featured,Phase-Design
+
+=What is foom?=
+foom is a toy language for my programming language/compiler design independent study.  It will hopefully end up having the following features:
+  * dynamic language
+  * C-like syntax
+  * optional typing
+  * first-class functions
+  * closures
+  * continuations
+  * list comprehensions
+  * data types
+    * integer
+    * decimal 
+    * string (multibyte?)
+    * bin (like a c-string)
+    * function
+    * list
+    * map
+    * object
