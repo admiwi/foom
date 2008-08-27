@@ -24,7 +24,7 @@ study.  It will hopefully end up having the following features:
       * [functionType func] {}
       * [listType list] []
       * [mapType map] [:]
-      * [tupleType tup] ()
+      * [tupleType tup] <>  # mebbe... thinking about it
 
 {{{
   obj o
@@ -52,6 +52,7 @@ study.  It will hopefully end up having the following features:
   assert e[0] == 12
   assert e.count == 2
   assert e.keys == [0,1]
+  assert ![]
 
   map f = [o: 12]
   assert f is map
@@ -67,12 +68,11 @@ study.  It will hopefully end up having the following features:
   assert h is func
   assert h() == 12
 
+  func i(j){ j as str }
+  assert i(12) == "12"
+  assert i 12 == "12"
 
-
+  assert int k == new Int()
   
-
-
-
-
-
+  assert 
 }}}
