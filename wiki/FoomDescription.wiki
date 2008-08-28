@@ -10,6 +10,7 @@ foom may end up having the following features:
   * closures
   * continuations
   * mixins
+  * currying
   * list comprehensions
   * data types
     * [objectType object] obj
