@@ -27,6 +27,8 @@ foom may end up having the following features:
       * [mapType map] [:]
       * [tupleType tup] <>  # mebbe... thinking about it
 
+==Variables and Data types==
+
 {{{
   obj o
   assert o.class == obj  #
@@ -54,12 +56,13 @@ foom may end up having the following features:
   assert e.count == 2
   assert e.keys == [0,1]
   assert ![]
+  assert 1,2,4 is list
 
   map f = [o: 12]
   assert f is map
   assert f.keys == [o]
 
-  assert {} is func
+  assert func {} is func
   func g = { 12 }
   assert g is func
   assert g() == 12
@@ -77,9 +80,35 @@ foom may end up having the following features:
   
 }}}
 
-==Functions:==
-Defining a function is done in two different ways:  traditional C like fashion.  Arguments may be defined explicitly or access through the local variable `args`.  Explicit arguments must be typed, but may use the `obj` base object for duck typing.  Functions returning a value must do so explicitly using the `return` statement.
+==Statements==
+Statements 
+
+==Expressions==
+
+==Functions==
+Defining a function is done in two different ways:  traditional C like
+fashion, assigning a lambda/closure to a function object. A C-like function
+definition may be prefaced with `func` denoting the function type.  A function
+variariable must be declared as a `func` type. Arguments may be defined
+explicitly or access through the local special variable `args`.  Explicit
+arguments must be typed, but may use the `obj` base object for duck typing.
+The last expression evaluated in a function will be the return value. A value
+may explicitily returned using the the `return` keyword followed by an
+expression. The return type in in C-like function declarations is optional.
+Arguments to a lambda may be declared as a list, following a colon.
 {{{
-  func f(int a){
+  int f(int a){
     return a + 2
   }
+  func f(a){
+    return a + 2
+  }
+  func f = {
+    return args[0] + 2
+  }
+  func f = { a:
+    return a+2
+  }
+}}}
+
+
