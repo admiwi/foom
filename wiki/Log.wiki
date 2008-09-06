@@ -67,3 +67,29 @@ The functions are very similar with the exception the type binding,
 incoming and outgoing.
 `func f = { 10 }`  isn't explicitly bound to return an `int`.
 
+
+Beginning to think I should keep all classes upper case -- even the base classes.  Lowercase like in C gives the impression that they are above being a normal class -- which is true to some extent, I guess.  They are the foundation.
+
+Another idea, I want everything to be extensible.
+{{{
+  Decimal.toDollars = { "$%{self:.2f}" }
+  assert 10.5.toDollars() == "$10.50"
+}}}
+This also introduces string interpolation/formating.  Sorta like sprintf style except the variable is in `{}`, followed by a `:` with the sprintf formating characters following.
+
+Along with the extensibility comes the possibility of overloading.
+{{{
+  assert "a":"b" == "ab"
+  String.`:` = { args[1].concat(args[0]) }
+  assert "a":"b" == "ba"
+}}}
+Which brings me to the `.orig` member of classes -- and everything else...
+The above could be rewritten as...
+{{{
+  String.`:` = { String.orig.`:`(args[1],args[0]) }
+  assert "a":"b" == "ba"
+}}}
+
+
+
+
