@@ -27,7 +27,7 @@ foom may end up having the following features:
       * [mapType map] [:]
       * [tupleType tup] <>  # mebbe... thinking about it
 
-==Variables and Data types==
+==Variables and DataTypes==
 
 {{{
   obj o
