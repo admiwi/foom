@@ -1,2 +1,69 @@
 #summary Development Log
 
+As for IO, I'm hoping to abstract everything thing as much as possible
+such that something like this will be possible:
+
+{{{
+File.new("c:/test.txt").each { line :  println line }
+}}}
+-or-
+{{{
+stdin.each { l : println l }
+}}}
+
+IO will be OS aware -- rather it will know DOS has `\` for directory
+separators, `\r\n` for newline and that sort of thing.
+
+The `assert` idea comes directly from Groovy.  They really focused on
+testing driven design.
+
+I have thought about scope a bit and I'm getting into trouble with the
+idea of everything being a closure. Ideally, I would like every `{}` to
+be a function.  So a `for-loop` would become `for(init;condi;seq) func` --
+but that's tough.
+
+Let suppose we have a `loop` operator.  `loop` takes three closures: block
+before the predicate, the predicate, and block after the predicate.
+The predicate will be executed each time and is expected to return a boolean.
+loop will be declared as such:
+{{{
+void loop(func pre, func pred, func post)
+}}}
+and used like:
+while...
+{{{
+loop {}{i<10} { print "Hi"}
+}}}
+do..while...
+{{{
+loop { prinln "Hi" } { if i<10; return false; else i++; return true;} {}
+}}}
+
+The for-loop
+{{{
+for(int i = 0; i<10; ++i) {  println i }
+}}}
+would be syntactic sugar for
+{{{
+{ int i = 0;
+loop {} { if i<10; return false; else ++i; return true;} { println i }
+}
+}}}
+
+loop doesn't actually have to exist, it just demonstrates the scoping issues.
+
+`{}` bound scope -- essentially, functions bound scope.  Variables
+defined in the same, or higher, scopes as a function can be seen
+within the function.  Objects in the inner scope with the same name
+override the outer scope without destruction, however, if one does
+this, they lose the ability to access the object of that name within
+the scope. args will always be local.  I think packages and imports
+would be necessary to keep the scope uncluttered.  I'll probably adopt
+Pythons idea behind modules/packages being based on a directory
+structure and special initialization file.  It seems like a fairly
+reasonable way of keeping things straight.
+
+The functions are very similar with the exception the type binding,
+incoming and outgoing.
+`func f = { 10 }`  isn't explicitly bound to return an `int`.
+
