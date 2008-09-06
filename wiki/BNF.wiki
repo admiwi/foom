@@ -1,0 +1,2 @@
+<Object> = "
+<DataType> = {obj|int|dec|bool|func|bin|list|map}
