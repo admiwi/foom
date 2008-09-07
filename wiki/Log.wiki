@@ -83,13 +83,13 @@ Along with the extensibility comes the possibility of overloading.
   String.`:` = { args[1].concat(args[0]) }
   assert "a":"b" == "ba"
 }}}
-Which brings me to the `.orig` member of classes -- and everything else...
+Which brings me to the `.base` member of classes -- and everything else...
 The above could be rewritten as...
 {{{
-  String.`:` = { String.orig.`:`(args[1],args[0]) }
+  String.`:` = { String.base.`:`(args[1],args[0]) }
   assert "a":"b" == "ba"
 }}}
-
+As you can see, you can access operators functions by using the backticks.  All operators can be overloaded except dot(.), quotes(") and backticks(`). 
 
 
 

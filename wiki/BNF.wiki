@@ -1,2 +1,33 @@
-<Object> = "
-<DataType> = {obj|int|dec|bool|func|bin|list|map}
+{{{
+term = variable|string|decimal|integer|class|data type
+
+oper func = "`",operator
+
+string = '"',{utf|dquote escapes|format},'"'|"'",{utf|squote escapes|format},"'";
+
+format = "%{",space,variable,[":",space,{fmt flag},[".",precision]],"}";
+fmt flag = integer|"+"|"-"|"0";
+
+variable = {letter|"_"},[{letter|digit|"_"}];
+decimal = {digit},[".",{digit}];
+integer = {digit};
+
+return type = [{_return type_,","}] _return type_ | "(",[{_return type_,","}] _return type_,")";
+_return type_ = (data type | class);
+
+class = cap letter,{ cap letter|letter|digit|"_"};
+data type     = "obj"|"int"|"dec"|"bool"|"func"|"bin"|"list"|"map";
+
+space = {" "};
+whitespace = ? white space characters ? ;
+overload ops = "!"|"@"|"#"|"$"|"%"|"^"|"&"|"*"|"{}"|":"|"<"|">"|"?"|"~"|"+"|"-"|"=="|"and"|"or"|"not";
+dquote escapes = '\"'|escapes;
+squote escapes = "\'"|escapes;
+escapes = "\%"|"\a"|"\b"|"\f"|"\n"|"\r"|"\t"|"\v"|"\\"|"\",octal,octal,octal|"\x",hex,hex|"\x",hex,hex,hex,hex;
+cap letter = "A"|"B"|"C"|"D"|"E"|"F"|"G"|"H"|"I"|"J"|"K"|"L"|"M"|"N"|"O"|"P"|"Q"|"R"|"S"|"T"|"U"|"V"|"W"|"X"|"Y"|"Z";
+letter = "a"|"b"|"c"|"d"|"e"|"f"|"g"|"h"|"i"|"j"|"k"|"l"|"m"|"n"|"o"|"p"|"q"|"r"|"s"|"t"|"u"|"v"|"W"|"X"|"Y"|"Z";
+hex = "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9"|"A"|"B"|"C"|"D"|"E"|"F";
+digit = "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7"|"8"|"9";
+octal = "0"|"1"|"2"|"3"|"4"|"5"|"6"|"7";
+utf = ? utf8 ?;
+}}}
