@@ -4,12 +4,17 @@
 if stmt = "if",{ws}*,"(",
 
 
-***closure = "{", {ws}*, [[data type|class] variable, {exp,{ exp}*, "}";
+closure = "{", {ws}*, 
+    [[data type|class,{ws}+], variable,{{ws}*,",",{ws}*,[data type|class,{ws}+],variable}*,{ws}*, "|",{ws}*, [exp,{exp end,exp}*], "}";
 
 assignment exp = variable, {ws}*, assignment op, {ws}*, exp;
-logical exp = term, [ {ws}*, logical op, {ws}*, term ]; 
+binary exp = exp, {ws}*, exp;
+unary exp = unary op, {ws}*,exp;
+logical exp = exp, {ws}*, logical op, {ws}*, exp, {{ws}*,logical op, {ws}*, exp}*; 
 end exp = newline | ";";
-expression = 
+exp =  assignment exp | binary exp | unary exp | logical exp
+    | "(",exp,")"
+
 term = variable|string|decimal|integer|class|data type|func;
 
 func = op func|closure
