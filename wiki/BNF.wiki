@@ -1,13 +1,17 @@
 {{{
 
 
-if stmt = "if",{ws}*,"(",
+if stmt = "if",{ws}*,"(",exp,")",closure;
+for stmt = "for" , {ws}* , "(" ,
+    assignment exp | "" , ";" , logical exp | "" , ";",
+    exp | "" , ")",closure;
 
 
 closure = "{", {ws}*, 
-    [[data type|class,{ws}+], variable,{{ws}*,",",{ws}*,[data type|class,{ws}+],variable}*,{ws}*, "|",{ws}*, [exp,{exp end,exp}*], "}";
+    [[data type|class,{ws}+], variable,{{ws}*,",",{ws}*,[data type|class,{ws}+],variable}*,
+    {ws}*, ":",{ws}*, [exp,{exp end,exp}*], "}";
 
-assignment exp = define var | variable, {ws}*, assignment op, {ws}*, exp;
+assignment exp = declare var | variable, {space, define var|variable}*, {ws}*, assignment op, {ws}*, exp;
 binary exp = exp, {ws}*, exp;
 unary exp = unary op, {ws}*,exp;
 logical exp = exp, {ws}*, logical op, {ws}*, exp, {{ws}*,logical op, {ws}*, exp}*; 
@@ -15,20 +19,27 @@ end exp = newline | ";";
 exp =  assignment exp | binary exp | unary exp | logical exp
     | "(",exp,")"
 
-term = variable|string|decimal|integer|class|data type|func;
 
-func = op func|closure
 
+func call = func,"(",bare list,")";
+func = op func|closure;
 op func = "`",overload op,"`";
 
+declare var = data type| class, space, variable;
 
+map = "[:]"
+    | "[",{ws}*,term,space,":",{ws}*,term,{ws}*,{term,space,":",{ws}*,term}*,{ws}*,"]";
+bare map = term,space,":",{ws}*,term,{ws}*,{term,{ws}*,":",{ws}*,term}*;
 
-string = '"',{utf|dquote escapes|format},'"'|"'",{utf|squote escapes|format},"'";
+list = "[",[term,{",",term}*,"]";
+bare list  = term,{",",term}*;
 
+term = variable|string|decimal|integer|class|data type|func call;
+
+string = '"',{utf|dquote escapes|format},'"'
+       | "'",{utf|squote escapes|format},"'";
 format = "%{",sp,variable,[sp,":",sp,{fmt flag},[".",precision]],"}";
 fmt flag = integer|"+" | "-" | "0";
-
-define var = data type|class,space,variable;
 variable = {letter|"_"},{letter|digit|"_"}*;
 decimal = {digit},[".",{digit}];
 integer = {digit};
@@ -43,10 +54,10 @@ sp = {" "}*;
 ws = ? white space characters ? ;
 newline = "\n"|"\r\n"|"\r";
 
-overload op = "^" | "&" | "*" | ":" | "+" | "-" | "==" | "and" | "or";
+overload op = "^" | "&" | "*" | ":" | "+" | "-" | "==" | "and" | "or" | 'as';
 logical op = '<' | '>' | '<=' | '>=' | '==' | '!=' | '&&' | '||' | 'and' | 'or' | 'xor';
 unary op = '&' | '*' | '+' | '-' | '~' | '!' | 'not';
-binary op = '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | 'div' | '&' | '^' | '|';
+binary op = '*' | '/' | '%' | '+' | '-' | '<<' | '>>' | 'div' | '&' | '^' | '|' | 'is' | 'was' | 'as';
 assignment op	= '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|=';
 
 dquote escapes = '\"'|escapes;
