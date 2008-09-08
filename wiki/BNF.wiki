@@ -11,7 +11,7 @@ closure = "{", {ws}*,
     [[data type|class,{ws}+], variable,{{ws}*,",",{ws}*,[data type|class,{ws}+],variable}*,
     {ws}*, ":",{ws}*, [exp,{exp end,exp}*], "}";
 
-assignment exp = declare var | variable, {space, define var|variable}*, {ws}*, assignment op, {ws}*, exp;
+assignment exp = bare tuple, {ws}*, assignment op, {ws}*, exp;
 binary exp = exp, {ws}*, exp;
 unary exp = unary op, {ws}*,exp;
 logical exp = exp, {ws}*, logical op, {ws}*, exp, {{ws}*,logical op, {ws}*, exp}*; 
@@ -26,6 +26,10 @@ func = op func|closure;
 op func = "`",overload op,"`";
 
 declare var = data type| class, space, variable;
+
+tuple = "<>"
+      | "<",bare list,">";
+bare tuple = variable,{",",variable}*;
 
 map = "[:]"
     | "[",{ws}*,term,space,":",{ws}*,term,{ws}*,{term,space,":",{ws}*,term}*,{ws}*,"]";
