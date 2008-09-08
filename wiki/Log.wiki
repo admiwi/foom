@@ -110,8 +110,8 @@ One way around this would be to use a different syntax for accessing list/maps v
 }}}
 However, iteration becomes less intuitive.  Still need to think about this.
 {{{
-  for obj k, obj v in ["1":"foo",0:"bar"] {
+  for k, v in ["1":"foo",0:"bar"] {
     assert k is int  // would this fail?
   }
 }}}
-BTW, I like this for-loop construct better -- more like Python.
+BTW, I like this for-loop construct better -- more like Python.  I still think I may need tuples....
