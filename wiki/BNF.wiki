@@ -3,7 +3,7 @@
 
 statement = 
 
-closure = "{", {ws}*, [[data type|class] variable, {terms expression,{ ";"|newline, expression}*, }
+closure = "{", {ws}*, [[data type|class] variable, {terms expression,{ ";"|newline, expression}*, "}"
 
 assignment = variable, {ws}*, assignment op, {ws}*, exp, [{ws}*, assignment op, {ws}*, exp];
 
