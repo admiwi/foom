@@ -113,5 +113,10 @@ However, iteration becomes less intuitive.  Still need to think about this.
   for k, v in ["1":"foo",0:"bar"] {
     assert k is int  // would this fail?
   }
+//(hmm which construct....
+  for ["1":"foo",0:"bar"] { k,v:
+    assert k is int  // would this fail?
+  }
 }}}
-BTW, I like this for-loop construct better -- more like Python.  I still think I may need tuples....
+
+I still think I may need tuples....
