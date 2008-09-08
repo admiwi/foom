@@ -91,5 +91,27 @@ The above could be rewritten as...
 }}}
 As you can see, you can access operators functions by using the backticks.  All operators can be overloaded except dot(.), quotes(") and backticks(`). 
 
-
-
+I had expressed the desire for maps and lists be the same thing, just a little more information attached to a map.  With the current syntax, a map would look like this:
+{{{
+  map m = ["foo":"bar"]
+  assert m["foo"] == "bar"
+  assert m[0] == "bar"
+}}}
+The trouble starts when you use integers as the key...
+{{{
+  map m = [1:"foo",0:"bar"]
+  assert m[0] == ???  
+}}}
+One way around this would be to use a different syntax for accessing list/maps via keyword.
+{{{
+  map m = [1:"foo",0:"bar"]
+  assert m[0] == "foo"
+  assert m<0> == "bar"
+}}}
+However, iteration becomes less intuitive.  Still need to think about this.
+{{{
+  for obj k, obj v in ["1":"foo",0:"bar"] {
+    assert k is int  // would this fail?
+  }
+}}}
+BTW, I like this for-loop construct better -- more like Python.
