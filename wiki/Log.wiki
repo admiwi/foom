@@ -120,3 +120,17 @@ However, iteration becomes less intuitive.  Still need to think about this.
 }}}
 
 I still think I may need tuples....
+{{{
+assert <1> is tuple
+int a = 1, b = 2, c = 3
+<a,b,c> = <c,b,a>
+assert a == 3
+<a,b,c> = 1,2,3,4
+assert c == [3,4]
+}}}
+A bare list on the left would be treated as a tuple -- on the right, a list.
+{{{
+  int a = 1, b = 2, c = 3
+  a,b,c = c,a,b
+
+}}}
