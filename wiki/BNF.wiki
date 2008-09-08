@@ -7,7 +7,7 @@ if stmt = "if",{ws}*,"(",
 closure = "{", {ws}*, 
     [[data type|class,{ws}+], variable,{{ws}*,",",{ws}*,[data type|class,{ws}+],variable}*,{ws}*, "|",{ws}*, [exp,{exp end,exp}*], "}";
 
-assignment exp = variable, {ws}*, assignment op, {ws}*, exp;
+assignment exp = define var | variable, {ws}*, assignment op, {ws}*, exp;
 binary exp = exp, {ws}*, exp;
 unary exp = unary op, {ws}*,exp;
 logical exp = exp, {ws}*, logical op, {ws}*, exp, {{ws}*,logical op, {ws}*, exp}*; 
@@ -28,6 +28,7 @@ string = '"',{utf|dquote escapes|format},'"'|"'",{utf|squote escapes|format},"'"
 format = "%{",sp,variable,[sp,":",sp,{fmt flag},[".",precision]],"}";
 fmt flag = integer|"+" | "-" | "0";
 
+define var = data type|class,space,variable;
 variable = {letter|"_"},{letter|digit|"_"}*;
 decimal = {digit},[".",{digit}];
 integer = {digit};
