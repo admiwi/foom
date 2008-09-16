@@ -1,7 +1,6 @@
 {{{
-
-
 if stmt = "if" , ws , "(" , exp , ")" , closure;
+
 for stmt = "for" , ws , "(" ,
           assignment exp | "" , ";" , 
           logical exp | "" , ";",
@@ -21,8 +20,6 @@ end exp = newline | ";";
 exp = assignment exp | binary exp | unary exp | logical exp
     | "(" , exp , ")";
 
-
-
 func call = func , "(" , bare list , ")";
 func = op func|closure;
 op func = "`" , overload op , "`";
@@ -31,7 +28,7 @@ declare var = data type| class , space , variable;
 
 tuple = "<>"
   | "<" , bare list , ">";
-bare tuple = variable , {" , ",variable}*;
+bare tuple = variable , {" , ", variable}*;
 
 map = "[:]"
  | "[" , ws , term , space , ":" , ws , term , ws , {term , space , ":" , ws , term}* , ws , "]";
@@ -40,7 +37,8 @@ bare map = term , space , ":" , ws , term , ws , {term , ws , ":" , ws , term}*;
 list = "[" , [term , {" , ",term}* , "]";
 bare list = term , {" , ",term}*;
 
-term = variable|string|decimal|integer|class|data type|func call;
+member = term,".",term;
+term = member|variable|string|decimal|integer|class|data type|func call|func;
 
 string = '"' , {utf|dquote escapes|format} , '"'
   | "'" , {utf|squote escapes|format} , "'";
