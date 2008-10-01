@@ -1,25 +1,31 @@
 #include "foom.h"
 #include "foom_lex.h"
 
-void process_file(char *file_name) {
-  int line = 0;
-	char cbuf[BUFSZ];
-	char lbuf[BUFSZ];
-  FILE * file;
-  int cnt;
 
-  file = fopen(file_name,"r");
-  do {
-    int i = 0;
-    cnt = fread(cbuf, 1, BUFSZ, file);
-    memcpy(lbuf, cbuf, BUFSZ);
-    do {
-      putc(cbuf[i], stdout);
-      if(cbuf[i] == '\n') {
-        line++;
-        printf("%04d ",line);
-      }
-    } while(i++<cnt);
-  } while(cnt == BUFSZ);
+
+void process_file(char *file_name) {
+  parse_pkg pp = {0, "", 0, 0, 0, 1};
+  extern char* keywords[];
+  char ch;
+
+  pp.file = fopen(file_name,"r");
+
+  while((ch = next_char(&pp)) != EOF)
+    putc(ch,stdout);
+
+
+  
+
+}
+
+char next_char(parse_pkg *pp) {
+  char c;
+  if(!pp->cnt)
+    pp->cnt = fread(pp->buf, 1, BUFSZ, pp->file);
+  c = pp->buf[pp->ci++];
+  if(pp->ci == pp->cnt)
+    pp->ci = pp->li = pp->cnt = 0;
+
+  return c;
 }
 
