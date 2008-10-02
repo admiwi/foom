@@ -4,14 +4,13 @@
 typedef struct _parse_pkg {
   FILE * file;
   char buf[BUFSZ];
-  int ci;
-  int li;
+  int i;
   int cnt;
   int line;
 } parse_pkg;
 
 void process_file(char*);
-char next_char(parse_pkg*);
+char buf_next(parse_pkg*);
 
 #endif
 

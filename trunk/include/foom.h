@@ -11,10 +11,11 @@
 #define BUFSZ 4096
 #define ARB_LEN 64
 
-#define SYMB_KEYWORD 1<<0
-#define SYMB_LIT_NUM 1<<1
-#define SYMB_LIT_STR 1<<2
-#define SYMB_OPERAOR 1<<3
+#define TOK_KEYWORD 1<<0
+#define TOK_LIT_NUM 1<<1
+#define TOK_LIT_STR 1<<2
+#define TOK_OPERAOR 1<<3
+#define TOK_SYMBOL  1<<4
 
 #define ATTR_EQ 1<<0
 #define ATTR_LT 1<<1

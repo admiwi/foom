@@ -4,28 +4,40 @@
 
 
 void process_file(char *file_name) {
-  parse_pkg pp = {0, "", 0, 0, 0, 1};
+  //              file, buf, i, cnt, line
+  parse_pkg pp = {   0,  "",  0,   0,    1};
   extern char* keywords[];
   char ch;
 
   pp.file = fopen(file_name,"r");
 
-  while((ch = next_char(&pp)) != EOF)
+  printf("%04d  ",pp.line);
+  while((ch = buf_next(&pp)) != EOF) {
+    switch(ch) {
+      case ' ':
+      case '\t':
+      case '\r':
+        break;
+      case '\n':
+        pp.line++;
+    }
     putc(ch,stdout);
-
-
-  
-
+    if(ch == '\n')
+      printf("%04d  ",pp.line);
+  }
 }
 
-char next_char(parse_pkg *pp) {
+char buf_next(parse_pkg *pp) {
   char c;
-  if(!pp->cnt)
+  if(!pp->cnt) {
     pp->cnt = fread(pp->buf, 1, BUFSZ, pp->file);
-  c = pp->buf[pp->ci++];
-  if(pp->ci == pp->cnt)
-    pp->ci = pp->li = pp->cnt = 0;
-
+    pp->i = 0;
+    if(!pp->cnt)
+      return EOF;
+  }
+  pp->cnt--;
+  c = pp->buf[pp->i++];
   return c;
 }
+
 
