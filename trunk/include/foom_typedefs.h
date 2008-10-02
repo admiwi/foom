@@ -23,7 +23,6 @@ typedef struct _object {
 typedef struct _symbol {
   char name[ARB_LEN];
   object * obj;
-
   struct _symbol * next;
 } symbol;
 

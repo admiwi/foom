@@ -9,7 +9,7 @@ char * keywords[] = {
   "is", "was", "as",
   "for", "while", "loop", "do", "continue",
   "obj", "int", "dec", "bool", "func", "bin", "list", "map",
-  "and", "or", "not", "xor"
+  "and", "or", "not", "xor",
+  0
 };
-
 
