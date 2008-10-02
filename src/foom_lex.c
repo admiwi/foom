@@ -13,20 +13,15 @@ void process_file(char *file_name) {
   printf("file %s open\n", file_name);
   printf("getting token\n");
   tok = get_token(&pp);
-  printf("got token at %x\n", tok);
-
   printf("Heres the name:  %s\n", tok->name);
 }
 
 char buf_getc(parse_pkg *pp) {
   char c;
   if(!pp->left) {
-    printf("loading buf\n");
     if(pp->buf && pp->count > ARB_LEN) 
       strncpy(pp->backbuf, &(pp->buf[pp->count - ARB_LEN]), ARB_LEN);
-    printf("backbuf...\n");
     pp->count = fread(pp->buf, 1, BUFSZ, pp->file);
-    printf("loaded %d\n", pp->count);
     pp->left = pp->count;
     pp->i = 0;
     if(!pp->count)
@@ -70,27 +65,26 @@ token * get_token(parse_pkg * pp) {
   int i=0;
   char c;
   token * tok = malloc(sizeof(token));
-  memset(buf, 0, 1204);
-  printf("%d %d \n", pp->i, pp->left);
+  memset(buf, 0, 1024);
+  memset(tok, 0, sizeof(token));
   while((c = buf_getc(pp)) != EOF) {
     printf("checking char %c(%i)\n",c,(int)c);
-    if(!c) continue;
-    printf("  not blank");
     if(c == ' ' || c == '\t' || c == '\n')
-      break;
-    printf("  not whitespace");
+      if(buf[0])
+        break;
+      else
+        continue;
     if(c == '"') {
       buf_ungetc(pp);
       get_string(pp, tok);
       free(buf);
       return tok;
     }
-    printf("  not a string");
-    if(isalpha(c))
+    if(isalpha(c)) {
       buf[i++] == c;
-    printf("  not alpha... dunno what it is\n");
+      continue;
+    }
   }
-  printf("do we get here?\n");
   strncpy(tok->name, buf, ARB_LEN-1);
   return tok;
 }
