@@ -11,6 +11,7 @@ typedef struct _parse_pkg {
 
 void process_file(char*);
 char buf_next(parse_pkg*);
+scope * gen_root_scope();
 
 #endif
 
