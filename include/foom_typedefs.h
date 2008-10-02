@@ -1,5 +1,8 @@
 #ifndef _FOOM_TYPEDEFS_
 #define _FOOM_TYPEDEFS_
+
+#include "foom_hash.h"
+
 typedef int funcp(char*,...);
 
 typedef struct _attrib {
@@ -28,7 +31,7 @@ typedef struct _symbol {
 
 typedef struct _scope {
   struct _scope *parent;
-  symbol *symbols;
+  map** symbols;
 } scope;
 
 #endif

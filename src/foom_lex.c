@@ -1,5 +1,6 @@
 #include "foom.h"
 #include "foom_lex.h"
+#include "foom_hash.h"
 
 
 
@@ -8,9 +9,10 @@ void process_file(char *file_name) {
   parse_pkg pp = {   NULL,  "",  0,   0,    1};
   extern char* keywords[];
   char ch;
+  int i=0;
+  char * tmp;
+  char not_found[] = "not found";
   scope *root_scope = gen_root_scope();
-  symbol *s = root_scope->symbols;
-
   pp.file = fopen(file_name,"r");
 
   printf("%04d  ",pp.line);
@@ -27,10 +29,15 @@ void process_file(char *file_name) {
     if(ch == '\n')
       printf("%04d  ",pp.line);
   }
-  while(s) {
-    printf("%s\n",s->name);
-    s = s->next;
-  }
+  map_del(root_scope->symbols, "loop"); 
+  map_del(root_scope->symbols, "func"); 
+  map_del(root_scope->symbols, "xor"); 
+  do {
+    tmp = (char*)map_get(root_scope->symbols, (void*)keywords[i]);
+    if(!tmp)
+      tmp = not_found;
+    printf("k:%s v:%s\n",keywords[i], tmp);
+  } while(keywords[++i]);
 }
 
 char buf_next(parse_pkg *pp) {
@@ -49,18 +56,11 @@ char buf_next(parse_pkg *pp) {
 scope * gen_root_scope() {
   extern char * keywords[];
   scope *s = malloc(sizeof(scope));
-  symbol *sym = malloc(sizeof(symbol));
-  s->symbols = sym;
-  int i;
-  for(i=0;keywords[i];++i){
-    strcpy(sym->name,keywords[i]);
-    if(!keywords[i]) {
-      sym->next = NULL;
-      break;
-    }
-    sym->next = malloc(sizeof(symbol));
-    sym = sym->next;
-  }
+  s->symbols = new_map();
+  int i=0;
+  do {
+    map_set(s->symbols, keywords[i], strdup(keywords[i]));
+  } while(keywords[++i]);
   return s;
 }
 
