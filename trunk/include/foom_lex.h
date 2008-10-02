@@ -4,14 +4,19 @@
 typedef struct _parse_pkg {
   FILE * file;
   char buf[BUFSZ];
+  char backbuf[ARB_LEN];
   int i;
-  int cnt;
+  int count;
+  int left;
   int line;
 } parse_pkg;
 
 void process_file(char*);
-char buf_next(parse_pkg*);
+char buf_getc(parse_pkg*);
+char buf_ungetc(parse_pkg*);
 scope * gen_root_scope();
+int get_string(parse_pkg*, token*);
+token * get_token(parse_pkg *);
 
 #endif
 
