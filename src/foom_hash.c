@@ -19,51 +19,59 @@ unsigned int hash(char* key) {
   return hv % HASH_SZ;
 }
 
-void map_set(map** mtab, char* key, void* data) {
+int map_set(map** mtab, char* key, void* data, int flags) {
   unsigned int hv = hash(key);
   map * m = malloc(sizeof(map));
   map * cur;
   void* td;
   strcpy(m->key, key);
   m->data = data;
+  m->flags = flags;
   m->next = 0;
-  if(!mtab[hv])
+  if(!mtab[hv]) {
     mtab[hv] = m;
+    return 0;
+  }
   else {
     cur = mtab[hv];
     do {
       if(!strcmp(cur->key, m->key)) {
-        td = cur->data;
-        cur->data = m->data;
+        if(!flag_is_set(cur->flags, MAP_IMMUTABLE)) {
+          td = cur->data;
+          cur->data = m->data;
+          cur->flags = m->flags;
+          free(td);
+        }
         free(m);
-        free(td);
-        return;
+        return 0;
       }
       cur = cur->next;
     }while(cur->next);
     cur->next = m;
   }
+  return 1;
 }
 
-map* _map_del(map*,char*);
+map* _map_del(map*,char*, int);
 
-void map_del(map** mtab, char* key) {
+void map_del(map** mtab, char* key, int deldata) {
   unsigned int hv = hash(key);
   if(!mtab[hv])
     return;
-  mtab[hv] = _map_del(mtab[hv], key);
+  mtab[hv] = _map_del(mtab[hv], key, deldata);
 }
 
-map* _map_del(map* m, char * key) {
+map* _map_del(map* m, char * key, int deldata) {
   map* t;
   if(!strcmp(m->key, key)){
     t = m->next;
-    free(m->data);
+    if(deldata)
+      free(m->data);
     free(m);
     return t;
   }
   if(m->next)
-    m->next = _map_del(m->next, key);  
+    m->next = _map_del(m->next, key, deldata);  
   return m;
 }
 
