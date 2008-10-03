@@ -13,9 +13,10 @@ typedef struct _attrib {
 
 typedef struct _token {
   char name[ARB_LEN];
-  attrib *attr;
+  int type;
+  int attr;
   funcp *func;
-  char arg_map[ARB_LEN];
+  char args[ARB_LEN];
   struct _token * next;
 } token;
 

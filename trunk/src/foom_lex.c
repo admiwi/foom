@@ -12,15 +12,10 @@ void process_file(char *file_name) {
 
   pp.file = fopen(file_name,"r");
  
-  do {
-    tok = get_token(&pp);
-    printf("Heres the name:  %s\n", tok->name);
+  while(tok = get_token(&pp)){
+    printf("Token: '%s' type %d\n", tok->name, tok->type);
     if(tok) free(tok);
-  } while(tok);
-  
-  tok = get_token(&pp);
-  printf("Heres the name:  %s\n", tok->name);
-  free(tok);
+  }
 }
 
 char buf_getc(parse_pkg *pp) {
@@ -93,20 +88,28 @@ int get_number(parse_pkg * pp, char *buf) {
   return 0;
 }
 
-token * new_token() {
+token * new_token(char* name, int type, int attr, funcp * func, char* args) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
+  strcpy(tok->name, name);
+  tok->type = type;
+  tok->attr = attr;
+  tok->func = func;
+  strcpy(tok->args, args);
+
   return tok;
 }
 
 token * get_token(parse_pkg * pp) {
   char * buf = malloc(1024);
+  int type = TOK_UNKNOWN;
   int i=0;
   char c;
   memset(buf, 0, 1024);
   token * tok = NULL;
 
   while((c = buf_getc(pp)) != EOF) {
+    if(is_irrel(c)) continue;
     if(is_ws(c)) {
       if(buf[0]==0)
         continue;
@@ -117,16 +120,16 @@ token * get_token(parse_pkg * pp) {
     if(c == '"') {
       if(buf[0]==0) {
         get_string(pp, buf);
-      } else {
-        buf_ungetc(pp);
-        break;
-      }
+        type = TOK_LIT_STR;
+      } else buf_ungetc(pp);
+      break;
     }
 
     if(is_num(c)) {
       buf_ungetc(pp);
       if(buf[0]==0) {
         get_number(pp, buf);
+        type = TOK_LIT_NUM;
         break;
       } else {
         break;
@@ -136,21 +139,23 @@ token * get_token(parse_pkg * pp) {
     if(is_op(c)) {
       if(buf[0]) 
         buf_ungetc(pp);
-      else
+      else{
+        type = TOK_OPERATOR;
         buf[0] = c;
+      }
       break;
     }
 
     if(is_char(c)) {
       buf[i++] = c;
+      type = TOK_SYMBOL;
       continue;
     }
     printf("unprocessed char ( '%c' : 0x%02x )\n",c,(int)c);
   }
   if(c == EOF) return NULL;
   if(buf) {
-     tok = new_token();
-    strncpy(tok->name, buf, ARB_LEN-1);
+     tok = new_token(buf, type, 0, NULL, "");
     free(buf);
   }
   return tok;
