@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
   putc('\n', stdout);
 	return EXIT_SUCCESS;
 }
-
+/*
 void test_stuff(char *file_name) {
   //               file,    buf, backbuf,  i, cnt, line
   parse_pkg pp = { NULL,   "\0",    "\0",  0,   0,   1};
@@ -64,4 +64,4 @@ void test_stuff(char *file_name) {
     printf("k:%s v:%s\n",keywords[i], tmp);
   } while(keywords[++i]);
 }
-
+*/

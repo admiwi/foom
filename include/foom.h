@@ -24,12 +24,8 @@
 #define ATTR_GE (1<<4)
 #define ATTR_NE (1<<5)
 
-#define flag_is_set(A,B) (A&B)
-#define set_flag(A,B) (A=A|B) 
-#define clear_flag(A,B) (A=A&(~B)) 
-#define toggle_flag(A,B) (A=A^B)
-
 #include "foom_typedefs.h"
+#include "foom_utils.h"
 
 #endif
 

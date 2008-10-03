@@ -15,8 +15,10 @@ void process_file(char*);
 char buf_getc(parse_pkg*);
 char buf_ungetc(parse_pkg*);
 scope * gen_root_scope();
-int get_string(parse_pkg*, token*);
+//int get_string(parse_pkg*, token*);
 token * get_token(parse_pkg *);
+map ** get_keywords();
+scope * new_scope(scope*);
 
 #endif
 
