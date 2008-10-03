@@ -8,7 +8,6 @@ void process_file(char *file_name) {
   parse_pkg pp = { NULL, "\0",    "\0",  0,   0,       0,   1};
   token * tok;
   scope *s = new_scope(NULL);
-  map ** kws = get_keywords();
 
   pp.file = fopen(file_name,"r");
  
@@ -88,6 +87,20 @@ int get_number(parse_pkg * pp, char *buf) {
   return 0;
 }
 
+int get_operator(parse_pkg * pp, char *buf) {
+  int i = 0;
+  char c;
+  while((c = buf_getc(pp)) != EOF) {
+    if(is_num(c))
+      buf[i++] = c;
+    else {
+      buf_ungetc(pp);
+      break;
+    }
+  }
+
+  return 0;
+}
 token * new_token(char* name, int type, int attr, funcp * func, char* args) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
@@ -105,6 +118,7 @@ token * get_token(parse_pkg * pp) {
   int type = TOK_UNKNOWN;
   int i=0;
   char c;
+  map ** kws = get_keywords();
   memset(buf, 0, 1024);
   token * tok = NULL;
 
@@ -155,7 +169,9 @@ token * get_token(parse_pkg * pp) {
   }
   if(c == EOF) return NULL;
   if(buf) {
-     tok = new_token(buf, type, 0, NULL, "");
+    if(type == TOK_SYMBOL && map_get(kws, buf))
+      type = TOK_KEYWORD;
+    tok = new_token(buf, type, 0, NULL, "");
     free(buf);
   }
   return tok;
