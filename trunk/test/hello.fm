@@ -1,1 +1,3 @@
-println "Hello World!"
+if(foo==10) {
+  print_ln "Hello World!\n"
+}
