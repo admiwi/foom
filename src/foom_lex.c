@@ -132,7 +132,7 @@ token * get_operator(parse_pkg * pp) {
           buf_ungetc(pp);
       }
       return new_token( buf, TOK_OP, ATTR_ASSIGN, NULL, 0);
-     case '>':
+    case '>':
       switch(buf_getc(pp)) {
         case '=':
           return new_token( buf, TOK_OP, ATTR_GE, NULL, 0);
@@ -140,7 +140,7 @@ token * get_operator(parse_pkg * pp) {
           buf_ungetc(pp);
       }
       return new_token( buf, TOK_OP, ATTR_GT, NULL, 0);
-     case '<':
+    case '<':
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
@@ -152,6 +152,9 @@ token * get_operator(parse_pkg * pp) {
           buf_ungetc(pp);
       }
       return new_token( buf, TOK_OP, ATTR_LT, NULL, 0);
+    default:
+      buf[i++] = pp->c;
+      return new_token( buf, TOK_OP, ATTR_NONE, NULL, 0);
       
   }
   return 0;
@@ -173,7 +176,6 @@ token * new_token(void* data, int type, int attr, funcp * func, char* args) {
 
 token * get_token(parse_pkg * pp) {
   while(buf_getc(pp)) {
-    
     if(pp->c == EOF) return NULL;
     //if(is_irrel(pp->c)) continue;
     if(is_ws(pp->c))
