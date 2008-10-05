@@ -2,10 +2,12 @@
 #define _FOOM_LEX_
 
 typedef struct _parse_pkg {
+  char filename[ARB_LEN];
   FILE * file;
   char buf[BUFSZ];
   char backbuf[ARB_LEN];
   int i;
+  char c;
   int count;
   int left;
   int line;
@@ -19,6 +21,8 @@ scope * gen_root_scope();
 token * get_token(parse_pkg *);
 map ** get_keywords();
 scope * new_scope(scope*);
+//token * new_token(char* name, int type, int attr, funcp * func, char* args) 
+token * new_token(void*, int, int, funcp*, char*); 
 
 #endif
 
