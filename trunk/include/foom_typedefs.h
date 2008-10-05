@@ -5,6 +5,16 @@
 
 typedef int funcp(char*,...);
 
+typedef struct _error {
+  int type;
+  char file[ARB_LEN];
+  int line;
+  char what[ARB_LEN];
+  char where[ARB_LEN];
+  struct _error * next;
+} _error_;
+
+
 typedef struct _attrib {
   char name[ARB_LEN];
   int type;
@@ -12,7 +22,7 @@ typedef struct _attrib {
 } attrib;
 
 typedef struct _token {
-  char name[ARB_LEN];
+  void * data;
   int type;
   int attr;
   funcp *func;

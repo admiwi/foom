@@ -22,6 +22,8 @@ int main(int argc, char** argv) {
     perror("error");
     exit(EXIT_SUCCESS);
   }
+
+  init_keywords();
   
   process_file(argv[1]);
   putc('\n', stdout);
