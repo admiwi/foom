@@ -12,7 +12,7 @@ void process_file(char *file_name) {
   pp.file = fopen(file_name,"r");
  
   while(tok = get_token(&pp)){
-    printf("Token: '%s' type %d\n", (char*)tok->data, tok->type);
+    printf("Token: '%s' type %d\n", (char*)tok->lexem, tok->type);
     if(tok) free(tok);
   }
   print_errors();
@@ -32,7 +32,7 @@ char buf_getc(parse_pkg *pp) {
     pp->c = pp->backbuf[ARB_LEN+pp->i];
   else
     pp->c = pp->buf[pp->i];
-  if(pp->c=='\n') pp->line--;
+  if(pp->c=='\n') pp->line++;
   pp->i++;
   return pp->c;
 }
@@ -74,7 +74,7 @@ token * get_string(parse_pkg * pp) {
     }
     //if(pp->c == '$') interpolation
     if(pp->c == endc)
-      return new_token( buf, TOK_STR, ATTR_NONE, NULL, 0);
+      return new_token( buf, TOK_STR, ATTR_NONE);
     buf[i++] = pp->c;
     if(i == len -1) {
       len += len;
@@ -95,8 +95,8 @@ token * get_symbol(parse_pkg * pp) {
     else {
       buf_ungetc(pp);
       return new_token( buf, 
-        map_get(keywords, buf)?TOK_SYM:TOK_SYM|TOK_KW, 
-        ATTR_NONE, NULL, 0);
+        map_get(keywords, buf)?TOK_SYM|TOK_KW:TOK_SYM, 
+        ATTR_NONE);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -111,7 +111,7 @@ token * get_number(parse_pkg * pp) {
       buf[i++] = pp->c;
     else {
       buf_ungetc(pp);
-      return new_token( buf, TOK_NUM, ATTR_NONE, NULL, 0);
+      return new_token( buf, TOK_NUM, ATTR_NONE);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -127,50 +127,44 @@ token * get_operator(parse_pkg * pp) {
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_EQ, NULL, 0);
+          return new_token( buf, TOK_OP, ATTR_EQ);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_ASSIGN, NULL, 0);
+      return new_token( buf, TOK_OP, ATTR_ASSIGN);
     case '>':
       switch(buf_getc(pp)) {
         case '=':
-          return new_token( buf, TOK_OP, ATTR_GE, NULL, 0);
+          return new_token( buf, TOK_OP, ATTR_GE);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_GT, NULL, 0);
+      return new_token( buf, TOK_OP, ATTR_GT);
     case '<':
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_LE, NULL, 0);
+          return new_token( buf, TOK_OP, ATTR_LE);
         case '>':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_NE, NULL, 0);
+          return new_token( buf, TOK_OP, ATTR_NE);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_LT, NULL, 0);
+      return new_token( buf, TOK_OP, ATTR_LT);
     default:
       buf[i++] = pp->c;
-      return new_token( buf, TOK_OP, ATTR_NONE, NULL, 0);
+      return new_token( buf, TOK_OP, ATTR_NONE);
       
   }
   return 0;
 }
-token * new_token(void* data, int type, int attr, funcp * func, char* args) {
+token * new_token(void* lexem, int type, int attr) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
-  tok->data = data;
+  tok->lexem = lexem;
   tok->type = type;
   tok->attr = attr;
-  tok->func = func;
-  if(args)
-    strcpy(tok->args, args);
-  else
-    tok->args[0] = 0;
-
   return tok;
 }
 

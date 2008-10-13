@@ -22,7 +22,7 @@ token * get_token(parse_pkg *);
 map ** get_keywords();
 scope * new_scope(scope*);
 //token * new_token(char* name, int type, int attr, funcp * func, char* args) 
-token * new_token(void*, int, int, funcp*, char*); 
+token * new_token(void*, int, int); 
 
 #endif
 

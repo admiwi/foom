@@ -22,20 +22,43 @@ typedef struct _attrib {
 } attrib;
 
 typedef struct _token {
-  void * data;
+  void * lexem;
   int type;
   int attr;
-  funcp *func;
-  char args[ARB_LEN];
   struct _token * next;
 } token;
 
+typedef struct _string {
+  char * str;
+  int len;
+} string;
+
+typedef struct _list {
+  struct _object * obj;
+  struct _list * next;
+  int type;
+  int count;
+} list;
+
+typedef struct _class {
+  int foo;  
+} class;
+
 typedef struct _object {
-  char id[ARB_LEN];
+  long serial;
+  int ntype;
+  void * value;
+  map ** members;
 } object;
 
+typedef struct _ast {
+  object * obj;
+  struct _ast * right;
+  struct _ast * left;
+} ast;
+
 typedef struct _symbol {
-  char name[ARB_LEN];
+  char id[ARB_LEN];
   object * obj;
   struct _symbol * next;
 } symbol;
