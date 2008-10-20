@@ -12,6 +12,13 @@
 #include "foom_lex.h"
 #include "foom_gram.h"
 
+void print_toks(token * tok) {
+  while(tok) {
+    printf("cur: '%s' %d prev:'%s'\n", tok->lexem, tok->symbol, tok->prev?tok->prev->lexem: "none");
+    tok = tok->next;
+  }
+}
+
 void process_file(char *file_name) {
   //        filename, file,  buf, backbuf,  i,    c, count, left, line
   parse_pkg pp = { "\0", NULL, "\0",    "\0",  0, '\0',     0,    0,   1};
@@ -19,13 +26,11 @@ void process_file(char *file_name) {
   token * tok, t;
   strcpy(pp.filename, file_name);
   pp.file = fopen(file_name,"r");
- 
+  
   tok = gen_token_chain(&pp);
+  gProgram(tok);
+ 
 
-  while(tok) {
-    printf("cur: '%s' %d %d prev:'%s'\n", tok->lexem, tok->type, tok->attr, tok->prev?tok->prev->lexem: "none");
-    tok = tok->next;
-  }
 }
 
 int main(int argc, char** argv) {
@@ -34,9 +39,7 @@ int main(int argc, char** argv) {
   extern MAP grammer;
   char *stmts[] = {"if","while","for", 0};
   void * g;
-  char gram[GLEN][GLEN][ARB_LEN];
-
-  init_grammer();
+  
   if(argc < 2) {
     printf("Usage: %s <source file>\n", argv[0]);
     exit(EXIT_SUCCESS);

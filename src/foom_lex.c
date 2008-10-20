@@ -70,7 +70,7 @@ token * get_string(parse_pkg * pp) {
     }
     //if(pp->c == '$') interpolation
     if(pp->c == endc)
-      return new_token( buf, TOK_STR, ATTR_NONE);
+      return new_token( buf, string_sym);
     buf[i++] = pp->c;
     if(i == len -1) {
       len += len;
@@ -83,16 +83,21 @@ token * get_string(parse_pkg * pp) {
 token * get_symbol(parse_pkg * pp) {
   int i = 0;
   char *buf = malloc(ARB_LEN);
-  extern map ** keywords;
+  extern MAP keywords;
+  extern char * _keywords[];
   memset(buf, 0, ARB_LEN);
+  int *s;
+  Symbol sym = id_sym;
   do {
     if(is_char(pp->c))
       buf[i++] = pp->c;
     else {
+      if(s = map_get(keywords, buf)) {
+        printf("%s:%d ",_keywords[*s], *s);
+        sym = *s;
+      }
       buf_ungetc(pp);
-      return new_token( buf, 
-        map_get(keywords, buf)?TOK_SYM|TOK_KW:TOK_SYM, 
-        ATTR_NONE);
+      return new_token( buf, sym);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -107,7 +112,7 @@ token * get_number(parse_pkg * pp) {
       buf[i++] = pp->c;
     else {
       buf_ungetc(pp);
-      return new_token( buf, TOK_NUM, ATTR_NONE);
+      return new_token( buf, integer_sym);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -117,53 +122,67 @@ token * get_operator(parse_pkg * pp) {
   int i = 0;
   char *buf = malloc(ARB_LEN);
   memset(buf, 0, ARB_LEN);
+  Symbol sym = unknown_sym;
   switch(pp->c) {
     case '=':
       buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_EQ);
+          return new_token( buf, eq_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_ASSIGN);
+      return new_token( buf, assign_sym);
     case '>':
       buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_GE);
+          return new_token( buf, ge_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_GT);
+      return new_token( buf, gt_sym);
     case '<':
       buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_LE);
+          return new_token( buf, le_sym);
         case '>':
           buf[i++] = pp->c;
-          return new_token( buf, TOK_OP, ATTR_NE);
+          return new_token( buf, neq_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, TOK_OP, ATTR_LT);
+      return new_token( buf, lt_sym);
+    case '+': sym = plus_sym; break;
+    case '-': sym = minus_sym; break;
+    case '*': sym = star_sym; break;
+    case '^': sym = carrot_sym; break;
+    case '!': sym = bang_sym; break;
+    case '&': sym = andper_sym; break;
+    case '/': sym = slash_sym; break;
+    case '.': sym = dot_sym; break;
+    case '@': sym = at_sym; break;
+    case '$': sym = dollar_sym; break;
+    case ':': sym = colon_sym; break;
+    case '`': sym = grave_sym; break;
+    case '~': sym = tilda_sym; break;
+    case '|': sym = bar_sym; break;
     default:
-      buf[i++] = pp->c;
-      return new_token( buf, TOK_OP, ATTR_NONE);
+      return 0;
       
   }
-  return 0;
+  buf[i++] = pp->c;
+  return new_token( buf, sym);
 }
-token * new_token(char* lexem, int type, int attr) {
+token * new_token(char* lexem, Symbol sym) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
   tok->lexem = lexem;
-  tok->type = type;
-  tok->attr = attr;
+  tok->symbol = sym;
   tok->prev = NULL;
   tok->next = NULL;
   return tok;
