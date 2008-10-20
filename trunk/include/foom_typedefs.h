@@ -35,8 +35,7 @@ typedef struct _attrib {
 
 typedef struct _token {
   char * lexem;
-  int type;
-  int attr;
+  Symbol symbol;
   int line;
   int pos;
   struct _token * prev;

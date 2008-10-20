@@ -1,6 +1,7 @@
 #include "foom.h"
 
 char * _keywords[] = { 
+  "\x255",
   "if", "switch", "case", "else", "break",
   "return",
   "try", "catch", "finally", "throw", "assert",
@@ -10,6 +11,10 @@ char * _keywords[] = {
   "for", "while", "loop", "do", "continue",
   "obj", "int", "dec", "bool", "func", "bin", "list", "map",
   "and", "or", "not", "xor",
+  "(",")",
+  "{","}",
+  "[","]",
+  "\"","'",
   0
 };
 
@@ -21,9 +26,12 @@ MAP init_keywords() {
     keywords = new_map();
     int i=0;
     do {
-      map_set(keywords, _keywords[i], strdup(_keywords[i]), MAP_STRING);
+      int * j = malloc(sizeof(int));
+      *j = i;
+      map_set(keywords, _keywords[i], j, MAP_STRING);
     } while(_keywords[++i]);
   }
+  return keywords;
 }
 
 _error_ *errors = 0;
