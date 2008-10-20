@@ -70,7 +70,7 @@ token * get_string(parse_pkg * pp) {
     }
     //if(pp->c == '$') interpolation
     if(pp->c == endc)
-      return new_token( buf, string_sym);
+      return new_token(pp->line, buf, string_sym);
     buf[i++] = pp->c;
     if(i == len -1) {
       len += len;
@@ -93,11 +93,10 @@ token * get_symbol(parse_pkg * pp) {
       buf[i++] = pp->c;
     else {
       if(s = map_get(keywords, buf)) {
-        printf("%s:%d ",_keywords[*s], *s);
         sym = *s;
       }
       buf_ungetc(pp);
-      return new_token( buf, sym);
+      return new_token(pp->line, buf, sym);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -112,7 +111,7 @@ token * get_number(parse_pkg * pp) {
       buf[i++] = pp->c;
     else {
       buf_ungetc(pp);
-      return new_token( buf, integer_sym);
+      return new_token(pp->line, buf, integer_sym);
     }
   } while(buf_getc(pp) != EOF);
   return NULL;
@@ -129,34 +128,34 @@ token * get_operator(parse_pkg * pp) {
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, eq_sym);
+          return new_token(pp->line, buf, eq_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, assign_sym);
+      return new_token(pp->line, buf, assign_sym);
     case '>':
       buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, ge_sym);
+          return new_token(pp->line, buf, ge_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, gt_sym);
+      return new_token(pp->line, buf, gt_sym);
     case '<':
       buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
-          return new_token( buf, le_sym);
+          return new_token(pp->line, buf, le_sym);
         case '>':
           buf[i++] = pp->c;
-          return new_token( buf, neq_sym);
+          return new_token(pp->line, buf, neq_sym);
         default:
           buf_ungetc(pp);
       }
-      return new_token( buf, lt_sym);
+      return new_token(pp->line, buf, lt_sym);
     case '+': sym = plus_sym; break;
     case '-': sym = minus_sym; break;
     case '*': sym = star_sym; break;
@@ -171,20 +170,25 @@ token * get_operator(parse_pkg * pp) {
     case '`': sym = grave_sym; break;
     case '~': sym = tilda_sym; break;
     case '|': sym = bar_sym; break;
+    case '(': sym = oparen_sym; break;
+    case ')': sym = cparen_sym; break;
+    case '{': sym = ocurly_sym; break;
+    case '}': sym = ccurly_sym; break;
     default:
       return 0;
       
   }
   buf[i++] = pp->c;
-  return new_token( buf, sym);
+  return new_token(pp->line, buf, sym);
 }
-token * new_token(char* lexem, Symbol sym) {
+token * new_token(int line, char* lexem, Symbol sym) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
   tok->lexem = lexem;
   tok->symbol = sym;
   tok->prev = NULL;
   tok->next = NULL;
+  tok->line = line;
   return tok;
 }
 
