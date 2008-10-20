@@ -76,6 +76,7 @@ void gProgram(token * t);
 
 void printE(Symbol sym, char * e){
   extern char * _keywords[];
+  if(cur_tok)
   printf("%s [Lex '%s' : line %d : Sym %d (kw '%s')]\n",
     e, 
     cur_tok->lexem, 
@@ -83,10 +84,11 @@ void printE(Symbol sym, char * e){
     sym,
     _keywords[sym]?_keywords[sym]:"none"
     );
+  fflush(stdout);
 }
 
 int expect(Symbol sym) {
-  if(sym == cur_tok->symbol)
+  if(cur_tok && sym == cur_tok->symbol)
     return 1;
   //add_error(ERR_ERROR, 0, cur_tok->line, 0sprintE(sym,"expecting token %d",sym), cur_tok->lexem);
   printE(sym,"tok err on ");
@@ -97,6 +99,7 @@ int next() { return !!(cur_tok = cur_tok->next); }
 
 int accept(Symbol sym) {
   if(expect(sym)) {
+    printE(sym,"accept");
     next();
     return 1; 
   }
@@ -104,27 +107,33 @@ int accept(Symbol sym) {
 }
 
 void sIf() {
+  printE(cur_tok->symbol,"if?");
   if(accept(oparen_sym)) {
     gE();
     accept(cparen_sym);
     gS();
   } else {
-    printE(cur_tok->symbol,"bad if");    
-    next();
+    if(cur_tok) {
+      printE(cur_tok->symbol,"bad if");    
+      next();
+    }
   }
 }
 
 void gT() {
   switch(cur_tok->symbol) {
-    case id_sym: next();
+    case id_sym: 
       printE(cur_tok->symbol,"symbol");
+      next();
       break;
     case integer_sym:
-    case float_sym: next();
+    case float_sym: 
       printE(cur_tok->symbol,"number");
+      next();
       break;
-    case oparen_sym: next();
+    case oparen_sym: 
       printE(cur_tok->symbol,"(");
+      next();
       gE();
       if(expect(cparen_sym))
         printE(cur_tok->symbol,")");
@@ -156,8 +165,9 @@ int isOp() {
    case andper_sym:
    case slash_sym:
    case tilda_sym:
-   case bar_sym: next(); 
+   case bar_sym: 
      printE(cur_tok->symbol,"operator");
+     next(); 
      return 1;
      //next();
    default:
@@ -191,8 +201,9 @@ void gS() {
       break;
     case while_sym:
     case switch_sym:
-    case ocurly_sym: next();
+    case ocurly_sym: 
       printE(cur_tok->symbol,"closure");
+      next();
       while(cur_tok->symbol != ccurly_sym)
         gS();
       accept(ccurly_sym);

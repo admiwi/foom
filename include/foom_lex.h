@@ -12,7 +12,7 @@ token * get_token(parse_pkg *);
 map ** get_keywords();
 scope * new_scope(scope*);
 //token * new_token(char* name, char *type, int attr, funcp * func, char* args) 
-token * new_token(char*, Symbol); 
+token * new_token(int, char*, Symbol); 
 token * gen_token_chain(parse_pkg *);
 
 #endif
