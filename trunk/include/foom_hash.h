@@ -11,6 +11,10 @@
 #define MAP_OBJECT    (1<<4)
 #define MAP_KEYWORD   (1<<5)
 
+#define MAP_GRAMMER   (1<<6)
+
+#define MAP map **
+
 typedef struct _map {
   struct _map * next;
   char key[ARB_LEN];
@@ -25,7 +29,7 @@ union charint {
 
 map** new_map();
 unsigned int hash(char*);
-int map_set(map**, char*, void*, int);
-void map_del(map**, char*, int);
-void* map_get(map**, char*);
+int map_set(MAP, char*, void*, int);
+void map_del(MAP, char*, int);
+void* map_get(MAP, char*);
 #endif

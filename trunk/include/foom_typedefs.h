@@ -3,6 +3,18 @@
 
 #include "foom_hash.h"
 
+typedef struct _parse_pkg {
+  char filename[ARB_LEN];
+  FILE * file;
+  char buf[BUFSZ];
+  char backbuf[ARB_LEN];
+  int i;
+  char c;
+  int count;
+  int left;
+  int line;
+} parse_pkg;
+
 typedef int funcp(char*,...);
 
 typedef struct _error {
@@ -22,9 +34,12 @@ typedef struct _attrib {
 } attrib;
 
 typedef struct _token {
-  void * lexem;
+  char * lexem;
   int type;
   int attr;
+  int line;
+  int pos;
+  struct _token * prev;
   struct _token * next;
 } token;
 
@@ -57,6 +72,12 @@ typedef struct _ast {
   struct _ast * left;
 } ast;
 
+typedef struct _ast_node {
+  object * obj;
+  struct _ast * right;
+  struct _ast * left;
+} ast_node;
+
 typedef struct _symbol {
   char id[ARB_LEN];
   object * obj;
@@ -67,5 +88,15 @@ typedef struct _scope {
   struct _scope *parent;
   map** symbols;
 } scope;
+
+typedef struct _prod_path {
+  char ** prod;
+} prod_path;
+
+typedef struct _prod {
+  char ** path;
+  prod_path * paths[ARB_LEN];
+} production;
+
 
 #endif

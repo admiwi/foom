@@ -19,12 +19,12 @@
 #define TOK_SYM (1<<4)
 
 #define ATTR_NONE 0
-#define ATTR_EQ (1<<0)
-#define ATTR_LT (1<<1)
-#define ATTR_GT (1<<2)
-#define ATTR_LE (1<<3)
-#define ATTR_GE (1<<4)
-#define ATTR_NE (1<<5)
+#define ATTR_EQ 1
+#define ATTR_LT 2
+#define ATTR_GT 3
+#define ATTR_LE 4
+#define ATTR_GE 5
+#define ATTR_NE 6
 
 #define ATTR_ASSIGN (1<<6)
 #define ATTR_INT (1<<7)

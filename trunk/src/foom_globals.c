@@ -13,10 +13,10 @@ char * _keywords[] = {
   0
 };
 
-map ** keywords = NULL;
-map ** init_keywords() {
+MAP keywords = NULL;
+MAP init_keywords() {
   extern char * _keywords[];
-  map ** _kws;
+  MAP _kws;
   if(!keywords) {
     keywords = new_map();
     int i=0;
