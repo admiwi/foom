@@ -3,19 +3,15 @@
 #include "foom_hash.h"
 #include <ctype.h>
 
-void process_file(char *file_name) {
-  //        filename, file,  buf, backbuf,  i,    c, count, left, line
-  parse_pkg pp = { "\0", NULL, "\0",    "\0",  0, '\0',     0,    0,   1};
-  token * tok;
-  scope *s = new_scope(NULL);
-  strcpy(pp.filename, file_name);
-  pp.file = fopen(file_name,"r");
- 
-  while(tok = get_token(&pp)){
-    printf("Token: '%s' type %d\n", (char*)tok->lexem, tok->type);
-    if(tok) free(tok);
+token * gen_token_chain(parse_pkg *pp) {
+  token * tok, * t;
+  t = tok = get_token(pp);
+  while(t->next = get_token(pp)) {
+    t->next->prev = t;
+    t = t->next;
   }
   print_errors();
+  return tok; 
 }
 
 char buf_getc(parse_pkg *pp) {
@@ -133,14 +129,17 @@ token * get_operator(parse_pkg * pp) {
       }
       return new_token( buf, TOK_OP, ATTR_ASSIGN);
     case '>':
+      buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
+          buf[i++] = pp->c;
           return new_token( buf, TOK_OP, ATTR_GE);
         default:
           buf_ungetc(pp);
       }
       return new_token( buf, TOK_OP, ATTR_GT);
     case '<':
+      buf[i++] = pp->c;
       switch(buf_getc(pp)) {
         case '=':
           buf[i++] = pp->c;
@@ -159,12 +158,14 @@ token * get_operator(parse_pkg * pp) {
   }
   return 0;
 }
-token * new_token(void* lexem, int type, int attr) {
+token * new_token(char* lexem, int type, int attr) {
   token * tok = malloc(sizeof(token));
   memset(tok, 0, sizeof(token));
   tok->lexem = lexem;
   tok->type = type;
   tok->attr = attr;
+  tok->prev = NULL;
+  tok->next = NULL;
   return tok;
 }
 

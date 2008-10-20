@@ -1,4 +1,4 @@
 if(foo>=10) {
-  int bar = 55
+  int bar.bat = 55
   print_ln 'Hello "Wor\ld"!\n'
 }
