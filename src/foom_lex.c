@@ -10,7 +10,6 @@ token * gen_token_chain(parse_pkg *pp) {
     t->next->prev = t;
     t = t->next;
   }
-  print_errors();
   return tok; 
 }
 

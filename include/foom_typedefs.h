@@ -21,8 +21,8 @@ typedef struct _error {
   int type;
   char file[ARB_LEN];
   int line;
-  char what[ARB_LEN];
-  char where[ARB_LEN];
+  char * what;
+  char * where;
   struct _error * next;
 } _error_;
 
