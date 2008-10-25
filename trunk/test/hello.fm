@@ -1,4 +1,4 @@
-if(foo>=102 {
+if(foo>=102) {
   int bar.bat = 55
   print_ln 'Hello "Wor\ld"!\n'
   if(test) {

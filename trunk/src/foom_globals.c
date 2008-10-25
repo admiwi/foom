@@ -41,10 +41,12 @@ void add_error(int type, char* fn, int line, char* what, char* where) {
   _error_ * err = malloc(sizeof(_error_));
   err->type = type;
   err->line = line;
-  strcpy(err->file, fn);
-  strncpy(err->what, what, ARB_LEN);
+  strcpy(err->file, fn?fn:"<file>");
+  err->what = malloc(ARB_LEN);
+  err->where = malloc(ARB_LEN);
+  strncpy(err->what, what?what:"unknown error", ARB_LEN);
   strcat(err->where, "...");
-  strncat(err->where, where, ARB_LEN-7);
+  strncat(err->where, where?where:"somewhere", ARB_LEN-7);
   strcat(err->where, "...");
   err->next = NULL;
   if(errors) {
