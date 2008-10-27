@@ -1,7 +1,7 @@
 #include "foom.h"
 
-char * _keywords[] = { 
-  "\x255",
+char * _keywords[47] = { 
+  "\xff",
   "if", "switch", "case", "else", "break",
   "return",
   "try", "catch", "finally", "throw", "assert",
@@ -14,8 +14,7 @@ char * _keywords[] = {
   "(",")",
   "{","}",
   "[","]",
-  "\"","'",
-  0
+  "\"","'"
 };
 
 MAP keywords = NULL;
@@ -29,7 +28,7 @@ MAP init_keywords() {
       int * j = malloc(sizeof(int));
       *j = i;
       map_set(keywords, _keywords[i], j, MAP_STRING);
-    } while(_keywords[++i]);
+    } while(++i < 46);//_keywords[++i][0]);
   }
   return keywords;
 }
@@ -50,7 +49,6 @@ void add_error(int type, char* fn, int line, char* what, char* where) {
   strcat(err->where, "...");
   err->next = NULL;
   if(errors) {
-    printf("have errors\n");
     curerr = errors;
     while(curerr->next)
       curerr = curerr->next;

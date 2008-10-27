@@ -11,50 +11,6 @@
 #define BUFSZ 4096
 #define ARB_LEN 64
 
-#define TOK_UNK (0)
-#define TOK_KW  (1<<0)
-#define TOK_NUM (1<<1)
-#define TOK_STR (1<<2)
-#define TOK_OP  (1<<3)
-#define TOK_SYM (1<<4)
-// 0x01-0x1f  ctrl chars
-
-#define STMT "\x1"
-#define STMTS "\x2"
-#define EXPR "\x3"
-#define CLOSURE "\x4"
-#define WS "\x5" 
-#define TYPE "\x6"
-#define ID "\x7"
-#define TERM "\x8"
-#define OP "\x9"
-#define LITERAL "\xA"
-#define KEYWORD "\xB"
-
-
-#define ATTR_NONE 0
-#define ATTR_EQ 1
-#define ATTR_LT 2
-#define ATTR_GT 3
-#define ATTR_LE 4
-#define ATTR_GE 5
-#define ATTR_NE 6
-
-#define ATTR_ASSIGN 7
-//literals
-#define ATTR_INTEGER 8
-#define ATTR_FLOAT 9
-#define ATTR_STRING 10
-//ids
-#define ATTR_KEYWORD 11
-#define ATTR_SYMBOL 12
-//statments
-#define ATTR_IF 13
-#define ATTR_WHILE 14
-#define ATTR_CASE 15
-#define ATTR_DECLARE 16
-
-
 #define ERR_WARN  0
 #define ERR_ERROR 1
 
@@ -92,7 +48,11 @@ typedef enum {
   dot_sym, at_sym, dollar_sym, colon_sym, grave_sym, tilda_sym, bar_sym, //71
   //    &&       ||
   dand_sym, dor_sym, // 73
-  unknown_sym // 74
+  // ..          ...
+  dotdot_sym, elipse_sym, //75
+  // \n           ;
+  newline_sym, semi_sym, //77
+  unknown_sym // 78
 } Symbol;
 
 #include "foom_typedefs.h"

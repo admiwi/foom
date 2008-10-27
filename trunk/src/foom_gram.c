@@ -2,86 +2,140 @@
 #include "foom_gram.h"
 #include "foom_lex.h"
 
+#define EChk(A) if((A) == pS_empty) return pS_empty
+
+token *prev_tok = NULL;
 token *cur_tok = NULL;
 scope *global = NULL;
-void gT();
-void gE();
-void gS();
-void gProgram(token * t);
+pStatus gT();
+pStatus gE();
+pStatus gTE();
+pStatus gS();
 
-void printE(Symbol sym, char * e){
+int indent;
+
+void printE(int line, Symbol sym, char * e){
   extern char * _keywords[];
-  if(cur_tok)
-  printf("%s [Lex '%s' : line %d : Sym %d (kw '%s')]\n",
+  int i = indent;
+  if(indent < 0) indent = 0;
+  if(!cur_tok) return;
+  while(i-- >= 0) { printf("  "); }
+  printf("%s [%d: '%s' %d ] from line %d\n",
     e, 
-    cur_tok->lexem, 
     cur_tok->line,
+    cur_tok->lexem, 
     sym,
-    _keywords[sym]?_keywords[sym]:"none"
-    );
-  fflush(stdout);
+    line
+  );
 }
 
-int expect(Symbol sym) {
-  if(cur_tok && sym == cur_tok->symbol)
-    return 1;
-  if(cur_tok)
-    add_error(ERR_ERROR, 0, cur_tok->line, "expecting token", cur_tok->lexem);
-  else
-    add_error(ERR_ERROR, 0, -1, "out of tokens", 0);
-  return 0;
-}
-
-int next() { return !!(cur_tok = cur_tok->next); }
-
-int accept(Symbol sym) {
-  if(expect(sym)) {
-    printE(sym,"accept");
-    return next(); 
+pStatus expect(int line, Symbol sym) {
+  if(cur_tok && sym == cur_tok->symbol) return pS_ok;
+  if(cur_tok) {
+    printE(line, sym, "!");
+    return pS_invalid;
   }
-  return 0;
+  add_error(ERR_ERROR, 0, -1, "out of tokens", 0);
+  return pS_empty;
 }
 
-void sIf() {
-  printE(cur_tok->symbol,"if");
-  if(accept(oparen_sym)) {
-    gE();
-    accept(cparen_sym);
-    gS();
-  } else {
-    if(cur_tok) {
-      printE(cur_tok->symbol,"bad if");    
-      if(!next()) return;
-    }
+pStatus next() { 
+  prev_tok = cur_tok;
+  cur_tok = cur_tok->next;
+  return (cur_tok ? pS_ok : pS_empty);
+}
+
+pStatus accept(int line, Symbol sym) {
+  pStatus s = expect(line, sym);
+  switch(s) {
+    case pS_ok:
+      return next();
+    default:
+      return s;
   }
 }
 
-void gT() {
+pStatus sClosure() {
+  while(cur_tok->symbol != ccurly_sym) {
+    EChk(gS());
+  }
+  return accept(__LINE__, ccurly_sym);
+}
+
+pStatus sIf() {
+  switch(accept(__LINE__, oparen_sym)) {
+    case pS_ok:
+      EChk(gE());
+      EChk(accept(__LINE__, cparen_sym));
+      EChk(gS());
+      return next();
+    case pS_invalid:
+      return next();
+    case pS_empty:
+      return pS_empty;
+    case pS_error:
+      return pS_error;
+  }
+  return pS_error;
+}
+
+    // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..] 
+pStatus eSubscript() {
+  pStatus s = expect(__LINE__, osquare_sym);
+  if(s != pS_ok) return s;
+  printE(__LINE__,cur_tok->symbol,"-> subscript");
+  EChk(next());
+  indent++;
+  EChk(gTE());
+  indent--;
+  printE(__LINE__,cur_tok->symbol,"-> subscript");
+  switch(expect(__LINE__, csquare_sym)) {
+    case pS_ok: 
+      printE(__LINE__,cur_tok->symbol,"subs ]");
+      EChk(next());
+      return pS_error;
+    case pS_invalid: return pS_invalid;
+    default: 
+      printf("should never get here %d\n",__LINE__);
+      return pS_error;
+  }
+
+}
+
+pStatus gT() {
+  pStatus s;
   switch(cur_tok->symbol) {
     case id_sym: 
-      printE(cur_tok->symbol,"symbol");
-      if(!next()) return;
-      break;
+      printE(__LINE__,cur_tok->symbol,"symbol");
+      EChk((s=next()));
+      EChk(eSubscript());
+      return s;
+    case string_sym: 
+      printE(__LINE__,cur_tok->symbol,"string");
+      EChk((s=next()));
+      EChk(eSubscript());
+      return s;
     case integer_sym:
     case float_sym: 
-      printE(cur_tok->symbol,"number");
-      if(!next()) return;
-      break;
+      printE(__LINE__,cur_tok->symbol,"number");
+      return next();
     case oparen_sym: 
-      printE(cur_tok->symbol,"(");
-      if(!next()) return;
-      gE();
-      if(expect(cparen_sym))
-        printE(cur_tok->symbol,")");
-      break;
+      printE(__LINE__,cur_tok->symbol,"(");
+      indent++;
+      EChk(next());
+      EChk(gTE());
+      EChk(expect(__LINE__, cparen_sym));
+      indent--;
+      printE(__LINE__,cur_tok->symbol,")");
+      EChk(eSubscript());
+      return next();
     default:
-      printE(cur_tok->symbol,"error");
-      if(!next()) return;
-      break;
+      printE(__LINE__,cur_tok->symbol,"error");
+      return next();
   }
 }
 
-int isOp() {
+pStatus isOp() {
   switch(cur_tok->symbol) {
     case le_sym:
     case ge_sym:
@@ -102,25 +156,39 @@ int isOp() {
     case slash_sym:
     case tilda_sym:
     case bar_sym: 
-      printE(cur_tok->symbol,"operator");
-      if(!next()) return 0;
-      return 1;
-      //next();
-    default:
-      return 0;
-      //printE(sym,"error gOp");
+    case dot_sym: 
+    case dotdot_sym: 
+    case elipse_sym: 
+      printE(__LINE__,cur_tok->symbol,"operator");
+      return next();
+     default:
+      return pS_invalid; //valid reply
   }
 }
 
+pStatus gE() {
+  pStatus s;
+  printE(__LINE__,cur_tok->symbol,"-> expression");
+    indent++;
 
-void gE() {
-  gT();
-  while(isOp()) {
-    gT();
+  EChk(gT());
+  while((s = isOp()) == pS_ok) {
+    EChk(gT());
   }
+    indent--;
+  printE(__LINE__,cur_tok->symbol,"<- expression");
+  return pS_ok;
 }
 
-void gS() {
+pStatus gTE() {
+  pStatus s;
+  EChk(gE());
+  s = accept(__LINE__, semi_sym);
+  printf("%d\n",s);
+  return pS_ok;
+}
+
+pStatus gS() {
   switch(cur_tok->symbol) {
     case obj_sym:
     case int_sym:
@@ -129,38 +197,48 @@ void gS() {
     case func_sym:
     case bin_sym:
     case list_sym:
-    case map_sym: next();
-      expect(id_sym);
-      break;
-    case if_sym: next();
-      sIf();
-      break;
+    case map_sym: 
+      printE(__LINE__,cur_tok->symbol,"type");
+      EChk(next());
+      EChk(expect(__LINE__, id_sym));
+      return pS_ok;
+    case if_sym: 
+      printE(__LINE__,cur_tok->symbol,"-> if");
+      indent++;
+      EChk(next());
+      EChk(sIf());
+      indent--;
+      printE(__LINE__,cur_tok->symbol,"<- if");
+      return pS_ok;
     case while_sym:
     case switch_sym:
     case ocurly_sym: 
-      printE(cur_tok->symbol,"closure");
-      if(!next()) return 0;
-      while(cur_tok && cur_tok->symbol != ccurly_sym)
-        gS();
-      if(!accept(ccurly_sym)) return;
-      break;
+      printE(__LINE__,cur_tok->symbol,"-> closure");
+      indent++;
+      EChk(next());
+      EChk(sClosure());
+      indent--;
+      printE(__LINE__,cur_tok->symbol,"<- closure");
+      return pS_ok;
     case id_sym:
     case string_sym:
     case integer_sym:
     case float_sym:
-      gE();
-      break;
+      EChk(gTE());
+      return accept(__LINE__, semi_sym);
     default:
-      printE(cur_tok->symbol,"invalid statement");
-      if(!next()) return 0;
+      printE(__LINE__,cur_tok->symbol,"invalid statement");
+      EChk(next());
   }
 }
 
-void gProgram(token * t) {
+pStatus gProgram(token * t) {
   cur_tok = t;
   global = new_scope(NULL);
-  while(cur_tok)
-    gS();
+  indent = 0;
+  while(1) {
+    EChk(gS());
+  }
 }
 
 
