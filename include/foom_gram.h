@@ -6,16 +6,10 @@
 
 #define LASTG 0x20
 
-#define END "\0"
-#define END2 END,END
-#define END3 END2,END
-#define END4 END3,END
-#define END5 END4,END
-#define END6 END5,END
-#define END7 END6,END
-#define END8 END7,END
+typedef enum {
+  pS_ok, pS_empty, pS_invalid, pS_error
+  
+} pStatus;
 
-#define GEND {"\0"}
-
-void gProgram(token *);
+pStatus gProgram(token *);
 #endif

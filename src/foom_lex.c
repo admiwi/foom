@@ -43,6 +43,14 @@ char buf_ungetc(parse_pkg *pp) {
   return pp->c;
 }
 
+int add_char(char c, int pos, char **buf, int len) {
+  (*buf)[pos] = c;
+  if(pos == len - 1) {
+    len += len;
+    (*buf) = resize_string(*buf, len);
+  }
+  return len;
+}
 
 token * get_string(parse_pkg * pp) {
   int i = 0;
@@ -52,29 +60,49 @@ token * get_string(parse_pkg * pp) {
   char endc = pp->c;
   while(buf_getc(pp) != EOF) {
     if(!pp->c) continue;
-    if(pp->c == '\\') { 
+    if(endc == '"' && pp->c == '\\') { 
       switch(buf_getc(pp)) {
-        case 'n': buf[i++] = '\n'; break;
-        case 't': buf[i++] = '\t'; break;
-        case '\\': buf[i++] = '\\'; break;
-        case 'b': buf[i++] = '\b'; break;
-        case '"': buf[i++] = '"'; break;
-        case '$': buf[i++] = '$'; break;
-        case '\'': buf[i++] = '\''; break;
+        case 'n': 
+          len = add_char('n', i++, &buf, len);
+          break;
+        case 't': 
+          len = add_char('t', i++, &buf, len);
+          break;
+        case '\\': 
+          len = add_char('\\', i++, &buf, len);
+          break;
+        case 'b': 
+          len = add_char('b', i++, &buf, len);
+          break;
+        case '"': 
+          len = add_char('"', i++, &buf, len);
+          break;
+        case '$': 
+          len = add_char('$', i++, &buf, len);
+          break;
+        case '\'': 
+          len = add_char('\'', i++, &buf, len);
+          break;
         default: 
           add_error(ERR_WARN, pp->filename, pp->line, "invalid \\ sequence", buf);
-          buf[i++] = pp->c;
+          len = add_char(pp->c, i++, &buf, len);
       }
       continue;
     }
-    //if(pp->c == '$') interpolation
-    if(pp->c == endc)
-      return new_token(pp->line, buf, string_sym);
-    buf[i++] = pp->c;
-    if(i == len -1) {
-      len += len;
-      buf = resize_string(buf, len);
+    if(endc == '\'' && pp->c == '\\') { 
+      switch(buf_getc(pp)) {
+        case '\'': 
+          len = add_char('\'', i++, &buf, len);
+          break;
+        default: 
+          len = add_char('\\', i++, &buf, len);
+      }
     }
+    //if(pp->c == '$') interpolation
+    if(pp->c == endc) {
+      return new_token(pp->line, buf, string_sym);
+    }
+    len = add_char(pp->c, i++, &buf, len);
   }
   return NULL;
 }
@@ -155,6 +183,22 @@ token * get_operator(parse_pkg * pp) {
           buf_ungetc(pp);
       }
       return new_token(pp->line, buf, lt_sym);
+    case '.': 
+      buf[i++] = pp->c;
+      sym = dot_sym; 
+      buf_getc(pp);
+      if(pp->c == '.') {
+        buf[i++] = pp->c;
+        sym = dotdot_sym; 
+        buf_getc(pp);
+        if(pp->c == '.') {
+          buf[i++] = pp->c;
+          sym = elipse_sym; 
+        } else
+          buf_ungetc(pp);
+      } else
+        buf_ungetc(pp);
+      return new_token(pp->line, buf, sym);
     case '+': sym = plus_sym; break;
     case '-': sym = minus_sym; break;
     case '*': sym = star_sym; break;
@@ -162,7 +206,6 @@ token * get_operator(parse_pkg * pp) {
     case '!': sym = bang_sym; break;
     case '&': sym = andper_sym; break;
     case '/': sym = slash_sym; break;
-    case '.': sym = dot_sym; break;
     case '@': sym = at_sym; break;
     case '$': sym = dollar_sym; break;
     case ':': sym = colon_sym; break;
@@ -171,6 +214,8 @@ token * get_operator(parse_pkg * pp) {
     case '|': sym = bar_sym; break;
     case '(': sym = oparen_sym; break;
     case ')': sym = cparen_sym; break;
+    case '[': sym = osquare_sym; break;
+    case ']': sym = csquare_sym; break;
     case '{': sym = ocurly_sym; break;
     case '}': sym = ccurly_sym; break;
     default:
@@ -209,6 +254,11 @@ token * get_token(parse_pkg * pp) {
  
     if(is_char(pp->c))
       return get_symbol(pp);
+    if(pp->c == '\n')
+      return new_token(pp->line, "<newline>", newline_sym);
+    if(pp->c == ';')
+      return new_token(pp->line, ";", semi_sym);
+
     printf("unprocessed char ( '%c' : 0x%02x )\n",pp->c,(int)pp->c);
   }
   return NULL;
