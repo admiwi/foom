@@ -236,9 +236,11 @@ pStatus gProgram(token * t) {
   cur_tok = t;
   global = new_scope(NULL);
   indent = 0;
+  printf("-> program\n");
   while(1) {
     EChk(gS());
   }
+  printf("<- program\n");
 }
 
 
