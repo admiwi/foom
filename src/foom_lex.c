@@ -10,12 +10,12 @@ token * gen_token_chain(parse_pkg *pp) {
     t->next->prev = t;
     t = t->next;
   }
-  return tok; 
+  return tok;
 }
 
 char buf_getc(parse_pkg *pp) {
   if(!pp->left) {
-    if(pp->buf && pp->count > ARB_LEN) 
+    if(pp->buf && pp->count > ARB_LEN)
       strncpy(pp->backbuf, &(pp->buf[pp->count - ARB_LEN]), ARB_LEN);
     pp->count = fread(pp->buf, 1, BUFSZ, pp->file);
     pp->left = pp->count;
@@ -60,41 +60,41 @@ token * get_string(parse_pkg * pp) {
   char endc = pp->c;
   while(buf_getc(pp) != EOF) {
     if(!pp->c) continue;
-    if(endc == '"' && pp->c == '\\') { 
+    if(endc == '"' && pp->c == '\\') {
       switch(buf_getc(pp)) {
-        case 'n': 
+        case 'n':
           len = add_char('n', i++, &buf, len);
           break;
-        case 't': 
+        case 't':
           len = add_char('t', i++, &buf, len);
           break;
-        case '\\': 
+        case '\\':
           len = add_char('\\', i++, &buf, len);
           break;
-        case 'b': 
+        case 'b':
           len = add_char('b', i++, &buf, len);
           break;
-        case '"': 
+        case '"':
           len = add_char('"', i++, &buf, len);
           break;
-        case '$': 
+        case '$':
           len = add_char('$', i++, &buf, len);
           break;
-        case '\'': 
+        case '\'':
           len = add_char('\'', i++, &buf, len);
           break;
-        default: 
+        default:
           add_error(ERR_WARN, pp->filename, pp->line, "invalid \\ sequence", buf);
           len = add_char(pp->c, i++, &buf, len);
       }
       continue;
     }
-    if(endc == '\'' && pp->c == '\\') { 
+    if(endc == '\'' && pp->c == '\\') {
       switch(buf_getc(pp)) {
-        case '\'': 
+        case '\'':
           len = add_char('\'', i++, &buf, len);
           break;
-        default: 
+        default:
           len = add_char('\\', i++, &buf, len);
       }
     }
@@ -183,17 +183,17 @@ token * get_operator(parse_pkg * pp) {
           buf_ungetc(pp);
       }
       return new_token(pp->line, buf, lt_sym);
-    case '.': 
+    case '.':
       buf[i++] = pp->c;
-      sym = dot_sym; 
+      sym = dot_sym;
       buf_getc(pp);
       if(pp->c == '.') {
         buf[i++] = pp->c;
-        sym = dotdot_sym; 
+        sym = dotdot_sym;
         buf_getc(pp);
         if(pp->c == '.') {
           buf[i++] = pp->c;
-          sym = elipse_sym; 
+          sym = elipse_sym;
         } else
           buf_ungetc(pp);
       } else
@@ -218,9 +218,10 @@ token * get_operator(parse_pkg * pp) {
     case ']': sym = csquare_sym; break;
     case '{': sym = ocurly_sym; break;
     case '}': sym = ccurly_sym; break;
+    case ';': sym = semi_sym; break;
     default:
       return 0;
-      
+
   }
   buf[i++] = pp->c;
   return new_token(pp->line, buf, sym);
@@ -243,7 +244,7 @@ token * get_token(parse_pkg * pp) {
     if(is_ws(pp->c))
       continue;
 
-    if(pp->c == '"' || pp->c=='\'') 
+    if(pp->c == '"' || pp->c=='\'')
       return get_string(pp);
 
     if(is_num(pp->c))
@@ -251,11 +252,11 @@ token * get_token(parse_pkg * pp) {
 
     if(is_op(pp->c))
       return get_operator(pp);
- 
+
     if(is_char(pp->c))
       return get_symbol(pp);
-    if(pp->c == '\n')
-      return new_token(pp->line, "<newline>", newline_sym);
+    //if(pp->c == '\n')
+    //  return new_token(pp->line, "<newline>", newline_sym);
     if(pp->c == ';')
       return new_token(pp->line, ";", semi_sym);
 
