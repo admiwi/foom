@@ -1,3 +1,4 @@
+#include "foom.h"
 #ifndef _FOOM_MAP_
 #define _FOOM_MAP_
 
