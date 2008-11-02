@@ -42,40 +42,44 @@ typedef struct _token {
   struct _token * next;
 } token;
 
-typedef struct _string {
-  char * str;
-  int len;
-} string;
-
 typedef struct _list {
   struct _object * obj;
   struct _list * next;
-  int type;
   int count;
 } list;
 
+typedef struct _func {
+  list * args;
+  struct _object * ret_type;
+} func;
+
+typedef struct _str {
+  int len;
+  char * val;
+} str;
+
 typedef struct _class {
-  int foo;  
+  char * name;
+  MAP members;
+  MAP static_members;
 } class;
 
 typedef struct _object {
-  long serial;
-  int ntype;
-  void * value;
-  map ** members;
+  char * name;
+  Symbol type;
+  union {
+    class * Class;
+    long Int;
+    double Dec;
+    str * Str;
+    int Bool;
+    MAP Map;
+    list * List;
+    func * Func;
+    //struct _object Obj;
+  } val;
+  MAP members;
 } object;
-
-typedef struct _ast {
-  object * obj;
-  struct _ast * right;
-  struct _ast * left;
-} ast;
-
-typedef struct _ast_node {
-  object * obj;
-  struct _ast * right;
-  struct _ast * left;
-} ast_node;
 
 typedef struct _symbol {
   char id[ARB_LEN];

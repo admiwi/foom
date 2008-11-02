@@ -10,6 +10,8 @@ token * gen_token_chain(parse_pkg *pp) {
     t->next->prev = t;
     t = t->next;
   }
+  t->next = new_token(pp->line, "<EOF>", eof_sym);
+
   return tok;
 }
 
@@ -126,6 +128,7 @@ token * get_symbol(parse_pkg * pp) {
       return new_token(pp->line, buf, sym);
     }
   } while(buf_getc(pp) != EOF);
+  add_error(ERR_WARN, pp->filename, pp->line, "error in get_symbol", buf);
   return NULL;
 }
 
@@ -141,6 +144,7 @@ token * get_number(parse_pkg * pp) {
       return new_token(pp->line, buf, integer_sym);
     }
   } while(buf_getc(pp) != EOF);
+  add_error(ERR_WARN, pp->filename, pp->line, "error in get_number", buf);
   return NULL;
 }
 
@@ -219,7 +223,9 @@ token * get_operator(parse_pkg * pp) {
     case '{': sym = ocurly_sym; break;
     case '}': sym = ccurly_sym; break;
     case ';': sym = semi_sym; break;
+    case ',': sym = comma_sym; break;
     default:
+      add_error(ERR_WARN, pp->filename, pp->line, "error in get_operator", buf);
       return 0;
 
   }
@@ -259,9 +265,9 @@ token * get_token(parse_pkg * pp) {
     //  return new_token(pp->line, "<newline>", newline_sym);
     if(pp->c == ';')
       return new_token(pp->line, ";", semi_sym);
-
-    printf("unprocessed char ( '%c' : 0x%02x )\n",pp->c,(int)pp->c);
+    add_error(ERR_WARN, pp->filename, pp->line, "error in get_token unprocessed character", "");
   }
+
   return NULL;
 }
 

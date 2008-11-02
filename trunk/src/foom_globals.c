@@ -1,6 +1,6 @@
 #include "foom.h"
 
-char * _keywords[47] = { 
+char * _keywords[47] = {
   "\xff",
   "if", "switch", "case", "else", "break",
   "return",
@@ -9,7 +9,7 @@ char * _keywords[47] = {
   "class", "extend", "interface", "mixin", "virtual",
   "is", "was", "as",
   "for", "while", "loop", "do", "continue",
-  "obj", "int", "dec", "bool", "func", "bin", "list", "map",
+  "obj", "int", "dec", "bool", "func", "bin", "list", "map", "str",
   "and", "or", "not", "xor",
   "(",")",
   "{","}",
@@ -59,8 +59,8 @@ void add_error(int type, char* fn, int line, char* what, char* where) {
 void print_errors() {
   _error_ *err = errors;
   while(err) {
-    printf("%s:%d: %s: %s\n", 
-      err->file, err->line, 
+    printf("%s:%d: %s: %s\n",
+      err->file, err->line,
       err->type?"error":"warning",  err->what);
     err = err->next;
   }
