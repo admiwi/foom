@@ -1,7 +1,12 @@
 if(foo>=102) {
   int foo;
-  obj bar.bat = 55 as str;
+  str cat = "dog";
+  obj bar = 55 as str;
+  println(cat.length);
   print_ln(stdout, 'Hello Crewl "Wor\ld"!\n"'[0..3]);
-  if(test == 'rar') 
+  if(test == 'rar')
     foo.copy = "hi";
 }
+
+
+println("Hi!");
