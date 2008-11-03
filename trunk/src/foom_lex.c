@@ -10,7 +10,7 @@ token * gen_token_chain(parse_pkg *pp) {
     t->next->prev = t;
     t = t->next;
   }
-  t->next = new_token(pp->line, "<EOF>", eof_sym);
+  t->next = new_token(pp->line, "<EOF>", end_sym);
 
   return tok;
 }

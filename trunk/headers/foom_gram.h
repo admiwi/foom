@@ -1,3 +1,4 @@
+#include "foom_ast.h"
 #ifndef _FOOM_GRAMMER_
 #define _FOOM_GRAMMER_
 
@@ -11,5 +12,6 @@ typedef enum {
 
 } pStatus;
 
-pStatus gProgram(token *);
+ast * gProgram(token *);
+
 #endif

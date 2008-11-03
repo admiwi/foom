@@ -67,6 +67,7 @@ typedef struct _class {
 typedef struct _object {
   char * name;
   Symbol type;
+  class * klass;
   union {
     class * Class;
     long Int;
