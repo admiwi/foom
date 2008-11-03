@@ -11,12 +11,12 @@ typedef struct _ast {
   union {
     object * obj;
     struct {
-      symbol oper;
+      Symbol oper;
       struct _ast * left;
       struct _ast * right;
     } binary;
     struct {
-      symbol oper;
+      Symbol oper;
       struct _ast * arg;
     } unary;
     struct {
@@ -31,7 +31,9 @@ typedef struct _ast_list {
   struct _ast_list * next;
 } ast_list;
 
-ast * make_ast();
+ast_list * new_astlist(ast *);
+ast * new_astnode();
+object * new_object();
 ast * make_binary_op(Symbol s, ast * l, ast * r);
 ast * make_unary_op(Symbol s, ast * a);
 ast * make_call(char * fn, ast_list * al);
@@ -50,5 +52,7 @@ ast * make_map(char * n, MAP v);
 ast * make_list(char * n, list * v);
 ast * make_func(char * n, func * v);
 ast * make_obj(char * n, class * c);
+
+object * evaluate(scope *, ast *);
 
 #endif

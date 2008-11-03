@@ -53,7 +53,7 @@ typedef enum {
   dotdot_sym, elipse_sym, //77
   // \n           ;
   newline_sym, semi_sym, //79
-  eof_sym, unknown_sym // 81
+  unknown_sym // 80
 } Symbol;
 
 #include "foom_typedefs.h"

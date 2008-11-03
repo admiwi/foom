@@ -8,11 +8,12 @@
 
 token *prev_tok = NULL;
 token *cur_tok = NULL;
-scope *global = NULL;
-pStatus gT();
-pStatus gE();
-pStatus gTE();
-pStatus gS();
+pStatus status;
+long serial;
+ast * gT(scope *);
+ast * gE(scope *);
+ast * gTE(scope *);
+ast * gS(scope *);
 
 int indent;
 
@@ -31,171 +32,207 @@ void _printE(int line, Symbol sym, char * e){
   );
 }
 
-pStatus _expect(int line, Symbol sym) {
-  if(cur_tok && sym == cur_tok->symbol) return pS_ok;
-  if(cur_tok) return pS_invalid;
+int _expect(int line, Symbol sym) {
+  if(cur_tok && sym == cur_tok->symbol) {
+    status = pS_ok;
+    return 1;
+  }
+  if(cur_tok) {
+    status = pS_invalid;
+    return 0;
+  }
+  status = pS_empty;
   add_error(ERR_ERROR, 0, -1, "out of tokens", 0);
-  return pS_empty;
+  return 0;
 }
 
-pStatus next() {
+void next() {
   prev_tok = cur_tok;
   cur_tok = cur_tok->next;
-  return (cur_tok ? pS_ok : pS_empty);
+  status = pS_ok;
 }
 
-pStatus _accept(int line, Symbol sym) {
-  pStatus s = _expect(line, sym);
+int _accept(int line, Symbol sym) {
   char * msg;
-  switch(s) {
-    case pS_ok:
-      return next();
-    default:
-      msg = malloc(ARB_LEN);
-      memset(msg, ARB_LEN, 1);
-      sprintf(msg, "syntax error: expected %d but found %d (%s)", sym, cur_tok->symbol, cur_tok->lexem);
-      add_error(ERR_ERROR, 0, cur_tok->line, msg, 0);
-      return s;
+  if(_expect(line, sym)) {
+    next();
+    return 1;
   }
+  msg = malloc(ARB_LEN);
+  memset(msg, ARB_LEN, 1);
+  sprintf(msg, "syntax error: expected %d but found %d (%s)", sym, cur_tok->symbol, cur_tok->lexem);
+  add_error(ERR_ERROR, 0, cur_tok->line, msg, 0);
+  status = pS_invalid;
+  return 0;
 }
 
-pStatus sClosure() {
+char * get_serial(char * t ) {
+  char * n = malloc(ARB_LEN);
+  memset(n, 0, ARB_LEN);
+  sprintf(n, "%s_%l", t, serial++);
+  return n;
+}
+
+//data
+
+ast * tId(scope * cscope) {
+  printE(cur_tok->symbol,"id");
+
+  next();
+  return NULL;
+}
+
+ast * tString(scope * cscope) {
+  str * s = malloc(sizeof(str));
+  printE(cur_tok->symbol,"string");
+  s->val = cur_tok->lexem;
+  s->len = strlen(s->val);
+  accept(string_sym);
+  return make_str(get_serial("Lstring"), s);
+}
+
+ast * tInteger(scope * cscope){
+  long li = strtol(cur_tok->lexem, NULL, 10);
+  printE(cur_tok->symbol,"number");
+  accept(integer_sym);
+  return make_int(get_serial("Linteger"), li);
+}
+ast * tDecimal(scope * cscope){
+  double fl = strtod(cur_tok->lexem,NULL);
+  printE(cur_tok->symbol,"number");
+  accept(float_sym);
+  return make_dec(get_serial("Linteger"), fl);
+}
+
+ast * tParens(scope * cscope) {
+  printE(cur_tok->symbol,"("); indent++;
+  accept(oparen_sym);
+  gE(cscope);
+  accept(cparen_sym);
+  indent--; printE(cur_tok->symbol,")");
+  return NULL;
+}
+ast * sClosure(scope * cscope) {
   printE(cur_tok->symbol,"-> closure");
   indent++;
   next();
   //if(expect(lt_sym) == pS_ok)
 
-  while(cur_tok->symbol != ccurly_sym && expect(eof_sym) != pS_ok) {
-    gS();
+  while(cur_tok->symbol != ccurly_sym && !expect(end_sym)) {
+    gS(cscope);
   }
   indent--;
   printE(cur_tok->symbol,"<- closure");
-  return accept( ccurly_sym);
+  accept(ccurly_sym);
 }
 
-pStatus sIf() {
-  pStatus s;
-  printE(cur_tok->symbol,"-> if");
-  indent++;
-  next();
-
-  switch(s = accept(oparen_sym)) {
-    case pS_ok:
-      gE();
-      accept(cparen_sym);
-      gS();
-      break;
-    default:
-      break;
-  }
-  indent--;
-  printE(cur_tok->symbol,"<- if");
-  return s;
+ast * sIf(scope * cscope) {
+  printE(cur_tok->symbol,"-> if"); indent++;
+  accept(if_sym);
+  tParens(cscope);
+  if(status == pS_ok)
+    gS(cscope);
+  indent--; printE(cur_tok->symbol,"<- if");
 }
 
     // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..]
-pStatus eSubscript() {
-  pStatus s = expect( osquare_sym);
-  if(s != pS_ok) return s;
+ast * eSubscript(scope * cscope) {
+  if(!expect( osquare_sym)) return NULL;
   printE(cur_tok->symbol,"-> subscript");
   next();
   indent++;
-  gE();
+  gE(cscope);
   indent--;
   printE(cur_tok->symbol,"<- subscript");
-  switch(expect( csquare_sym)) {
-    case pS_ok:
-      next();
-      return pS_error;
-    case pS_invalid: return pS_invalid;
-    default:
-      printf("should never get here %d\n",__LINE__);
-      return pS_error;
-  }
-
+  if(expect(csquare_sym))
+    next();
+  else
+    status = pS_error;
 }
 
-pStatus eFuncCall() {
-  pStatus s = expect( oparen_sym);
-  if(s != pS_ok) return s;
+ast * eFuncCall(scope * cscope) {
+  if(!expect(oparen_sym)) return NULL;
+
   printE(cur_tok->symbol,"-> func call"); indent++;
   next();
   do {
-    gE();
-  } while(expect(comma_sym) == pS_ok && accept(comma_sym) == pS_ok);
+    gE(cscope);
+  } while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- func call");
-  return accept(cparen_sym);
+  accept(cparen_sym);
 }
-pStatus tVar() {
-  while(expect(dot_sym) == pS_ok && accept(dot_sym) == pS_ok) {
+
+ast * tVar(scope * cscope) {
+  while(expect(dot_sym) && accept(dot_sym)) {
     printE(cur_tok->symbol,"-> member"); indent++;
-    gT();
+    gT(cscope);
     indent--; printE(cur_tok->symbol,"<- member");
   }
-  return pS_ok;
 }
 
-pStatus gT() {
-  pStatus s;
+//tVar and eSub may have to move
+ast * gT(scope * cscope) {
+  ast * a;
   switch(cur_tok->symbol) {
     case id_sym:
-      printE(cur_tok->symbol,"symbol");
-      s=next();
-      tVar();
-      eSubscript();
-      eFuncCall();
-      return s;
+      a = tId(cscope);
+      tVar(cscope);
+      eSubscript(cscope);
+      eFuncCall(cscope);
+    break;
+
     case string_sym:
-      printE(cur_tok->symbol,"string");
-      s=next();
-      tVar();
-      eSubscript();
-      return s;
+      a = tString(cscope);
+      tVar(cscope);
+      eSubscript(cscope);
+      break;
     case integer_sym:
+      a = tInteger(cscope);
+      tVar(cscope);
+      break;
     case float_sym:
-      printE(cur_tok->symbol,"number");
-      (s = next());
-      tVar();
-      return s;
+      a = tDecimal(cscope);
+      tVar(cscope);
+      break;
     case oparen_sym:
-      printE(cur_tok->symbol,"(");
-      indent++;
-      next();
-      gTE();
-      expect(cparen_sym);
-      indent--;
-      printE(cur_tok->symbol,")");
-      tVar();
-      eSubscript();
-      return next();
+      a = tParens(cscope);
+      tVar(cscope);
+      eSubscript(cscope);
+      return NULL;
     default:
       printE(cur_tok->symbol,"error");
-      return next();
+      next();
   }
+  return a;
 }
 
-void add_id_scope() {
+ast *add_id_scope(scope * cscope) {
 
 }
 
 
-pStatus sDeclare() {
+ast * sDeclare(scope * cscope) {
+  object * o = new_object();
+  o->type = cur_tok->symbol;
   printE(cur_tok->symbol,"-> declare call"); indent++;
   next();
-  do {
-    if(accept(id_sym)==pS_ok)
+  token * cid = NULL;
+  //do {
+    if(expect(id_sym))
+      o->name = strdup(cur_tok->lexem);
+    accept(id_sym);
 
-    tVar();
-    if(expect(assign_sym)==pS_ok) {
+    //tVar(cscope);
+    if(expect(assign_sym)) {
       next();
-      gE();
+      gE(cscope);
     }
-  } while(expect(comma_sym) == pS_ok && accept(comma_sym) == pS_ok);
+  //} while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- declare call");
-  return accept(semi_sym);
+  accept(semi_sym);
 }
 
-pStatus isOp() {
+int isBinaryOp() {
   switch(cur_tok->symbol) {
     case le_sym:
     case ge_sym:
@@ -207,7 +244,7 @@ pStatus isOp() {
     case and_sym:
     case or_sym:
     case not_sym:
-    case bang_sym:
+    //case bang_sym:
     case plus_sym:
     case minus_sym:
     case star_sym:
@@ -220,23 +257,25 @@ pStatus isOp() {
     case dotdot_sym:
     case elipse_sym:
       printE(cur_tok->symbol,"operator");
-      return next();
+      return 1;
      default:
-      return pS_invalid; //valid reply
+      return 0;
   }
 }
 
-pStatus gE() {
-  pStatus s = pS_ok;
-  printE(cur_tok->symbol,"-> expression");
-  indent++;
-
-  gT();
-  while(expect(eof_sym) != pS_ok) {
-    if(isOp() == pS_ok) {
-      gT();
-    } else if(expect(as_sym) == pS_ok || expect(was_sym) == pS_ok || expect(is_sym) == pS_ok) {
+ast * gE(scope * cscope) {
+  ast * ret, * l, * r;
+  Symbol op;
+  printE(cur_tok->symbol,"-> expression"); indent++;
+  l = gT(cscope);
+  if(isBinaryOp()) {
+      op = cur_tok->symbol;
+      next();//op
+      r = gE(cscope);
+      return make_binary_op(op, l, r);
+    } else if(expect(as_sym) || expect(was_sym) || expect(is_sym)) {
       printE(cur_tok->symbol,"class op");
+      op = cur_tok->symbol;
       next();
       switch(cur_tok->symbol){
         case obj_sym:
@@ -252,22 +291,20 @@ pStatus gE() {
           printE(cur_tok->symbol,"class");
           next();
         default:
-          s = pS_invalid;
+          status = pS_invalid;
       }
-    } else
-      break;
   }
-  indent--;
-  printE(cur_tok->symbol,"<- expression");
-  return s;
+  indent--; printE(cur_tok->symbol,"<- expression");
 }
 
-pStatus gTE() {
-  gE();
-  return accept(semi_sym);
+ast * gTE(scope * cscope) {
+  ast * a = gE(cscope);
+  accept(semi_sym);
+  return a;
 }
 
-pStatus gS() {
+ast * gS(scope * cscope) {
+  ast * a;
   switch(cur_tok->symbol) {
     case obj_sym:
     case int_sym:
@@ -279,40 +316,45 @@ pStatus gS() {
     case map_sym:
     case str_sym:
       printE(cur_tok->symbol,"type");
-      return sDeclare();
+      sDeclare(cscope);
+      break;
     case if_sym:
-      return sIf();
+       sIf(cscope);
+       break;
     case while_sym:
     case switch_sym:
     case ocurly_sym:
-      return sClosure();
+      sClosure(new_scope(cscope));
+      break;
     case id_sym:
     case string_sym:
     case integer_sym:
     case float_sym:
-      return gTE();
-    case eof_sym:  //valid
-      return pS_done;
+      a = gTE(cscope);
+      break;
+    case end_sym:  //valid
+      status = pS_done;
+      return NULL;
     default:
       printE(cur_tok->symbol,"invalid statement");
-      return next();
+      next();
+
   }
+  return NULL;
 }
 
-pStatus gProgram(token * t) {
+ast * gProgram(token * t) {
   cur_tok = t;
-  global = new_scope(NULL);
-  indent = 0;
-  pStatus s;
+  scope * global = new_scope(NULL);
+  serial = indent = 0;
+  ast_list * altop, * cural = new_astlist();
+  status = pS_ok;
   fprintf(stderr,"-> program\n");
-  while(expect(eof_sym)!=pS_ok) {
-    s = gS();
-    if(s == pS_ok) continue;
-    if(s == pS_done) break;
-
+  while(!expect(end_sym)) {
+    gS(global);
   }
   fprintf(stderr,"<- program\n");
-  return s;
+  return NULL;
 }
 
 
