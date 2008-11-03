@@ -7,10 +7,9 @@ object * new_object() {
   return o;
 }
 
-ast_list * new_astlist(ast * a) {
+ast_list * new_astlist() {
   ast_list * al = malloc(sizeof(ast_list));
   memset(al, 0, sizeof(ast_list));
-  al->node = a;
   return al;
 }
 
@@ -24,6 +23,13 @@ ast * new_astobj() {
   ast * a = new_astnode();
   a->tag = obj_ast;
   a->op.obj = new_object();
+  return a;
+}
+
+ast * make_obj(char * n) {
+  ast * a = new_astobj();
+  a->op.obj->name = n;
+  a->op.obj->type = obj_sym;
   return a;
 }
 
@@ -74,6 +80,20 @@ ast * make_func(char * n, func * v){
   a->op.obj->name = n;
   a->op.obj->type = map_sym;
   a->op.obj->val.Func = v;
+  return a;
+}
+ast * make_call(char * fn, ast_list * al){
+  ast * a = new_astnode();
+  a->tag = func_call_ast;
+  a->op.call.obj = NULL;
+  a->op.call.arguments = al;
+  return a;
+}
+//TODO  Need to make this different == it's not going to work very well as is.
+ast * make_closure(ast_list * v){
+  ast * a = new_astnode();
+  a->tag = closure_ast;
+  a->op.closure.stmts = v;
   return a;
 }
 
