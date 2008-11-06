@@ -14,6 +14,9 @@ ast * gT(scope *);
 ast * gE(scope *);
 ast * gTE(scope *);
 ast * gS(scope *);
+ast * tId(scope *);
+ast * eSubscript(scope *);
+ast * eFuncCall(scope *);
 
 int indent;
 
@@ -148,22 +151,26 @@ ast * sClosure(scope * cscope) {
 }
 
 ast * sIf(scope * cscope) {
+  ast * ret, * e, *s;
   printE(cur_tok->symbol,"-> if"); indent++;
   accept(if_sym);
-  tParens(cscope);
+  e = tParens(cscope);
   if(status == pS_ok)
-    gS(cscope);
+    s = gS(cscope);
   indent--; printE(cur_tok->symbol,"<- if");
+  return make_binary_op(if_sym, e, s);
 }
 
     // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..]
 ast * eSubscript(scope * cscope) {
+  ast * ret, * ua;
   if(!expect( osquare_sym)) return NULL;
   printE(cur_tok->symbol,"-> subscript"); indent++;
   next();
-  gE(cscope);
+  ua = gE(cscope);
   indent--; printE(cur_tok->symbol,"<- subscript");
   accept(csquare_sym);
+  return make_unary_op(subscript_sym, ua);
 }
 
 ast * eFuncCall(scope * cscope) {
@@ -235,8 +242,9 @@ ast * sDeclare(scope * cscope) {
   ast * ret = NULL, *ao = new_astobj();
   ao->tag = obj_ast;
   ao->op.obj->type = cur_tok->symbol;
-  printE(cur_tok->symbol,"-> declare call"); indent++;
   next();
+  printE(cur_tok->symbol,"-> declare call"); indent++;
+
   //do {
     if(expect(id_sym))
       ao->op.obj->name = strdup(cur_tok->lexem);
@@ -244,12 +252,12 @@ ast * sDeclare(scope * cscope) {
     map_set(cscope->symbols, ao->op.obj->name, ao->op.obj, MAP_OBJECT);
     //tVar(cscope);
     if(expect(assign_sym)) {
+      next();
       ret = make_binary_op(next(), ao, gE(cscope));
-      gE(cscope);
     }
   //} while(expect(comma_sym) && accept(comma_sym));
-  indent--; printE(cur_tok->symbol,"<- declare call");
   accept(semi_sym);
+  indent--; printE(cur_tok->symbol,"<- declare call");
   return ret?ret:ao;
 }
 
@@ -290,7 +298,7 @@ ast * gE(scope * cscope) {
   printE(cur_tok->symbol,"-> expression"); indent++;
   ret = gT(cscope);
   if(isBinaryOp()) {
-	l = ret;
+    l = ret;
     op = next();//op
     r = gE(cscope);
     ret = make_binary_op(op, l, r);
@@ -316,12 +324,6 @@ ast * gE(scope * cscope) {
   }
   indent--; printE(cur_tok->symbol,"<- expression");
   return ret;
-}
-
-ast * gTE(scope * cscope) {
-  ast * a = gE(cscope);
-  accept(semi_sym);
-  return a;
 }
 
 ast * gS(scope * cscope) {
@@ -351,7 +353,8 @@ ast * gS(scope * cscope) {
     case string_sym:
     case integer_sym:
     case float_sym:
-      a = gTE(cscope);
+      a = gE(cscope);
+      accept(semi_sym);
       break;
     case end_sym:  //valid
       status = pS_done;
