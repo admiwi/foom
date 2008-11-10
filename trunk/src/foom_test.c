@@ -1,7 +1,8 @@
 #include "foom_test.h"
 
+extern char * _symbols_[];
 void da_binary(ast * a){
-  printf("BINARY(%d:", a->op.binary.oper);
+  printf("BINARY(%s:", _symbols_[a->op.binary.oper]);
   decend_ast(a->op.binary.left);
   printf(", ");
   decend_ast(a->op.binary.right);
@@ -9,7 +10,7 @@ void da_binary(ast * a){
 }
 
 void da_unary(ast * a){
-  printf("UNARY(%d:", a->op.unary.oper);
+  printf("UNARY(%s:", _symbols_[a->op.unary.oper]);
   decend_ast(a->op.unary.arg);
   printf(")");
 }

@@ -6,6 +6,8 @@
 #define expect(A) _expect(__LINE__, A)
 #define accept(A) _accept(__LINE__, A)
 
+extern char * _symbols_[];
+
 token *prev_tok = NULL;
 token *cur_tok = NULL;
 pStatus status;
@@ -26,11 +28,11 @@ void _printE(int line, Symbol sym, char * e){
   if(indent < 0) indent = 0;
   if(!cur_tok) return;
   while(i-- >= 0) { fprintf(stderr,"  "); }
-  fprintf(stderr, "%s [%d: '%s' %d ] from line %d\n",
+  fprintf(stderr, "%s [%d: '%s' %s ] from line %d\n",
     e,
     cur_tok->line,
     cur_tok->lexem,
-    sym,
+    _symbols_[sym],
     line
   );
 }
@@ -64,7 +66,7 @@ int _accept(int line, Symbol sym) {
   }
   msg = malloc(ARB_LEN);
   memset(msg, ARB_LEN, 1);
-  sprintf(msg, "syntax error: expected %d but found %d (%s)", sym, cur_tok->symbol, cur_tok->lexem);
+  sprintf(msg, "syntax error: expected %s but found %s (%s)", _symbols_[sym], _symbols_[cur_tok->symbol], cur_tok->lexem);
   add_error(ERR_ERROR, 0, cur_tok->line, msg, 0);
   status = pS_invalid;
   return 0;
@@ -73,7 +75,7 @@ int _accept(int line, Symbol sym) {
 char * get_serial(char * t ) {
   char * n = malloc(ARB_LEN);
   memset(n, 0, ARB_LEN);
-  sprintf(n, "%s_%l", t, serial++);
+  sprintf(n, "%s_%ld", t, serial++);
   return n;
 }
 
