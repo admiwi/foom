@@ -119,7 +119,7 @@ ast * tDecimal(scope * cscope){
   double fl = strtod(cur_tok->lexem,NULL);
   printE(cur_tok->symbol,"number");
   accept(float_sym);
-  return make_dec(get_serial("Linteger"), fl);
+  return make_dec(get_serial("Ldecimal"), fl);
 }
 
 ast * tParens(scope * cscope) {
@@ -179,7 +179,6 @@ ast * eFuncCall(scope * cscope) {
   if(!expect(oparen_sym)) return NULL;
   char * fn = prev_tok->lexem;
 
-
   printE(cur_tok->symbol,"-> func call"); indent++;
   next();
   do {
@@ -192,15 +191,7 @@ ast * eFuncCall(scope * cscope) {
   return make_call(fn,topal);
 }
 
-ast * tVar(scope * cscope) {
-  while(expect(dot_sym) && accept(dot_sym)) {
-    printE(cur_tok->symbol,"-> member"); indent++;
-    gT(cscope);
-    indent--; printE(cur_tok->symbol,"<- member");
-  }
-}
-
-//tVar and eSub may have to move
+//TODO: tVar and eSub may have to move
 ast * gT(scope * cscope) {
   ast * a;
   switch(cur_tok->symbol) {
@@ -210,20 +201,16 @@ ast * gT(scope * cscope) {
 
     case string_sym:
       a = tString(cscope);
-      //tVar(cscope);
       eSubscript(cscope);
       break;
     case integer_sym:
       a = tInteger(cscope);
-      //tVar(cscope);
       break;
     case float_sym:
       a = tDecimal(cscope);
-      //tVar(cscope);
       break;
     case oparen_sym:
       a = tParens(cscope);
-      //tVar(cscope);
       eSubscript(cscope);
       return NULL;
     default:
@@ -233,29 +220,20 @@ ast * gT(scope * cscope) {
   return a;
 }
 
-ast *add_id_scope(scope * cscope) {
-
-}
-
-
 ast * sDeclare(scope * cscope) {
   ast * ret = NULL, *ao = new_astobj();
   ao->tag = obj_ast;
   ao->op.obj->type = cur_tok->symbol;
   next();
   printE(cur_tok->symbol,"-> declare call"); indent++;
+  if(expect(id_sym))
+    ao->op.obj->name = strdup(cur_tok->lexem);
+  accept(id_sym);
+  map_set(cscope->symbols, ao->op.obj->name, ao->op.obj, MAP_OBJECT);
 
-  //do {
-    if(expect(id_sym))
-      ao->op.obj->name = strdup(cur_tok->lexem);
-    accept(id_sym);
-    map_set(cscope->symbols, ao->op.obj->name, ao->op.obj, MAP_OBJECT);
-    //tVar(cscope);
-    if(expect(assign_sym)) {
-      next();
-      ret = make_binary_op(next(), ao, gE(cscope));
-    }
-  //} while(expect(comma_sym) && accept(comma_sym));
+  if(expect(assign_sym))
+    ret = make_binary_op(next(), ao, gE(cscope));
+
   accept(semi_sym);
   indent--; printE(cur_tok->symbol,"<- declare call");
   return ret?ret:ao;

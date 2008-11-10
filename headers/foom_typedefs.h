@@ -15,8 +15,6 @@ typedef struct _parse_pkg {
   int line;
 } parse_pkg;
 
-typedef int funcp(char*,...);
-
 typedef struct _error {
   int type;
   char file[ARB_LEN];
@@ -68,6 +66,7 @@ typedef struct _object {
   char * name;
   Symbol type;
   class * klass;
+  int refval;  // pass by ref or val
   union {
     class * Class;
     long Int;
@@ -81,6 +80,8 @@ typedef struct _object {
   } val;
   MAP members;
 } object;
+
+typedef int(*FuncP)(object * ret , object * a1, object * a2, object * a3, object * a4, object * a5);
 
 typedef struct _symbol {
   char id[ARB_LEN];
