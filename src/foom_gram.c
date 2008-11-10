@@ -86,7 +86,7 @@ ast * tMFS(ast * l, scope * cscope) {
   else if(expect(oparen_sym))
     ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
   else if(expect(dot_sym)) {
-    next(dot_sym);
+    accept(dot_sym);
     ret = make_binary_op(member_sym, l, tId(cscope));
   }
   return ret;
@@ -178,7 +178,7 @@ ast * eFuncCall(scope * cscope) {
   topal = cural = new_astlist();
   if(!expect(oparen_sym)) return NULL;
   char * fn = prev_tok->lexem;
-
+  printf("Calling %s\n", fn);
   printE(cur_tok->symbol,"-> func call"); indent++;
   next();
   do {
@@ -346,12 +346,15 @@ ast * gS(scope * cscope) {
 }
 
 ast * gProgram(token * t) {
-  cur_tok = t;
   scope * global = new_scope(NULL);
+  ast_list * cural;
+  ast * ret = new_astnode();
+  ret->tag = block_ast;
+  ret->op.block.stmts = cural = new_astlist();
   serial = indent = 0;
-  ast_list * altop, * cural;
-  altop = cural = new_astlist();
+  cur_tok = t;
   status = pS_ok;
+
   fprintf(stderr,"-> program\n");
   while(!expect(end_sym)) {
     cural->node = gS(global);
@@ -359,7 +362,7 @@ ast * gProgram(token * t) {
     cural = cural->next;
   }
   fprintf(stderr,"<- program\n");
-  return NULL;
+  return ret;
 }
 
 

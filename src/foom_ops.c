@@ -2,179 +2,227 @@
 
 FuncP func_tbl[100] = {NULL};
 
-int if_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int if_func(void * ret, Stack * args){
+  return 1;
 }
-int switch_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int switch_func(void * ret, Stack * args){
+  return 1;
 }
-int case_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int case_func(void * ret, Stack * args){
+  return 1;
 }
-int else_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int else_func(void * ret, Stack * args){
+  return 1;
 }
-int break_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int break_func(void * ret, Stack * args){
+  return 1;
 }
-int return_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-
-//int try_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int catch_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int finally_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int throw_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int assert_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int import_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int namespace_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int class_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int extend_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int interface_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int mixin_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int virtual_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int is_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int was_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-
-int as_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int for_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int while_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int loop_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int do_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int continue_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int return_func(void * ret, Stack * args){
+  return 1;
 }
 
-//int obj_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int try_func(void * ret, Stack * args){
 //}
-//int int_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int catch_func(void * ret, Stack * args){
 //}
-//int dec_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int finally_func(void * ret, Stack * args){
 //}
-//int bool_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int throw_func(void * ret, Stack * args){
 //}
-//int func_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int assert_func(void * ret, Stack * args){
 //}
-//int bin_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int import_func(void * ret, Stack * args){
 //}
-//int list_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int namespace_func(void * ret, Stack * args){
 //}
-//int map_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int class_func(void * ret, Stack * args){
 //}
-//int str_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int extend_func(void * ret, Stack * args){
+//}
+//int interface_func(void * ret, Stack * args){
+//}
+//int mixin_func(void * ret, Stack * args){
+//}
+//int virtual_func(void * ret, Stack * args){
+//}
+//int is_func(void * ret, Stack * args){
+//}
+//int was_func(void * ret, Stack * args){
 //}
 
-int and_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int as_func(void * ret, Stack * args){
+  return 1;
 }
-int or_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int for_func(void * ret, Stack * args){
+  return 1;
 }
-int not_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int while_func(void * ret, Stack * args){
+  return 1;
 }
-int xor_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int loop_func(void * ret, Stack * args){
+  return 1;
 }
-
-//int oparen_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int cparen_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int ocurly_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int ccurly_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int osquare_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int csquare_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int dquote_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int squote_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int id_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int string_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int integer_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-//int float_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-//}
-int lt_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int do_func(void * ret, Stack * args){
+  return 1;
 }
-int gt_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int le_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int ge_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int eq_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int neq_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int assign_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int plus_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int minus_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int star_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int carrot_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int bang_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int andper_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int slash_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int dot_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int at_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int dollar_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int colon_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int grave_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int tilda_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int bar_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int comma_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int dand_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int dor_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int dotdot_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int elipse_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
-}
-int newline_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+int continue_func(void * ret, Stack * args){
+  return 1;
 }
 
-//int semi_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int obj_func(void * ret, Stack * args){
 //}
-//int funccall_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int int_func(void * ret, Stack * args){
 //}
-//int subscript_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int dec_func(void * ret, Stack * args){
 //}
-//int member_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int bool_func(void * ret, Stack * args){
 //}
-//int group_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int func_func(void * ret, Stack * args){
 //}
-//int unknown_func(object * ret, object * a1, object * a2, object * a3, object * a4, object * a5){
+//int bin_func(void * ret, Stack * args){
+//}
+//int list_func(void * ret, Stack * args){
+//}
+//int map_func(void * ret, Stack * args){
+//}
+//int str_func(void * ret, Stack * args){
+//}
+
+int and_func(void * ret, Stack * args){
+  return 1;
+}
+int or_func(void * ret, Stack * args){
+  return 1;
+}
+int not_func(void * ret, Stack * args){
+  return 1;
+}
+int xor_func(void * ret, Stack * args){
+  return 1;
+}
+
+//int oparen_func(void * ret, Stack * args){
+//}
+//int cparen_func(void * ret, Stack * args){
+//}
+//int ocurly_func(void * ret, Stack * args){
+//}
+//int ccurly_func(void * ret, Stack * args){
+//}
+//int osquare_func(void * ret, Stack * args){
+//}
+//int csquare_func(void * ret, Stack * args){
+//}
+//int dquote_func(void * ret, Stack * args){
+//}
+//int squote_func(void * ret, Stack * args){
+//}
+//int id_func(void * ret, Stack * args){
+//}
+//int string_func(void * ret, Stack * args){
+//}
+//int integer_func(void * ret, Stack * args){
+//}
+//int float_func(void * ret, Stack * args){
+//}
+int lt_func(void * ret, Stack * args){
+  return 1;
+}
+int gt_func(void * ret, Stack * args){
+  return 1;
+}
+int le_func(void * ret, Stack * args){
+  return 1;
+}
+int ge_func(void * ret, Stack * args){
+  return 1;
+}
+int eq_func(void * ret, Stack * args){
+  return 1;
+}
+int neq_func(void * ret, Stack * args){
+  return 1;
+}
+int assign_func(void * ret, Stack * args){
+  return 1;
+}
+int plus_func(void * ret, Stack * args){
+  return 1;
+}
+int minus_func(void * ret, Stack * args){
+  return 1;
+}
+int star_func(void * ret, Stack * args){
+  return 1;
+}
+int carrot_func(void * ret, Stack * args){
+  return 1;
+}
+int bang_func(void * ret, Stack * args){
+  return 1;
+}
+int andper_func(void * ret, Stack * args){
+  return 1;
+}
+int slash_func(void * ret, Stack * args){
+  return 1;
+}
+int dot_func(void * ret, Stack * args){
+  return 1;
+}
+int at_func(void * ret, Stack * args){
+  return 1;
+}
+int dollar_func(void * ret, Stack * args){
+  return 1;
+}
+int colon_func(void * ret, Stack * args){
+  return 1;
+}
+int grave_func(void * ret, Stack * args){
+  return 1;
+}
+int tilda_func(void * ret, Stack * args){
+  return 1;
+}
+int bar_func(void * ret, Stack * args){
+  return 1;
+}
+int comma_func(void * ret, Stack * args){
+  return 1;
+}
+int dand_func(void * ret, Stack * args){
+  return 1;
+}
+int dor_func(void * ret, Stack * args){
+  return 1;
+}
+int dotdot_func(void * ret, Stack * args){
+  return 1;
+}
+int elipse_func(void * ret, Stack * args){
+  return 1;
+}
+int newline_func(void * ret, Stack * args){
+  return 1;
+}
+
+//int semi_func(void * ret, Stack * args){
+//}
+
+int funccall_func(void * ret, Stack * args){
+  return 1;
+}
+int subscript_func(void * ret, Stack * args){
+  return 1;
+}
+int member_func(void * ret, Stack * args){
+  return 1;
+}
+int group_func(void * ret, Stack * args){
+  return 1;
+}
+//int unknown_func(void * ret, Stack * args){
 //}
 
 void init_funcs() {
@@ -268,11 +316,12 @@ void init_funcs() {
 
 //  func_tbl[newline_sym] = &newline_func;
 //  func_tbl[semi_sym] = &semi_func;
-//  func_tbl[funccall_sym] = &funccall_func;
-//  func_tbl[subscript_sym] = &subscript_func;
-//  func_tbl[member_sym] = &member_func;
-//  func_tbl[group_sym] = &group_func;
-//  func_tbl[unknown_sym] = &unknown_func;
+
+  func_tbl[funccall_sym] = &funccall_func;
+  func_tbl[subscript_sym] = &subscript_func;
+  func_tbl[member_sym] = &member_func;
+  func_tbl[group_sym] = &group_func;
+
 }
 
 

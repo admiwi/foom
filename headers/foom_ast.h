@@ -6,7 +6,7 @@ typedef struct _ast {
   enum {
     binary_ast, unary_ast,
     obj_ast, func_call_ast,
-    closure_ast
+    block_ast
   } tag;
   scope * scp;
   union {
@@ -26,7 +26,7 @@ typedef struct _ast {
     } call;
     struct {
       struct _ast_list * stmts;
-    } closure;
+    } block;
   } op;
 } ast;
 
