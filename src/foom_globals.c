@@ -1,6 +1,6 @@
 #include "foom.h"
 
-char * _keywords[47] = {
+char * _keywords[] = {
   "\xff",
   "if", "switch", "case", "else", "break",
   "return",
@@ -16,14 +16,99 @@ char * _keywords[47] = {
   "[","]",
   "\"","'"
 };
-
+char * _symbols_[] = {
+  "{end}",
+  "{if}",
+  "{switch}",
+  "{case}",
+  "{else}",
+  "{break}",
+  "{return}",
+  "{try}",
+  "{catch}",
+  "{finally}",
+  "{throw}",
+  "{assert}",
+  "{import}",
+  "{namespace}",
+  "{class}",
+  "{extend}",
+  "{interface}",
+  "{mixin}",
+  "{virtual}",
+  "{is}",
+  "{was}",
+  "{as}",
+  "{for}",
+  "{while}",
+  "{loop}",
+  "{do}",
+  "{continue}",
+  "{obj}",
+  "{int}",
+  "{dec}",
+  "{bool}",
+  "{func}",
+  "{bin}",
+  "{list}",
+  "{map}",
+  "{str}",
+  "{and}",
+  "{or}",
+  "{not}",
+  "{xor}",
+  "{oparen}",
+  "{cparen}",
+  "{ocurly}",
+  "{ccurly}",
+  "{osquare}",
+  "{csquare}",
+  "{dquote}",
+  "{squote}",
+  "{id}",
+  "{string}",
+  "{integer}",
+  "{float}",
+  "{lt}",
+  "{gt}",
+  "{le}",
+  "{ge}",
+  "{eq}",
+  "{neq}",
+  "{assign}",
+  "{plus}",
+  "{minus}",
+  "{star}",
+  "{carrot}",
+  "{bang}",
+  "{andper}",
+  "{slash}",
+  "{dot}",
+  "{at}",
+  "{dollar}",
+  "{colon}",
+  "{grave}",
+  "{tilda}",
+  "{bar}",
+  "{comma}",
+  "{dand}",
+  "{dor}",
+  "{dotdot}",
+  "{elipse}",
+  "{newline}",
+  "{semi}",
+  "{funccall}",
+  "{subscript}",
+  "{member}",
+  "{group}",
+  "{unknown}" };
 MAP keywords = NULL;
 MAP init_keywords() {
   extern char * _keywords[];
   MAP _kws;
+  int i=0;
   if(!keywords) {
     keywords = new_map();
-    int i=0;
     do {
       int * j = malloc(sizeof(int));
       *j = i;
