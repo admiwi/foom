@@ -81,7 +81,11 @@ typedef struct _object {
   MAP members;
 } object;
 
-typedef int(*FuncP)(object * ret , object * a1, object * a2, object * a3, object * a4, object * a5);
+typedef struct {
+
+} Stack;
+
+typedef int(*FuncP)(void * ret , Stack * args);
 
 typedef struct _symbol {
   char id[ARB_LEN];
@@ -93,15 +97,5 @@ typedef struct _scope {
   struct _scope *parent;
   map** symbols;
 } scope;
-
-typedef struct _prod_path {
-  char ** prod;
-} prod_path;
-
-typedef struct _prod {
-  char ** path;
-  prod_path * paths[ARB_LEN];
-} production;
-
 
 #endif

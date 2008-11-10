@@ -3,7 +3,6 @@ if(foo>=102) {
   str cat = "dog";
   obj bar = 55;
   println(cat.length, "carr").foo[12];
-  print_ln(stdout, 'Hello Crewl "Wor\ld"!\n"'[0..3]);
   if(test == 'rar')
     foo.copy = "hi";
 }

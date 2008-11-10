@@ -92,8 +92,8 @@ ast * make_call(char * fn, ast_list * al){
 //TODO  Need to make this different == it's not going to work very well as is.
 ast * make_closure(ast_list * v){
   ast * a = new_astnode();
-  a->tag = closure_ast;
-  a->op.closure.stmts = v;
+  a->tag = block_ast;
+  a->op.block.stmts = v;
   return a;
 }
 
