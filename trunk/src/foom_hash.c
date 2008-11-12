@@ -37,6 +37,7 @@ int map_set(map** mtab, char* key, void* data, int flags) {
     do {
       if(!strcmp(cur->key, m->key)) {
         if(!flag_is_set(cur->flags, MAP_IMMUTABLE)) {
+          fprintf(stderr, "map_overwrite %s\n", m->key);
           td = cur->data;
           cur->data = m->data;
           cur->flags = m->flags;
@@ -71,7 +72,7 @@ map* _map_del(map* m, char * key, int deldata) {
     return t;
   }
   if(m->next)
-    m->next = _map_del(m->next, key, deldata);  
+    m->next = _map_del(m->next, key, deldata);
   return m;
 }
 
@@ -88,4 +89,12 @@ void* map_get(map** mtab, char* key) {
   } while(cur->next);
   return NULL;
 }
+
+object * scope_get(scope * s, char * key) {
+  object * o = (object *)map_get(s->symbols, key);
+  if(!o && s->parent)
+      return scope_get(s->parent, key);
+  return o;
+}
+
 

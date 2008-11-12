@@ -1,13 +1,14 @@
-#include "foom.h"
-#include "foom_ast.h"
-
+#include "foom_class.h"
 
 void add_member(class * c, object * o) {
   map_set(c->members, o->name, o, MAP_OBJECT);
 }
 
-object * get_member(class * c, char * n) {
-  return (object *)map_get(c->members, n);
+object * get_member(object * o, char * n) {
+  //class c;
+  //c = o->klass;
+  fprintf(stderr,"member %s not found\n", n);
+  return NULL;//(object *)map_get(c->members, n);
 }
 
 void add_static_member(class * c, object * o) {

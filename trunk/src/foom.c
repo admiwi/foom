@@ -33,7 +33,7 @@ void process_file(char *file_name) {
   pgm = gProgram(tok);
   print_errors();
 
-  //decend_ast(pgm);
+  decend_ast(pgm);
 
 
 }

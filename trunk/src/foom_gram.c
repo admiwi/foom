@@ -1,6 +1,7 @@
 #include "foom.h"
 #include "foom_gram.h"
 #include "foom_lex.h"
+#include "foom_class.h"
 
 #define printE(A,B) _printE(__LINE__, A, B)
 #define expect(A) _expect(__LINE__, A)
@@ -16,6 +17,7 @@ ast * gT(scope *);
 ast * gE(scope *);
 ast * gTE(scope *);
 ast * gS(scope *);
+ast * tMember(ast *, scope *);
 ast * tId(scope *);
 ast * eSubscript(scope *);
 ast * eFuncCall(scope *);
@@ -89,39 +91,50 @@ ast * tMFS(ast * l, scope * cscope) {
     ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
   else if(expect(dot_sym)) {
     accept(dot_sym);
-    ret = make_binary_op(member_sym, l, tId(cscope));
+    ret = make_binary_op(member_sym, l, tMember(l, cscope));
   }
   return ret;
 }
 
-ast * tId(scope * cscope) {
-  ast *ret = NULL, * l = make_obj(cur_tok->lexem);
+ast * tMember(ast * a, scope * cscope) {
+  ast *ret = NULL, * l = get_member(a->op.obj, cur_tok->lexem);
   ret = l;
-  printE(cur_tok->symbol,"id");
+  printE(cur_tok->symbol,"member");
   next();
   return tMFS(l, cscope);
 }
 
+ast * tId(scope * cscope) {
+  ast *ret = NULL, * l = get_obj(cscope, cur_tok->lexem);
+  ret = l;
+  printE(cur_tok->symbol,"id");
+  next();
+  if(l) return tMFS(l, cscope);
+  return l;
+}
+
 ast * tString(scope * cscope) {
+  ast * a;
   str * s = malloc(sizeof(str));
   printE(cur_tok->symbol,"string");
   s->val = cur_tok->lexem;
   s->len = strlen(s->val);
   accept(string_sym);
-  return make_str(get_serial("Lstring"), s);
+  a = make_str(cscope, get_serial("Lstring"), s);
+  return a;
 }
 
 ast * tInteger(scope * cscope){
   long li = strtol(cur_tok->lexem, NULL, 10);
   printE(cur_tok->symbol,"number");
   accept(integer_sym);
-  return make_int(get_serial("Linteger"), li);
+  return make_int(cscope, get_serial("Linteger"), li);
 }
 ast * tDecimal(scope * cscope){
   double fl = strtod(cur_tok->lexem,NULL);
   printE(cur_tok->symbol,"number");
   accept(float_sym);
-  return make_dec(get_serial("Ldecimal"), fl);
+  return make_dec(cscope, get_serial("Ldecimal"), fl);
 }
 
 ast * tParens(scope * cscope) {
@@ -149,7 +162,7 @@ ast * sClosure(scope * cscope) {
   indent--;
   printE(cur_tok->symbol,"<- closure");
   accept(ccurly_sym);
-  return make_closure(topal);
+  return make_closure(cscope, get_serial("closure"), topal);
 }
 
 ast * sIf(scope * cscope) {
@@ -180,7 +193,6 @@ ast * eFuncCall(scope * cscope) {
   topal = cural = new_astlist();
   if(!expect(oparen_sym)) return NULL;
   char * fn = prev_tok->lexem;
-  printf("Calling %s\n", fn);
   printE(cur_tok->symbol,"-> func call"); indent++;
   next();
   do {
@@ -190,7 +202,7 @@ ast * eFuncCall(scope * cscope) {
   } while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- func call");
   accept(cparen_sym);
-  return make_call(fn,topal);
+  return make_call(cscope, fn,topal);
 }
 
 //TODO: tVar and eSub may have to move
@@ -233,8 +245,10 @@ ast * sDeclare(scope * cscope) {
   accept(id_sym);
   map_set(cscope->symbols, ao->op.obj->name, ao->op.obj, MAP_OBJECT);
 
-  if(expect(assign_sym))
-    ret = make_binary_op(next(), ao, gE(cscope));
+  if(expect(assign_sym)) {
+    accept(assign_sym);
+    ret = make_binary_op(assign_sym, ao, gE(cscope));
+  }
 
   accept(semi_sym);
   indent--; printE(cur_tok->symbol,"<- declare call");
