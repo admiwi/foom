@@ -28,9 +28,9 @@ void process_file(char *file_name) {
   ast * pgm;
   strcpy(pp.filename, file_name);
   pp.file = fopen(file_name,"r");
-
+  init_classes(s);
   tok = gen_token_chain(&pp);
-  pgm = gProgram(tok);
+  pgm = gProgram(tok, s);
   print_errors();
 
   decend_ast(pgm);

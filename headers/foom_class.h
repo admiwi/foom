@@ -4,19 +4,17 @@
 #ifndef __FOOM_CLASS__
 #define __FOOM_CLASS__
 
-void add_member(class * c, object * o);
+void add_member(object * c, object * o);
 
 object * get_member(object * o, char * n);
 
-void add_static_member(class * c, object * o);
+void add_static_member(object * c, object * o);
 
-object * get_static_member(class * c, char * n);
+object * get_static_member(object * c, char * n);
 
-class * new_class(char * name);
+class * new_class(bool );
 
 //native classes
 
-void initialize_classes(scope * s);
-object * int_class();
-
+void init_classes(scope * s);
 #endif

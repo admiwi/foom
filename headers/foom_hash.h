@@ -11,8 +11,9 @@
 #define MAP_FLOAT     (1<<3)
 #define MAP_OBJECT    (1<<4)
 #define MAP_KEYWORD   (1<<5)
-
-#define MAP_GRAMMER   (1<<6)
+#define MAP_UNARY     (1<<6)
+#define MAP_BINARY    (1<<7)
+#define MAP_GRAMMER   (1<<8)
 
 #define MAP map **
 
@@ -28,7 +29,7 @@ union charint {
   int i;
 };
 
-MAP new_map();
+MAP map_new();
 unsigned int hash(char*);
 int map_set(MAP, char*, void*, int);
 void map_del(MAP, char*, int);

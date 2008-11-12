@@ -2,7 +2,7 @@
 #define _FOOM_TYPEDEFS_
 
 #include "foom_hash.h"
-
+typedef enum { false, true } bool;
 typedef struct _parse_pkg {
   char filename[ARB_LEN];
   FILE * file;
@@ -47,8 +47,10 @@ typedef struct _list {
 } list;
 
 typedef struct _func {
+  char * sig;
+  bool native;
   list * args;
-  struct _object * ret_type;
+  struct _class * ret_type;
 } func;
 
 typedef struct _str {
@@ -57,22 +59,22 @@ typedef struct _str {
 } str;
 
 typedef struct _class {
-  char * name;
-  MAP members;
+  bool native;
   MAP static_members;
 } class;
 
 typedef struct _object {
   char * name;
   Symbol type;
-  class * klass;
-  int refval;  // pass by ref or val
+  struct _object * class;
+  bool ref;
+  bool null;
   union {
     class * Class;
     long Int;
     double Dec;
     str * Str;
-    int Bool;
+    bool Bool;
     MAP Map;
     list * List;
     func * Func;
@@ -81,11 +83,7 @@ typedef struct _object {
   MAP members;
 } object;
 
-typedef struct {
-
-} Stack;
-
-typedef int(*FuncP)(void * ret , Stack * args);
+typedef int(*FuncP)(void * ret , list * args);
 
 typedef struct _symbol {
   char id[ARB_LEN];

@@ -274,7 +274,7 @@ token * get_token(parse_pkg * pp) {
 scope * new_scope(scope *par) {
   scope * s = malloc(sizeof(scope));
   s->parent = par;
-  s->symbols = new_map();
+  s->symbols = map_new();
   return s;
 }
 
