@@ -1,7 +1,7 @@
 #include "foom.h"
 #include "foom_hash.h"
 
-map** new_map() {
+map** map_new() {
   map** m = malloc(sizeof(map)*HASH_SZ);
   memset(m, 0, sizeof(map)*HASH_SZ);
   return m;
@@ -24,6 +24,8 @@ int map_set(map** mtab, char* key, void* data, int flags) {
   map * m = malloc(sizeof(map));
   map * cur;
   void* td;
+  if(!mtab)
+    mtab = map_new();
   strcpy(m->key, key);
   m->data = data;
   m->flags = flags;
@@ -79,6 +81,10 @@ map* _map_del(map* m, char * key, int deldata) {
 void* map_get(map** mtab, char* key) {
   unsigned int hv = hash(key);
   map * cur;
+  if(!mtab) {
+    fprintf(stderr, "uninitialized map looking for key %s\n", key);
+    return NULL;
+  }
   if(!mtab[hv])
     return NULL;
   cur = mtab[hv];

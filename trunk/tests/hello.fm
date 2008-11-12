@@ -1,3 +1,7 @@
+func println;
+int foo;
+str test = 'rar';
+
 if(foo>=102) {
   int foo;
   str cat = "dog";

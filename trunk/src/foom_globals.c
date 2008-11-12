@@ -2,19 +2,54 @@
 
 char * _keywords[] = {
   "\xff",
-  "if", "switch", "case", "else", "break",
+  "if",
+  "switch",
+  "case",
+  "else",
+  "break",
   "return",
-  "try", "catch", "finally", "throw", "assert",
-  "import", "namespace",
-  "class", "extend", "interface", "mixin", "virtual",
-  "is", "was", "as",
-  "for", "while", "loop", "do", "continue",
-  "obj", "int", "dec", "bool", "func", "bin", "list", "map", "str",
-  "and", "or", "not", "xor",
-  "(",")",
-  "{","}",
-  "[","]",
-  "\"","'"
+  "try",
+  "catch",
+  "finally",
+  "throw",
+  "assert",
+  "import",
+  "namespace",
+  "class",
+  "extend",
+  "interface",
+  "mixin",
+  "virtual",
+  "is",
+  "was",
+  "as",
+  "for",
+  "while",
+  "loop",
+  "do",
+  "continue",
+  "obj",
+  "int",
+  "dec",
+  "bool",
+  "func",
+  "bin",
+  "list",
+  "map",
+  "str",
+  "null",
+  "and",
+  "or",
+  "not",
+  "xor",
+  "(",
+  ")",
+  "{",
+  "}",
+  "[",
+  "]",
+  "\"",
+  "'"
 };
 char * _symbols_[] = {
   "{end}",
@@ -53,6 +88,7 @@ char * _symbols_[] = {
   "{list}",
   "{map}",
   "{str}",
+  "{null},"
   "{and}",
   "{or}",
   "{not}",
@@ -108,7 +144,7 @@ MAP init_keywords() {
   MAP _kws;
   int i=0;
   if(!keywords) {
-    keywords = new_map();
+    keywords = map_new();
     do {
       int * j = malloc(sizeof(int));
       *j = i;

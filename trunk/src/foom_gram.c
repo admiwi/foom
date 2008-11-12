@@ -97,8 +97,11 @@ ast * tMFS(ast * l, scope * cscope) {
 }
 
 ast * tMember(ast * a, scope * cscope) {
-  ast *ret = NULL, * l = get_member(a->op.obj, cur_tok->lexem);
+  ast *ret = NULL, * l = new_astnode();
   ret = l;
+  a = new_astnode();
+  a->tag = id_ast;
+  a->op.Id = strdup(cur_tok->lexem);
   printE(cur_tok->symbol,"member");
   next();
   return tMFS(l, cscope);
@@ -117,7 +120,7 @@ ast * tString(scope * cscope) {
   ast * a;
   str * s = malloc(sizeof(str));
   printE(cur_tok->symbol,"string");
-  s->val = cur_tok->lexem;
+  s->val = strdup(cur_tok->lexem);
   s->len = strlen(s->val);
   accept(string_sym);
   a = make_str(cscope, get_serial("Lstring"), s);
@@ -235,7 +238,8 @@ ast * gT(scope * cscope) {
 }
 
 ast * sDeclare(scope * cscope) {
-  ast * ret = NULL, *ao = new_astobj();
+  ast * ret = NULL, *ao = new_astnode();
+  ao->op.obj = find_obj(cur_tok->symbol);
   ao->tag = obj_ast;
   ao->op.obj->type = cur_tok->symbol;
   next();
@@ -361,8 +365,7 @@ ast * gS(scope * cscope) {
   return a;
 }
 
-ast * gProgram(token * t) {
-  scope * global = new_scope(NULL);
+ast * gProgram(token * t, scope * global) {
   ast_list * cural;
   ast * ret = new_astnode();
   ret->tag = block_ast;

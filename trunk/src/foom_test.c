@@ -72,6 +72,7 @@ void decend_ast(ast * a) {
   switch(a->tag) {
     case binary_ast: return da_binary(a);
     case unary_ast: return da_unary(a);
+    case id_ast:
     case obj_ast: return da_object(a);
     case func_call_ast: return da_func_call(a);
     case block_ast: return da_block(a);

@@ -27,7 +27,7 @@ typedef struct _ast {
     struct {
       struct _ast_list * stmts;
     } block;
-    char * id;
+    char * Id;
   } op;
 } ast;
 
