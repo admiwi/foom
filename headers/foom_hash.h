@@ -28,9 +28,10 @@ union charint {
   int i;
 };
 
-map** new_map();
+MAP new_map();
 unsigned int hash(char*);
 int map_set(MAP, char*, void*, int);
 void map_del(MAP, char*, int);
 void* map_get(MAP, char*);
+//object * scope_get(scope *, char *);
 #endif

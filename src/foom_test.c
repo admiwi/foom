@@ -17,24 +17,21 @@ void da_unary(ast * a){
 
 void da_func_call(ast * a){
   ast_list * al;
-  //if((a->op.call)) {
-    printf("CALL to %s :",a->op.call.obj->name);
-    for(al = a->op.call.arguments;al;al = al->next)
-      decend_ast(al->node);
-  //}
+  for(al = a->op.call.arguments;al->node;al = al->next)
+    decend_ast(al->node);
 }
 
 void da_block(ast * a){
   ast_list * al;
-  printf("BLOCK START\n");
+  printf("{\n");
   if(a->op.block.stmts)
-    for(al = a->op.block.stmts;al;al = al->next) {
+    for(al = a->op.block.stmts;al->node;al = al->next) {
       decend_ast(al->node);
       printf("\n");
     }
   else
     printf("**BLOCK ERROR**\n");
-  printf("BLOCK END\n");
+  printf("}\n");
 }
 
 void da_object(ast * a){
@@ -44,19 +41,19 @@ void da_object(ast * a){
     switch(o->type){
       case dec_sym: //TODO: make floats
       case int_sym:
-        printf("<object:integer %s=%li>\n",o->name, o->val.Int);
+        printf("<object:integer %s=%li>",o->name, o->val.Int);
         break;
       case str_sym:
-        printf("<object:string %s='%s'>\n",o->name, o->val.Str);
+        printf("<object:string %s='%s'>",o->name, o->val.Str?o->val.Str->val:"<none>");
         break;
       case bool_sym:
-        printf("<object:boolean %s=%s>\n",o->name, o->val.Bool?"true":"false");
+        printf("<object:boolean %s=%s>",o->name, o->val.Bool?"true":"false");
         break;
       case obj_sym:
-        printf("<object:object %s>\n",o->name);
+        printf("<object:object %s>",o->name);
         break;
       case list_sym:
-        printf("<object:list %s>\n",o->name);
+        printf("<object:list %s>",o->name);
         break;
       case map_sym:
         printf("<object:map %s>\n",o->name);
@@ -65,7 +62,7 @@ void da_object(ast * a){
         printf("<object:func %s>\n",o->name);
         break;
       default:
-        printf("<object:unknown %s>\n",o->name);
+        printf("<object:unknown>\n");
     }
   } else
     printf("**OBJECT ERROR**\n");
