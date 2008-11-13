@@ -11,4 +11,4 @@ if(foo>=102) {
 }
 
 
-println("Hi!");
+println("Hi!",{int i=10;});
