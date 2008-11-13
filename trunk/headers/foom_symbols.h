@@ -38,7 +38,6 @@ typedef enum{
   list_sym,
   map_sym,
   str_sym,
-  null_sym,
   and_sym,
   or_sym,
   not_sym,

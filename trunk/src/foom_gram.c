@@ -17,7 +17,7 @@ ast * gT(scope *);
 ast * gE(scope *);
 ast * gTE(scope *);
 ast * gS(scope *);
-ast * tMember(ast *, scope *);
+ast * tMember(scope *);
 ast * tId(scope *);
 ast * eSubscript(scope *);
 ast * eFuncCall(scope *);
@@ -91,17 +91,15 @@ ast * tMFS(ast * l, scope * cscope) {
     ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
   else if(expect(dot_sym)) {
     accept(dot_sym);
-    ret = make_binary_op(member_sym, l, tMember(l, cscope));
+    ret = make_binary_op(member_sym, l, tMember(cscope));
   }
   return ret;
 }
 
-ast * tMember(ast * a, scope * cscope) {
-  ast *ret = NULL, * l = new_astnode();
-  ret = l;
-  a = new_astnode();
-  a->tag = id_ast;
-  a->op.Id = strdup(cur_tok->lexem);
+ast * tMember(scope * cscope) {
+  ast * l = new_astnode();
+  l->tag = id_ast;
+  l->op.Id = strdup(cur_tok->lexem);
   printE(cur_tok->symbol,"member");
   next();
   return tMFS(l, cscope);

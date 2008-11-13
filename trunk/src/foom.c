@@ -12,6 +12,7 @@
 #include "foom_lex.h"
 #include "foom_gram.h"
 #include "foom_test.h"
+SYMBOLS;
 
 void print_toks(token * tok) {
   while(tok) {
