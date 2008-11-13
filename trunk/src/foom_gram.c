@@ -227,7 +227,10 @@ ast * gT(scope * cscope) {
     case oparen_sym:
       a = tParens(cscope);
       eSubscript(cscope);
-      return NULL;
+      break;
+    case ocurly_sym:
+      a = sClosure(new_scope(cscope));
+      //accept(ccurly_sym);
     default:
       printE(cur_tok->symbol,"error");
       next();
