@@ -174,9 +174,42 @@ ast * sIf(scope * cscope) {
   if(status == pS_ok)
     s = gS(cscope);
   indent--; printE(cur_tok->symbol,"<- if");
+  if(expect(else_sym)) {
+    accept(else_sym);
+    s = make_binary_op(else_sym, s, gS(cscope));
+  }
   return make_binary_op(if_sym, e, s);
 }
 
+ast * sFor(scope * cscope) {
+  ast * ret, * e, * s;
+  ast_list * for_guts, * cural;
+  for_guts = cural = new_astlist();
+  printE(cur_tok->symbol,"-> for"); indent++;
+  accept(for_sym);
+  printE(cur_tok->symbol,"("); indent++;
+  accept(oparen_sym);
+
+  cural->node = gE(cscope);
+  cural->next = new_astlist();
+  cural = cural->next;
+  accept(semi_sym);
+  cural->node = gE(cscope);
+  cural->next = new_astlist();
+  cural = cural->next;
+  accept(semi_sym);
+  cural->node = gE(cscope);
+  cural->next = new_astlist();
+
+  indent--; printE(cur_tok->symbol,")");
+  accept(cparen_sym);
+  s = gS(cscope);
+  e = new_astnode();
+  e->tag = block_ast;
+  e->op.block.stmts = for_guts;
+  e->scp = cscope;
+  return make_binary_op(for_sym, e, s);
+}
     // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..]
 ast * eSubscript(scope * cscope) {
   ast * ret, * ua;
@@ -186,7 +219,7 @@ ast * eSubscript(scope * cscope) {
   ua = gE(cscope);
   indent--; printE(cur_tok->symbol,"<- subscript");
   accept(csquare_sym);
-  return make_unary_op(subscript_sym, ua);
+  return ua;
 }
 
 ast * eFuncCall(scope * cscope) {
@@ -231,6 +264,7 @@ ast * gT(scope * cscope) {
     case ocurly_sym:
       a = sClosure(new_scope(cscope));
       //accept(ccurly_sym);
+      break;
     default:
       printE(cur_tok->symbol,"error");
       next();
@@ -342,6 +376,9 @@ ast * gS(scope * cscope) {
       break;
     case if_sym:
        a = sIf(cscope);
+       break;
+    case for_sym:
+       a = sFor(cscope);
        break;
     case while_sym:
     case switch_sym:

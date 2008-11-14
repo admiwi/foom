@@ -2,40 +2,6 @@
 #ifndef _FOOM_AST_
 #define _FOOM_AST_
 
-typedef struct _ast {
-  enum {
-    binary_ast, unary_ast,
-    obj_ast, func_call_ast,
-    block_ast, id_ast
-  } tag;
-  scope * scp;
-  union {
-    object * obj;
-    struct {
-      Symbol oper;
-      struct _ast * left;
-      struct _ast * right;
-    } binary;
-    struct {
-      Symbol oper;
-      struct _ast * arg;
-    } unary;
-    struct {
-      object * obj;
-      struct _ast_list * arguments;
-    } call;
-    struct {
-      struct _ast_list * stmts;
-    } block;
-    char * Id;
-  } op;
-} ast;
-
-typedef struct _ast_list {
-  ast * node;
-  struct _ast_list * next;
-} ast_list;
-
 ast_list * new_astlist();
 ast * new_astnode();
 object * new_object();

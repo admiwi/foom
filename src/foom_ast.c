@@ -30,6 +30,7 @@ ast * make_obj(scope * cscope, char * n) {
   ast * a = new_astnode();
   a->tag = obj_ast;
   a->op.obj = new_object();
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -40,6 +41,7 @@ ast * make_int(scope * cscope, char * n, long v) {
   a->op.obj = new_int();
   a->op.obj->name = n;
   a->op.obj->val.Int = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -49,6 +51,7 @@ ast * make_dec(scope * cscope, char * n, double v) {
   a->op.obj = new_dec();
   a->op.obj->name = n;
   a->op.obj->val.Dec = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -58,6 +61,7 @@ ast * make_str(scope * cscope, char * n, str * v) {
   a->op.obj = new_str();
   a->op.obj->name = n;
   a->op.obj->val.Str = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -67,6 +71,7 @@ ast * make_bool(scope * cscope, char * n, int v) {
   a->op.obj = new_bool();
   a->op.obj->name = n;
   a->op.obj->val.Bool = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -76,6 +81,7 @@ ast * make_map(scope * cscope, char * n, MAP v) {
   a->op.obj = new_map();
   a->op.obj->name = n;
   a->op.obj->val.Map = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -85,6 +91,7 @@ ast * make_list(scope * cscope, char * n, list * v){
   a->op.obj = new_list();
   a->op.obj->name = n;
   a->op.obj->val.List = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -94,6 +101,7 @@ ast * make_func(scope * cscope, char * n, func * v){
   a->op.obj = new_func();
   a->op.obj->name = n;
   a->op.obj->val.Func = v;
+  a->scp = cscope;
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -103,6 +111,7 @@ ast * make_call(scope * cscope, char * fn, ast_list * al){
   a->op.call.obj = new_object();
   a->op.call.obj->name = fn;
   a->op.call.arguments = al;
+  a->scp = cscope;
   //map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
@@ -111,6 +120,7 @@ ast * make_closure(scope * cscope, char * n, ast_list * v){
   ast * a = new_astnode();
   a->tag = block_ast;
   a->op.block.stmts = v;
+  a->scp = cscope;
   //map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }

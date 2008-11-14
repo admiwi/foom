@@ -83,8 +83,6 @@ typedef struct _object {
   MAP members;
 } object;
 
-typedef int(*FuncP)(void * ret , list * args);
-
 typedef struct _symbol {
   char id[ARB_LEN];
   object * obj;
@@ -95,5 +93,39 @@ typedef struct _scope {
   struct _scope *parent;
   map** symbols;
 } scope;
+typedef struct _ast {
+  enum {
+    binary_ast, unary_ast,
+    obj_ast, func_call_ast,
+    block_ast, id_ast
+  } tag;
+  scope * scp;
+  union {
+    object * obj;
+    struct {
+      Symbol oper;
+      struct _ast * left;
+      struct _ast * right;
+    } binary;
+    struct {
+      Symbol oper;
+      struct _ast * arg;
+    } unary;
+    struct {
+      object * obj;
+      struct _ast_list * arguments;
+    } call;
+    struct {
+      struct _ast_list * stmts;
+    } block;
+    char * Id;
+  } op;
+} ast;
 
+typedef struct _ast_list {
+  ast * node;
+  struct _ast_list * next;
+} ast_list;
+
+typedef object *(*FuncP)(ast * op);
 #endif
