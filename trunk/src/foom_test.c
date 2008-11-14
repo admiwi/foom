@@ -1,29 +1,33 @@
 #include "foom_test.h"
-
+extern FuncP func_tbl[100];
 extern char * _symbols_[];
 void da_binary(ast * a){
-  printf("(");
-  decend_ast(a->op.binary.left);
-  printf(" %s ", _symbols_[a->op.binary.oper]);
-  decend_ast(a->op.binary.right);
-  printf(")");
+
+    printf("(");
+    printf("%s:", _symbols_[a->op.binary.oper]);
+    decend_ast(a->op.binary.left);
+    printf(",");
+    decend_ast(a->op.binary.right);
+    printf(")");
+
 }
 
 void da_unary(ast * a){
-  printf("(%s", _symbols_[a->op.unary.oper]);
+  printf("(%s:", _symbols_[a->op.unary.oper]);
   decend_ast(a->op.unary.arg);
   printf(")");
 }
 
 void da_func_call(ast * a){
   ast_list * al;
-  for(al = a->op.call.arguments;al->node;al = al->next)
+  for(al = a->op.call.arguments;al->node;al = al->next) {
     decend_ast(al->node);
+  }
 }
 
 void da_block(ast * a){
   ast_list * al;
-  printf("\nBEGIN\n");
+  printf("{\n");
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
       decend_ast(al->node);
@@ -31,17 +35,20 @@ void da_block(ast * a){
     }
   else
     printf("**BLOCK ERROR**\n");
-  printf("\nEND\n");
+  printf("}\n");
 }
 
 void da_id(ast * a){
-  printf("<member:%s>",a->op.Id);
+  printf("%s",a->op.Id);
+  //printf("<member:%s>",a->op.Id);
 }
 
 void da_object(ast * a){
   if(a->op.obj) {
     object * o = a->op.obj;
     //obj_sym, int_sym, dec_sym, bool_sym, func_sym, bin_sym, list_sym, map_sym, str_sym,
+    printf("%s", o->name);
+    return;
     switch(o->type){
       case dec_sym: //TODO: make floats
       case int_sym:
@@ -74,8 +81,8 @@ void da_object(ast * a){
 
 void decend_ast(ast * a) {
   switch(a->tag) {
-    case binary_ast: return da_binary(a);
-    case unary_ast: return da_unary(a);
+    case binary_ast: return func_tbl[a->op.binary.oper](a);
+    case unary_ast: return func_tbl[a->op.unary.oper](a);
     case id_ast: return da_id(a);
     case obj_ast: return da_object(a);
     case func_call_ast: return da_func_call(a);

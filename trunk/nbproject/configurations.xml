@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="51">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <logicalFolder name="headers" displayName="headers" projectFiles="true">
+        <itemPath>headers/foom.h</itemPath>
+        <itemPath>headers/foom_ast.h</itemPath>
+        <itemPath>headers/foom_class.h</itemPath>
+        <itemPath>headers/foom_gram.h</itemPath>
+        <itemPath>headers/foom_hash.h</itemPath>
+        <itemPath>headers/foom_lex.h</itemPath>
+        <itemPath>headers/foom_objects.h</itemPath>
+        <itemPath>headers/foom_symbols.h</itemPath>
+        <itemPath>headers/foom_test.h</itemPath>
+        <itemPath>headers/foom_typedefs.h</itemPath>
+        <itemPath>headers/foom_util.h</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <logicalFolder name="src" displayName="src" projectFiles="true">
+        <logicalFolder name="foom_classes"
+                       displayName="foom_classes"
+                       projectFiles="true">
+          <itemPath>src/foom_classes/foom_bool.c</itemPath>
+          <itemPath>src/foom_classes/foom_dec.c</itemPath>
+          <itemPath>src/foom_classes/foom_func.c</itemPath>
+          <itemPath>src/foom_classes/foom_int.c</itemPath>
+          <itemPath>src/foom_classes/foom_list.c</itemPath>
+          <itemPath>src/foom_classes/foom_map.c</itemPath>
+          <itemPath>src/foom_classes/foom_obj.c</itemPath>
+          <itemPath>src/foom_classes/foom_str.c</itemPath>
+        </logicalFolder>
+        <itemPath>src/foom.c</itemPath>
+        <itemPath>src/foom_ast.c</itemPath>
+        <itemPath>src/foom_class.c</itemPath>
+        <itemPath>src/foom_globals.c</itemPath>
+        <itemPath>src/foom_gram.c</itemPath>
+        <itemPath>src/foom_hash.c</itemPath>
+        <itemPath>src/foom_lex.c</itemPath>
+        <itemPath>src/foom_objects.c</itemPath>
+        <itemPath>src/foom_ops.c</itemPath>
+        <itemPath>src/foom_parser.c</itemPath>
+        <itemPath>src/foom_test.c</itemPath>
+        <itemPath>src/foom_util.c</itemPath>
+      </logicalFolder>
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>Makefile</itemPath>
+      <itemPath>tests</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <platform>3</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <includeDirectories>
+            <directoryPath>headers</directoryPath>
+          </includeDirectories>
+          <warningLevel>2</warningLevel>
+        </cCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <folder path="HeaderFiles">
+        <cCompilerTool>
+          <includeDirectories>
+            <directoryPath>headers</directoryPath>
+          </includeDirectories>
+        </cCompilerTool>
+      </folder>
+      <item path="headers/foom.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_ast.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_class.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_gram.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_hash.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_lex.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_objects.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_symbols.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_test.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_typedefs.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_util.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/foom.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_ast.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_class.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_bool.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_dec.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_func.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_int.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_list.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_map.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_obj.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_str.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_globals.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_gram.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_hash.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_lex.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_objects.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_ops.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_parser.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_test.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_util.c">
+        <itemTool>0</itemTool>
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>MinGW|MinGW</compilerSet>
+        <platform>3</platform>
+      </toolsSet>
+      <compileType>
+        <cCompilerTool>
+          <developmentMode>5</developmentMode>
+        </cCompilerTool>
+        <ccCompilerTool>
+          <developmentMode>5</developmentMode>
+        </ccCompilerTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <linkerTool>
+          <linkerLibItems>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="headers/foom.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_ast.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_class.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_gram.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_hash.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_lex.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_objects.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_symbols.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_test.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_typedefs.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_util.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="src/foom.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_ast.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_class.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_bool.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_dec.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_func.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_int.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_list.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_map.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_obj.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_classes/foom_str.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_globals.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_gram.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_hash.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_lex.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_objects.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_ops.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_parser.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_test.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_util.c">
+        <itemTool>0</itemTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

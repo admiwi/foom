@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
     exit(EXIT_SUCCESS);
   }
   init_keywords();
+  init_funcs();
   process_file(argv[1]);
   putc('\n', stdout);
 	return EXIT_SUCCESS;
