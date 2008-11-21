@@ -96,7 +96,7 @@ typedef struct _scope {
 typedef struct _ast {
   enum {
     binary_ast, unary_ast,
-    obj_ast, func_call_ast,
+    obj_ast, func_args_ast,
     block_ast, id_ast
   } tag;
   scope * scp;
@@ -112,8 +112,7 @@ typedef struct _ast {
       struct _ast * arg;
     } unary;
     struct {
-      object * obj;
-      struct _ast_list * arguments;
+      struct _ast_list * args;
     } call;
     struct {
       struct _ast_list * stmts;

@@ -86,6 +86,7 @@ typedef enum{
   subscript_sym,
   member_sym,
   group_sym,
+  declare_sym,
   unknown_sym
 }Symbol;
 #endif
