@@ -7,7 +7,7 @@ ast * new_astnode();
 object * new_object();
 ast * make_binary_op(Symbol s, ast * l, ast * r);
 ast * make_unary_op(Symbol s, ast * a);
-ast * make_call(scope *, char * fn, ast_list * al);
+ast * make_call_args(scope *, ast_list * al);
 //long Int;
 //double Dec;
 //str Str;

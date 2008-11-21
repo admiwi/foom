@@ -263,7 +263,7 @@ object * newline_func(ast * op){
 object * funccall_func(ast * op){
   ast * func = op->op.binary.left;
   ast * args = op->op.binary.right;
-  printf("%s(",func->op.obj->name);
+  printf("%s(",func->op.Id);
   decend_ast(args);
   printf(")");
 }
@@ -286,6 +286,15 @@ object * group_func(ast * op){
   printf("(");
   decend_ast(op->op.unary.arg);
   printf(")");
+}
+object * declare_func(ast * op){
+  ast * l = op->op.binary.left;
+  ast * r = op->op.binary.right;
+  object * o = find_obj(l->op.obj->type);
+  o->name = strdup(r->op.Id);
+  map_set(l->scp->symbols, o);
+  printf("%s %s", l->op.obj->name, r->op.Id);
+  return o;
 }
 object * generic_func(ast * op) {
   switch(op->tag) {
@@ -372,6 +381,7 @@ void init_funcs() {
   func_tbl[subscript_sym] = &subscript_func;
   func_tbl[member_sym] = &member_func;
   func_tbl[group_sym] = &group_func;
+  func_tbl[declare_sym] = &declare_func;
 
 
 

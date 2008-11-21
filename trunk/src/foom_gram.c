@@ -8,6 +8,7 @@
 #define accept(A) _accept(__LINE__, A)
 
 extern char * _symbols_[];
+extern MAP native_classes;
 
 token *prev_tok = NULL;
 token *cur_tok = NULL;
@@ -91,12 +92,12 @@ ast * tMFS(ast * l, scope * cscope) {
     ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
   else if(expect(dot_sym)) {
     accept(dot_sym);
-    ret = make_binary_op(member_sym, l, tMember(cscope));
+    ret = make_binary_op(member_sym, l, tId(cscope));
   }
   return ret;
 }
 
-ast * tMember(scope * cscope) {
+ast * tId(scope * cscope) {
   ast * l = new_astnode();
   l->tag = id_ast;
   l->op.Id = strdup(cur_tok->lexem);
@@ -104,7 +105,7 @@ ast * tMember(scope * cscope) {
   next();
   return tMFS(l, cscope);
 }
-
+/*
 ast * tId(scope * cscope) {
   ast *ret = NULL, * l = get_obj(cscope, cur_tok->lexem);
   ret = l;
@@ -113,7 +114,7 @@ ast * tId(scope * cscope) {
   if(l) return tMFS(l, cscope);
   return l;
 }
-
+*/
 ast * tString(scope * cscope) {
   ast * a;
   str * s = malloc(sizeof(str));
@@ -236,7 +237,7 @@ ast * eFuncCall(scope * cscope) {
   } while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- func call");
   accept(cparen_sym);
-  return make_call(cscope, fn,topal);
+  return make_call_args(cscope, topal);
 }
 
 //TODO: tVar and eSub may have to move
@@ -273,25 +274,28 @@ ast * gT(scope * cscope) {
 }
 
 ast * sDeclare(scope * cscope) {
-  ast * ret = NULL, *ao = new_astnode();
-  ao->op.obj = find_obj(cur_tok->symbol);
-  ao->tag = obj_ast;
-  ao->op.obj->type = cur_tok->symbol;
+  ast * ret = NULL, *typ = new_astnode(), *var = new_astnode();
+  typ->op.obj = map_get(native_classes, cur_tok->lexem);//find_obj(cur_tok->symbol);
+  typ->tag = obj_ast;
+  //ao->op.obj->type = cur_tok->symbol;
   next();
   printE(cur_tok->symbol,"-> declare call"); indent++;
+  /*
   if(expect(id_sym))
     ao->op.obj->name = strdup(cur_tok->lexem);
-  accept(id_sym);
-  map_set(cscope->symbols, ao->op.obj->name, ao->op.obj, MAP_OBJECT);
+  */
+  //accept(id_sym);
+  var =  tId(cscope);
+  //map_set(cscope->symbols, var->op.Id, find_object(typ->op.obj->type), MAP_OBJECT);
 
   if(expect(assign_sym)) {
     accept(assign_sym);
-    ret = make_binary_op(assign_sym, ao, gE(cscope));
+    ret = make_binary_op(assign_sym, make_binary_op(declare_sym, typ, var), gE(cscope));
   }
 
   accept(semi_sym);
   indent--; printE(cur_tok->symbol,"<- declare call");
-  return ret?ret:ao;
+  return ret?ret:make_binary_op(declare_sym, typ, var);
 }
 
 int isBinaryOp() {

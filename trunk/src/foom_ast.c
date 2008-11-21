@@ -105,12 +105,10 @@ ast * make_func(scope * cscope, char * n, func * v){
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;
 }
-ast * make_call(scope * cscope, char * fn, ast_list * al){
+ast * make_call_args(scope * cscope, ast_list * al){
   ast * a = new_astnode();
-  a->tag = func_call_ast;
-  a->op.call.obj = new_object();
-  a->op.call.obj->name = fn;
-  a->op.call.arguments = al;
+  a->tag = func_args_ast;
+  a->op.call.args = al;
   a->scp = cscope;
   //map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
   return a;

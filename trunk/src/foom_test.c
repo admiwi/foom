@@ -18,10 +18,12 @@ void da_unary(ast * a){
   printf(")");
 }
 
-void da_func_call(ast * a){
+void da_call_args(ast * a){
   ast_list * al;
-  for(al = a->op.call.arguments;al->node;al = al->next) {
+  for(al = a->op.call.args;al->node;al = al->next) {
     decend_ast(al->node);
+    if(al->next->node)
+      printf(", ");
   }
 }
 
@@ -47,18 +49,16 @@ void da_object(ast * a){
   if(a->op.obj) {
     object * o = a->op.obj;
     //obj_sym, int_sym, dec_sym, bool_sym, func_sym, bin_sym, list_sym, map_sym, str_sym,
-    printf("%s", o->name);
-    return;
     switch(o->type){
       case dec_sym: //TODO: make floats
       case int_sym:
-        printf("<object:integer %s=%li>",o->name, o->val.Int);
+        printf("%li",o->val.Int);
         break;
       case str_sym:
-        printf("<object:string %s='%s'>",o->name, o->val.Str?o->val.Str->val:"<none>");
+        printf("'%s'", o->val.Str?o->val.Str->val:"<none>");
         break;
       case bool_sym:
-        printf("<object:boolean %s=%s>",o->name, o->val.Bool?"true":"false");
+        printf("%s",o->name, o->val.Bool?"true":"false");
         break;
       case obj_sym:
         printf("<object:object %s>",o->name);
@@ -70,7 +70,7 @@ void da_object(ast * a){
         printf("<object:map %s>",o->name);
         break;
       case func_sym:
-        printf("<object:func %s>",o->name);
+        printf("%s",o->name);
         break;
       default:
         printf("<object:unknown>");
@@ -85,7 +85,7 @@ void decend_ast(ast * a) {
     case unary_ast: return func_tbl[a->op.unary.oper](a);
     case id_ast: return da_id(a);
     case obj_ast: return da_object(a);
-    case func_call_ast: return da_func_call(a);
+    case func_args_ast: return da_call_args(a);
     case block_ast: return da_block(a);
   }
 }

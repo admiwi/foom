@@ -84,6 +84,7 @@ char * _symbols_[] = {
   "{subscript}",
   "{member}",
   "{group}",
+  "{declare}",
   "{unknown}" };
 char * _keywords[] = {
   "\xff",
