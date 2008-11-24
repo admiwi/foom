@@ -38,7 +38,7 @@ int map_set(map** mtab, char* key, void* data, int flags) {
     cur = mtab[hv];
     do {
       if(!strcmp(cur->key, m->key)) {
-        if(!flag_is_set(cur->flags, MAP_IMMUTABLE)) {
+        if(!flaged(cur->flags, map_immutable)) {
           fprintf(stderr, "map_overwrite %s\n", m->key);
           td = cur->data;
           cur->data = m->data;
@@ -78,7 +78,7 @@ map* _map_del(map* m, char * key, int deldata) {
   return m;
 }
 
-void* map_get(map** mtab, char* key) {
+map * map_get(map** mtab, char* key) {
   unsigned int hv = hash(key);
   map * cur;
   if(!mtab) {
@@ -90,17 +90,17 @@ void* map_get(map** mtab, char* key) {
   cur = mtab[hv];
   do {
     if(!strcmp(cur->key, key))
-      return cur->data;
+      return cur;
     cur = cur->next;
   } while(cur->next);
   return NULL;
 }
 
 object * scope_get(scope * s, char * key) {
-  object * o = (object *)map_get(s->symbols, key);
-  if(!o && s->parent)
+  map * v = map_get(s->symbols, key);
+  if(!v && s->parent)
       return scope_get(s->parent, key);
-  return o;
+  return v->data;
 }
 
 

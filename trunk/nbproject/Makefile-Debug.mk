@@ -32,21 +32,22 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/foom_classes/foom_func.o \
 	${OBJECTDIR}/src/foom_lex.o \
 	${OBJECTDIR}/src/foom_globals.o \
-	${OBJECTDIR}/src/foom_classes/foom_bool.o \
 	${OBJECTDIR}/src/foom_util.o \
+	${OBJECTDIR}/src/foom_classes/foom_bool.o \
 	${OBJECTDIR}/src/foom_classes/foom_str.o \
 	${OBJECTDIR}/src/foom_hash.o \
-	${OBJECTDIR}/src/foom_classes/foom_list.o \
 	${OBJECTDIR}/src/foom_classes/foom_int.o \
-	${OBJECTDIR}/src/foom.o \
+	${OBJECTDIR}/src/foom_classes/foom_list.o \
 	${OBJECTDIR}/src/foom_parser.o \
+	${OBJECTDIR}/src/foom.o \
 	${OBJECTDIR}/src/foom_test.o \
 	${OBJECTDIR}/src/foom_classes/foom_map.o \
 	${OBJECTDIR}/src/foom_classes/foom_obj.o \
 	${OBJECTDIR}/src/foom_ast.o \
 	${OBJECTDIR}/src/foom_ops.o \
-	${OBJECTDIR}/src/foom_gram.o \
+	${OBJECTDIR}/src/foom_feval.o \
 	${OBJECTDIR}/src/foom_classes/foom_dec.o \
+	${OBJECTDIR}/src/foom_gram.o \
 	${OBJECTDIR}/src/foom_class.o
 
 # C Compiler Flags
@@ -90,15 +91,15 @@ ${OBJECTDIR}/src/foom_globals.o: src/foom_globals.c
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_globals.o src/foom_globals.c
 
-${OBJECTDIR}/src/foom_classes/foom_bool.o: src/foom_classes/foom_bool.c 
-	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_bool.o src/foom_classes/foom_bool.c
-
 ${OBJECTDIR}/src/foom_util.o: src/foom_util.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_util.o src/foom_util.c
+
+${OBJECTDIR}/src/foom_classes/foom_bool.o: src/foom_classes/foom_bool.c 
+	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
+	${RM} $@.d
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_bool.o src/foom_classes/foom_bool.c
 
 ${OBJECTDIR}/src/foom_classes/foom_str.o: src/foom_classes/foom_str.c 
 	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
@@ -110,25 +111,25 @@ ${OBJECTDIR}/src/foom_hash.o: src/foom_hash.c
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_hash.o src/foom_hash.c
 
-${OBJECTDIR}/src/foom_classes/foom_list.o: src/foom_classes/foom_list.c 
-	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_list.o src/foom_classes/foom_list.c
-
 ${OBJECTDIR}/src/foom_classes/foom_int.o: src/foom_classes/foom_int.c 
 	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_int.o src/foom_classes/foom_int.c
 
-${OBJECTDIR}/src/foom.o: src/foom.c 
-	${MKDIR} -p ${OBJECTDIR}/src
+${OBJECTDIR}/src/foom_classes/foom_list.o: src/foom_classes/foom_list.c 
+	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
 	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom.o src/foom.c
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_list.o src/foom_classes/foom_list.c
 
 ${OBJECTDIR}/src/foom_parser.o: src/foom_parser.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_parser.o src/foom_parser.c
+
+${OBJECTDIR}/src/foom.o: src/foom.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom.o src/foom.c
 
 ${OBJECTDIR}/src/foom_test.o: src/foom_test.c 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -155,15 +156,20 @@ ${OBJECTDIR}/src/foom_ops.o: src/foom_ops.c
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_ops.o src/foom_ops.c
 
-${OBJECTDIR}/src/foom_gram.o: src/foom_gram.c 
+${OBJECTDIR}/src/foom_feval.o: src/foom_feval.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_gram.o src/foom_gram.c
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_feval.o src/foom_feval.c
 
 ${OBJECTDIR}/src/foom_classes/foom_dec.o: src/foom_classes/foom_dec.c 
 	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_dec.o src/foom_classes/foom_dec.c
+
+${OBJECTDIR}/src/foom_gram.o: src/foom_gram.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} $@.d
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_gram.o src/foom_gram.c
 
 ${OBJECTDIR}/src/foom_class.o: src/foom_class.c 
 	${MKDIR} -p ${OBJECTDIR}/src

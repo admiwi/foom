@@ -48,7 +48,7 @@ object * int_class() {
   o->type = class_sym;
   o->null = false;
   o->name = "int";
-  map_set(o->members, _symbols_[minus_sym], &int_minus, MAP_BINARY);
-  map_set(o->members, _symbols_[plus_sym], &int_plus, MAP_BINARY);
+  map_set(o->members, _symbols_[minus_sym], &int_minus, map_binary);
+  map_set(o->members, _symbols_[plus_sym], &int_plus, map_binary);
   return o;
 }

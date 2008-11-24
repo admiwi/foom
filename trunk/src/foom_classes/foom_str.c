@@ -1,5 +1,6 @@
 #include "foom.h"
 #include "foom_class.h"
+#include "foom_objects.h"
 
 SYMBOLS;
 
@@ -17,6 +18,12 @@ object * str_plus(object * self, object * arg) {
   return o;
 }
 
+object * str_length(object * self) {
+  object * l = new_int();
+  l->val.Int = self->val.Str->len;
+  return l;
+}
+
 object * str_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
@@ -24,6 +31,7 @@ object * str_class() {
   o->type = class_sym;
   o->null = false;
   o->name = "str";
-  map_set(o->members, _symbols_[plus_sym], &str_plus, MAP_BINARY);
+  map_set(o->members, _symbols_[plus_sym], &str_plus, map_binary|map_native);
+  map_set(o->members, "length", &str_length, map_unary|map_native);
   return o;
 }

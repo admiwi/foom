@@ -115,14 +115,14 @@ token * get_symbol(parse_pkg * pp) {
   extern MAP keywords;
   extern char * _keywords[];
   memset(buf, 0, ARB_LEN);
-  int *s;
+  map * v;
   Symbol sym = id_sym;
   do {
     if(is_char(pp->c))
       buf[i++] = pp->c;
     else {
-      if(s = map_get(keywords, buf)) {
-        sym = *s;
+      if(v = map_get(keywords, buf)) {
+        sym = *((int*)v->data);
       }
       buf_ungetc(pp);
       return new_token(pp->line, buf, sym);
