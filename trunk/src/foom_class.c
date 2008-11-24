@@ -8,23 +8,54 @@ void add_member(object * c, object * o) {
   map_set(c->members, o->name, o, map_object);
 }
 
-object * get_member(object * o, char * n) {
-  map * v = map_get(o->members, n);
-  if(!v && o->class) {
-    v = map_get(o->class->members, n);
-    if(!v) {
-      fprintf(stderr,"member %s not found, returning null\n", n);
-      return new_object();
-    }
-  }
+object * resolve_member_map(map * v) {
   if(flaged(v->flags, map_native|map_unary)) {
-    object * (*ufp)(object *);
-    ufp = v->data;
-    object * mo = ufp(o);
-    return mo;
+    object * (*ufp)(object *) = v->data;
+    return ufp(o);
   } else //  if(flaged(v->flags, map_native&map_binary)) {
     return new_object();
-  //}
+}
+
+object * get_member_getter(object * o, char * n) {
+  map * v;
+  char * gn = strdup("get_");
+  strcat(gn, n);
+  v  = map_get(o->members, gn);
+  if(!v && o->class)
+    v = map_get(o->class->members, gn);
+  if(!v) {
+    //check getters
+    fprintf(stderr,"member %s not found, returning null\n", gn);
+    return new_object();
+  }
+  free(gn);
+  return resolve_member_map(v);
+}
+
+object * get_member_setter(object * o, char * n) {
+  map * v;
+  char * gn = strdup("set_");
+  strcat(gn, n);
+  v  = map_get(o->members, gn);
+  if(!v && o->class)
+    v = map_get(o->class->members, gn);
+  if(!v) {
+    fprintf(stderr,"member %s not found, returning null\n", gn);
+    return new_object();
+  }
+  free(gn);
+  return resolve_member_map(v);
+}
+
+object * get_member(object * o, char * n) {
+  map * v = map_get(o->members, n);
+  if(!v && o->class)
+    v = map_get(o->class->members, n);
+  if(!v) {
+    fprintf(stderr,"member %s not found, returning null\n", n);
+    return new_object();
+  }
+  return resolve_member_map(v);
 }
 
 void add_static_member(object * c, object * o) {
