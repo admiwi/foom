@@ -8,6 +8,7 @@
         <itemPath>headers/foom.h</itemPath>
         <itemPath>headers/foom_ast.h</itemPath>
         <itemPath>headers/foom_class.h</itemPath>
+        <itemPath>headers/foom_feval.h</itemPath>
         <itemPath>headers/foom_gram.h</itemPath>
         <itemPath>headers/foom_hash.h</itemPath>
         <itemPath>headers/foom_lex.h</itemPath>
@@ -41,6 +42,7 @@
         <itemPath>src/foom.c</itemPath>
         <itemPath>src/foom_ast.c</itemPath>
         <itemPath>src/foom_class.c</itemPath>
+        <itemPath>src/foom_feval.c</itemPath>
         <itemPath>src/foom_globals.c</itemPath>
         <itemPath>src/foom_gram.c</itemPath>
         <itemPath>src/foom_hash.c</itemPath>
@@ -93,6 +95,9 @@
         <itemTool>3</itemTool>
       </item>
       <item path="headers/foom_class.h">
+        <itemTool>3</itemTool>
+      </item>
+      <item path="headers/foom_feval.h">
         <itemTool>3</itemTool>
       </item>
       <item path="headers/foom_gram.h">
@@ -150,6 +155,9 @@
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_classes/foom_str.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_feval.c">
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_globals.c">
@@ -210,6 +218,9 @@
       <item path="headers/foom_class.h">
         <itemTool>3</itemTool>
       </item>
+      <item path="headers/foom_feval.h">
+        <itemTool>3</itemTool>
+      </item>
       <item path="headers/foom_gram.h">
         <itemTool>3</itemTool>
       </item>
@@ -265,6 +276,9 @@
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_classes/foom_str.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_feval.c">
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_globals.c">

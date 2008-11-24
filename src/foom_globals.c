@@ -148,7 +148,7 @@ MAP init_keywords() {
     do {
       int * j = malloc(sizeof(int));
       *j = i;
-      map_set(keywords, _keywords[i], j, MAP_STRING);
+      map_set(keywords, _keywords[i], j, map_string);
     } while(++i < 46);//_keywords[++i][0]);
   }
   return keywords;

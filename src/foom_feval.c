@@ -15,11 +15,18 @@ object * id_feval(ast * op){
 object * member_feval(ast * op){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
+
   printf("%s<-", l->op.Id);
-  if(r->tag == binary_ast)
-    return get_member(member_feval(r), l->op.Id);
-  if(r->tag == id_ast)
-    return id_feval(r);
+  if(r->tag == binary_ast) {
+    object * ro = member_feval(r);
+    if(ro->null)
+      return ro;
+    else
+      return get_member(ro, l->op.Id);
+  }
+  if(r->tag == id_ast) {
+    return get_member(id_feval(r), l->op.Id);
+  }
   return new_object(false);
 }
 
@@ -371,7 +378,7 @@ object * declare_feval(ast * op){
   ast * r = op->op.binary.right;
   object * o = find_obj(l->op.obj->val.Class->native_type);
   o->name = strdup(r->op.Id);
-  map_set(l->scp->symbols, o->name, o, MAP_OBJECT);
+  map_set(l->scp->symbols, o->name, o, map_object);
   printf("%s %s", l->op.obj->name, r->op.Id);
   return o;
 }

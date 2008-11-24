@@ -6,18 +6,20 @@ SYMBOLS;
 
 object * new_object() {
   object * o = malloc(sizeof(object));
+  //map * v = map_get(native_classes, "obj");
   memset(o, 0, sizeof(object));
   o->type = obj_sym;
   o->null = true;
   o->ref = true;
-  o->class = map_get(native_classes, "obj");
+  o->members = map_new();
+  o->class = NULL;
   return o;
 }
 
 object * new_int() {
   object * o = new_object();
   o->type = int_sym;
-  o->class = map_get(native_classes, "int");
+  o->class = map_get(native_classes, "int")->data;
   o->null = false;
   o->ref = false;
   o->val.Int = 0;
@@ -27,7 +29,7 @@ object * new_int() {
 object * new_str() {
   object * o = new_object();
   o->type = str_sym;
-  o->class = map_get(native_classes, "str");
+  o->class = map_get(native_classes, "str")->data;
   return o;
 }
 
@@ -35,28 +37,28 @@ object * new_dec() {
   object * o = new_object();
   o->type = dec_sym;
   o->ref = false;
-  o->class = map_get(native_classes, "dec");
+  o->class = map_get(native_classes, "dec")->data;
   return o;
 }
 
 object * new_map() {
   object * o = new_object();
   o->type = map_sym;
-  o->class = map_get(native_classes, "map");
+  o->class = map_get(native_classes, "map")->data;
   return o;
 }
 
 object * new_list() {
   object * o = new_object();
   o->type = list_sym;
-  o->class = map_get(native_classes, "list");
+  o->class = map_get(native_classes, "list")->data;
   return o;
 }
 
 object * new_bool() {
   object * o = new_object();
   o->type = bool_sym;
-  o->class = map_get(native_classes, "bool");
+  o->class = map_get(native_classes, "bool")->data;
   o->null = false;
   o->ref = false;
   o->val.Bool = false;
@@ -66,7 +68,7 @@ object * new_bool() {
 object * new_func() {
   object * o = new_object();
   o->type = func_sym;
-  o->class = map_get(native_classes, "func");
+  o->class = map_get(native_classes, "func")->data;
   return o;
 }
 

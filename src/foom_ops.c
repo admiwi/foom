@@ -293,7 +293,7 @@ object * declare_func(ast * op){
   ast * r = op->op.binary.right;
   object * o = find_obj(l->op.obj->val.Class->native_type);
   o->name = strdup(r->op.Id);
-  map_set(l->scp->symbols, o->name, o, MAP_OBJECT);
+  map_set(l->scp->symbols, o->name, o, map_object);
   printf("%s %s", l->op.obj->name, r->op.Id);
   return o;
 }

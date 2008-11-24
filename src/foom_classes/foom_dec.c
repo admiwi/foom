@@ -32,7 +32,7 @@ object * dec_class() {
   o->type = class_sym;
   o->null = false;
   o->name = "dec";
-  map_set(o->members, _symbols_[minus_sym], &dec_minus, MAP_BINARY);
-  map_set(o->members, _symbols_[plus_sym], &dec_plus, MAP_BINARY);
+  map_set(o->members, _symbols_[minus_sym], &dec_minus, map_binary);
+  map_set(o->members, _symbols_[plus_sym], &dec_plus, map_binary);
   return o;
 }

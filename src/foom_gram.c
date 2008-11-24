@@ -306,7 +306,7 @@ ast * gT(scope * cscope) {
 
 ast * sDeclare(scope * cscope) {
   ast * ret = NULL, *typ = new_astnode(cscope), *var = new_astnode(cscope);
-  typ->op.obj = map_get(native_classes, cur_tok->lexem);//find_obj(cur_tok->symbol);
+  typ->op.obj = map_get(native_classes, cur_tok->lexem)->data;//find_obj(cur_tok->symbol);
   typ->tag = obj_ast;
   //ao->op.obj->type = cur_tok->symbol;
   next();
