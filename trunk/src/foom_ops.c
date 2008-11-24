@@ -2,6 +2,7 @@
 #include "foom_test.h"
 SYMBOLS;
 FuncP func_tbl[100] = {NULL};
+
 object * if_func(ast * op){
   ast * cond, * exec;
   cond = op->op.binary.left;
@@ -290,9 +291,9 @@ object * group_func(ast * op){
 object * declare_func(ast * op){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  object * o = find_obj(l->op.obj->type);
+  object * o = find_obj(l->op.obj->val.Class->native_type);
   o->name = strdup(r->op.Id);
-  map_set(l->scp->symbols, o);
+  map_set(l->scp->symbols, o->name, o, MAP_OBJECT);
   printf("%s %s", l->op.obj->name, r->op.Id);
   return o;
 }

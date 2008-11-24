@@ -20,6 +20,8 @@ ast * gTE(scope *);
 ast * gS(scope *);
 ast * tMember(scope *);
 ast * tId(scope *);
+ast * tMid(scope *);
+ast * tM(ast *, scope *);
 ast * eSubscript(scope *);
 ast * eFuncCall(scope *);
 
@@ -28,6 +30,7 @@ int indent;
 void _printE(int line, Symbol sym, char * e){
   extern char * _keywords[];
   int i = indent;
+  return;
   if(indent < 0) indent = 0;
   if(!cur_tok) return;
   while(i-- >= 0) { fprintf(stderr,"  "); }
@@ -84,26 +87,54 @@ char * get_serial(char * t ) {
 
 //data
 
-ast * tMFS(ast * l, scope * cscope) {
+ast * tFS(ast * l, scope * cscope) {
   ast *ret = l;
   if(expect(osquare_sym))
     ret = make_binary_op(subscript_sym, l, eSubscript(cscope));
   else if(expect(oparen_sym))
     ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
-  else if(expect(dot_sym)) {
-    accept(dot_sym);
-    ret = make_binary_op(member_sym, l, tId(cscope));
-  }
-  return ret;
+  return tM(ret, cscope);
 }
 
-ast * tId(scope * cscope) {
-  ast * l = new_astnode();
-  l->tag = id_ast;
+ast * tMid(scope * cscope) {
+  ast * l = new_astnode(cscope);
+  l->tag = mid_ast;
   l->op.Id = strdup(cur_tok->lexem);
   printE(cur_tok->symbol,"member");
   next();
-  return tMFS(l, cscope);
+  if(expect(dot_sym)) {
+      accept(dot_sym);
+      return make_binary_op(member_sym, l, tMid(cscope));
+  }
+  return tFS(l, cscope);
+}
+
+ast * tM(ast * r, scope * cscope) {
+  ast * l;
+  if(expect(dot_sym)) {
+    l = new_astnode(cscope);
+    accept(dot_sym);
+    l->tag = mid_ast;
+    l->op.Id = strdup(cur_tok->lexem);
+    printE(cur_tok->symbol,"member");
+    next();
+    return tM(make_binary_op(member_sym, l, r), cscope);
+  }
+  return r;
+}
+
+ast * tId(scope * cscope) {
+  ast * l = new_astnode(cscope);
+  l->tag = id_ast;
+  l->op.Id = strdup(cur_tok->lexem);
+  printE(cur_tok->symbol,"id");
+  next();
+  l = tM(l, cscope);
+  /*if(expect(dot_sym)) {
+    accept(dot_sym);
+    return make_binary_op(member_sym, l, tMid(cscope));
+  }*/
+  return tFS(l, cscope);
 }
 /*
 ast * tId(scope * cscope) {
@@ -111,7 +142,7 @@ ast * tId(scope * cscope) {
   ret = l;
   printE(cur_tok->symbol,"id");
   next();
-  if(l) return tMFS(l, cscope);
+  if(l) return tFS(l, cscope);
   return l;
 }
 */
@@ -205,7 +236,7 @@ ast * sFor(scope * cscope) {
   indent--; printE(cur_tok->symbol,")");
   accept(cparen_sym);
   s = gS(cscope);
-  e = new_astnode();
+  e = new_astnode(cscope);
   e->tag = block_ast;
   e->op.block.stmts = for_guts;
   e->scp = cscope;
@@ -274,7 +305,7 @@ ast * gT(scope * cscope) {
 }
 
 ast * sDeclare(scope * cscope) {
-  ast * ret = NULL, *typ = new_astnode(), *var = new_astnode();
+  ast * ret = NULL, *typ = new_astnode(cscope), *var = new_astnode(cscope);
   typ->op.obj = map_get(native_classes, cur_tok->lexem);//find_obj(cur_tok->symbol);
   typ->tag = obj_ast;
   //ao->op.obj->type = cur_tok->symbol;
@@ -409,7 +440,7 @@ ast * gS(scope * cscope) {
 
 ast * gProgram(token * t, scope * global) {
   ast_list * cural;
-  ast * ret = new_astnode();
+  ast * ret = new_astnode(global);
   ret->tag = block_ast;
   ret->op.block.stmts = cural = new_astlist();
   serial = indent = 0;

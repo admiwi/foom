@@ -81,5 +81,9 @@ void init_classes(scope * s) {
   cls = obj_class();
   map_set(native_classes, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
   map_set(s->symbols, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
+  //class
+  cls = class_class();
+  map_set(native_classes, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
+  map_set(s->symbols, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
 
 }

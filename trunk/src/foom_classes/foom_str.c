@@ -20,6 +20,7 @@ object * str_plus(object * self, object * arg) {
 object * str_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
+  o->val.Class->native_type = str_sym;
   o->type = class_sym;
   o->null = false;
   o->name = "str";

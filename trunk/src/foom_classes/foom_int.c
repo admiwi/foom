@@ -44,6 +44,7 @@ object * int_plus(object * self, object * arg) {
 object * int_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
+  o->val.Class->native_type = int_sym;
   o->type = class_sym;
   o->null = false;
   o->name = "int";

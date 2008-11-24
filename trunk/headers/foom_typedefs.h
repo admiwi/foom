@@ -60,6 +60,7 @@ typedef struct _str {
 
 typedef struct _class {
   bool native;
+  Symbol native_type;
   MAP static_members;
 } class;
 
@@ -97,7 +98,7 @@ typedef struct _ast {
   enum {
     binary_ast, unary_ast,
     obj_ast, func_args_ast,
-    block_ast, id_ast
+    block_ast, id_ast, mid_ast
   } tag;
   scope * scp;
   union {
