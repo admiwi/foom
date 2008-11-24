@@ -82,7 +82,7 @@ object * find_obj(Symbol s) {
     case map_sym: return new_map();
     case str_sym: return new_str();
     default:
-      fprintf(stderr, "invalid object type %s", _symbols_[s]);
+      fprintf(stderr, "invalid object type %s\n", _symbols_[s]);
       return new_object();
   }
 }

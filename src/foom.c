@@ -11,7 +11,7 @@
 #include "foom.h"
 #include "foom_lex.h"
 #include "foom_gram.h"
-#include "foom_test.h"
+#include "foom_feval.h"
 SYMBOLS;
 
 void print_toks(token * tok) {
@@ -34,17 +34,13 @@ void process_file(char *file_name) {
   pgm = gProgram(tok, s);
   print_errors();
 
-  decend_ast(pgm);
+  start_feval(pgm);
 
 
 }
 
 int main(int argc, char** argv) {
   struct stat sb;
-  int i = 0, j = 0;
-  extern MAP grammer;
-  char *stmts[] = {"if","while","for", 0};
-  void * g;
 
   if(argc < 2) {
     printf("Usage: %s <source file>\n", argv[0]);
@@ -56,7 +52,7 @@ int main(int argc, char** argv) {
     exit(EXIT_SUCCESS);
   }
   init_keywords();
-  init_funcs();
+  init_fevals();
   process_file(argv[1]);
   putc('\n', stdout);
 	return EXIT_SUCCESS;
