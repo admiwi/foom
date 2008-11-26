@@ -12,6 +12,8 @@
 #include "foom_lex.h"
 #include "foom_gram.h"
 #include "foom_feval.h"
+#include "foom_lib.h"
+
 SYMBOLS;
 
 void print_toks(token * tok) {
@@ -30,6 +32,7 @@ void process_file(char *file_name) {
   strcpy(pp.filename, file_name);
   pp.file = fopen(file_name,"r");
   init_classes(s);
+  init_libs(s);
   tok = gen_token_chain(&pp);
   pgm = gProgram(tok, s);
   print_errors();

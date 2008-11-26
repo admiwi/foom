@@ -1,5 +1,6 @@
 #include "foom.h"
 #include "foom_class.h"
+#include "foom_objects.h"
 SYMBOLS;
 
 object * int_minus(object * self, object * arg) {
@@ -41,6 +42,16 @@ object * int_plus(object * self, object * arg) {
   return o;
 }
 
+object * int_to_string(object * self){
+  object * s = new_str();
+  s->null = false;
+  s->val.Str = malloc(sizeof(str));
+  s->val.Str->val = malloc(33*sizeof(char));
+  ltoa(self->val.Int, s->val.Str->val, 10);
+  s->val.Str->len = strlen(s->val.Str->val);
+  return s;
+}
+
 object * int_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
@@ -50,5 +61,6 @@ object * int_class() {
   o->name = "int";
   map_set(o->members, _symbols_[minus_sym], &int_minus, map_binary);
   map_set(o->members, _symbols_[plus_sym], &int_plus, map_binary);
+  map_set(o->members, "to_string", native_wrapper(&int_to_string, func_unary), map_object);
   return o;
 }

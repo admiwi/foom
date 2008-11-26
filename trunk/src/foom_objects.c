@@ -68,6 +68,8 @@ object * new_bool() {
 object * new_func() {
   object * o = new_object();
   o->type = func_sym;
+  o->val.Func = malloc(sizeof(func));
+  memset(o->val.Func, 0, sizeof(func));
   o->class = map_get(native_classes, "func")->data;
   return o;
 }

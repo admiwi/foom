@@ -30,7 +30,7 @@ int indent;
 void _printE(int line, Symbol sym, char * e){
   extern char * _keywords[];
   int i = indent;
-  return;
+  //return;
   if(indent < 0) indent = 0;
   if(!cur_tok) return;
   while(i-- >= 0) { fprintf(stderr,"  "); }
@@ -96,21 +96,8 @@ ast * tFS(ast * l, scope * cscope) {
   return tM(ret, cscope);
 }
 
-ast * tMid(scope * cscope) {
-  ast * l = new_astnode(cscope);
-  l->tag = mid_ast;
-  l->op.Id = strdup(cur_tok->lexem);
-  printE(cur_tok->symbol,"member");
-  next();
-  if(expect(dot_sym)) {
-      accept(dot_sym);
-      return make_binary_op(member_sym, l, tMid(cscope));
-  }
-  return tFS(l, cscope);
-}
-
 ast * tM(ast * r, scope * cscope) {
-  ast * l;
+  ast * l, *a;
   if(expect(dot_sym)) {
     l = new_astnode(cscope);
     accept(dot_sym);
@@ -118,7 +105,8 @@ ast * tM(ast * r, scope * cscope) {
     l->op.Id = strdup(cur_tok->lexem);
     printE(cur_tok->symbol,"member");
     next();
-    return tM(make_binary_op(member_sym, l, r), cscope);
+    a = make_binary_op(member_sym, l, r);
+    return tM(a, cscope);
   }
   return r;
 }
@@ -261,6 +249,13 @@ ast * eFuncCall(scope * cscope) {
   char * fn = prev_tok->lexem;
   printE(cur_tok->symbol,"-> func call"); indent++;
   next();
+/*
+  if(expect(cparen_sym)) {
+    //topal->next = new_astlist();
+    accept(cparen_sym);
+    return make_call_args(cscope, topal);
+  }
+*/
   do {
     cural->node = gE(cscope);
     cural->next = new_astlist();
