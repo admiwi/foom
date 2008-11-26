@@ -3,6 +3,20 @@
 
 SYMBOLS;
 
+list * list_node() {
+  list * l = malloc(sizeof(list));
+  memset(l, 0, sizeof(list));
+  return l;
+}
+
+list * push_list(list * l, object * o) {
+  list * nl = list_node();
+  while(l->next) l = l->next;
+  l->next = nl;
+  nl->obj = o;
+  return nl;
+}
+
 object * list_class() {
   object * o = new_object();
   o->val.Class = new_class(true);

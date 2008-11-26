@@ -46,12 +46,7 @@ typedef struct _list {
   int count;
 } list;
 
-typedef struct _func {
-  char * sig;
-  bool native;
-  list * args;
-  struct _class * ret_type;
-} func;
+
 
 typedef struct _str {
   int len;
@@ -78,7 +73,7 @@ typedef struct _object {
     bool Bool;
     MAP Map;
     list * List;
-    func * Func;
+    struct _func * Func;
     //struct _object Obj;
   } val;
   MAP members;
@@ -128,4 +123,25 @@ typedef struct _ast_list {
 } ast_list;
 
 typedef object *(*FuncP)(ast * op);
+typedef object * (*bFuncP)(object *, object *);
+typedef object * (*uFuncP)(object *);
+
+typedef struct _func {
+  char * sig;
+  enum {
+      func_foom,
+      func_binary,
+      func_unary
+  } flags;
+  list * args;
+  union {
+      ast * acode;
+      bFuncP bfunc;
+      uFuncP ufunc;
+  } f;
+  struct _class * ret_type;
+} func;
+
+object * scope_get(scope *, char *);
+void scope_set(scope *, object *, map_flags);
 #endif

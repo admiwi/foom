@@ -7,6 +7,9 @@
 void add_member(object * c, object * o);
 
 object * get_member(object * o, char * n);
+object * set_member(object * o, char * n, object * arg);
+object * native_wrapper(void * f, int);
+
 
 void add_static_member(object * c, object * o);
 
@@ -17,4 +20,8 @@ class * new_class(bool );
 //native classes
 
 void init_classes(scope * s);
+
+//class functions
+object * func_call(object *, object *, object *);
+list * list_node();
 #endif

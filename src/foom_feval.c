@@ -8,15 +8,12 @@ FuncP feval_tbl[100] = {NULL};
 //_symbols_
 object * id_feval(ast * op){
   object * o = scope_get(op->scp, op->op.Id);
-  printf("%s%c", op->op.Id, o?':':'!');
   return o;
 }
 
 object * member_feval(ast * op){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-
-  printf("%s<-", l->op.Id);
   if(r->tag == binary_ast) {
     object * ro = member_feval(r);
     if(ro->null)
@@ -31,17 +28,19 @@ object * member_feval(ast * op){
 }
 
 object * object_feval(ast * op){
-  printf("%s", _symbols_[op->op.obj->type]);
   return op->op.obj;
 }
 
 object * call_args_feval(ast *a) {
   ast_list * al;
-  object * ret;
+  object * ret = new_list();
+  list * l;
+  l = ret->val.List = list_node();
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
-      ret = feval(al->node);
-      printf("\n");
+      l->obj = feval(al->node);
+      l->next = list_node();
+      l = l->next;
     }
   else
     printf("**BLOCK ERROR**\n");
@@ -53,7 +52,6 @@ object * block_feval(ast * a) {
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
       ret = feval(al->node);
-      printf("\n");
     }
   else
     printf("**BLOCK ERROR**\n");
@@ -81,15 +79,13 @@ object * feval(ast * a) {
 
 void start_feval(ast * a){
   ast_list * al;
-  printf("//Program Start\n");
+  object * o;
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
-      feval(al->node);
-      printf("\n");
+      o = feval(al->node);
     }
   else
     printf("**BLOCK ERROR**\n");
-  printf("//Program End\n");
 }
 
 
@@ -273,9 +269,9 @@ object * neq_feval(ast * op){
 object * assign_feval(ast * op){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  feval(l);
-  printf(" = ");
-  feval(r);
+  object * lo = feval(l);
+  object * ro = feval(r);
+  return set_member(lo, "self", ro);
 }
 object * plus_feval(ast * op){
   ast * l = op->op.binary.left;
@@ -353,11 +349,11 @@ object * newline_feval(ast * op){
 //}
 
 object * funccall_feval(ast * op){
-  ast * func = op->op.binary.left;
-  ast * args = op->op.binary.right;
-  printf("%s(",func->op.Id);
-  feval(args);
-  printf(")");
+  ast * f = op->op.binary.left;
+  ast * a = op->op.binary.right;
+  object * of = feval(f);
+  object * oa = feval(a);
+  return func_call(of, NULL, oa);
 }
 object * subscript_feval(ast * op){
   ast * var = op->op.binary.left;
@@ -378,8 +374,7 @@ object * declare_feval(ast * op){
   ast * r = op->op.binary.right;
   object * o = find_obj(l->op.obj->val.Class->native_type);
   o->name = strdup(r->op.Id);
-  map_set(l->scp->symbols, o->name, o, map_object);
-  printf("%s %s", l->op.obj->name, r->op.Id);
+  scope_set(l->scp, o, map_object);
   return o;
 }
 object * generic_feval(ast * op) {

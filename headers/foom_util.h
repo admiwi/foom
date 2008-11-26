@@ -9,10 +9,10 @@
 #define is_irrel(A) ((A)=='\r'||(A)=='\0')
 #define is_op(A)  (((A)>='!'&&(A)<='/')||((A)>=':'&&(A)<='@')||((A)>='['&&(A)<='^')||((A)>='{'&&(A)<='~')||(A)=='`')
 
-#define flaged(A,B) (A&B)
-#define set_flag(A,B)    (A|=B)
-#define toggle_flag(A,B) (A=A^B)
-#define clear_flag(A,B)  (A=A&(~B))
+#define flaged(A,B) (A&(B))
+#define set_flag(A,B)    (A|=(B))
+#define toggle_flag(A,B) (A=(A^B))
+#define clear_flag(A,B)  (A=(A&(~B)))
 
 char * resize_string(char*, int);
 

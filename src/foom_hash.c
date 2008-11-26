@@ -102,5 +102,8 @@ object * scope_get(scope * s, char * key) {
       return scope_get(s->parent, key);
   return v->data;
 }
+void scope_set(scope * s, object * o, map_flags f) {
+  map_set(s->symbols, o->name, o, map_object|f);
+}
 
 

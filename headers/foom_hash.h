@@ -6,16 +6,16 @@
 #define INT_SZ 4
 
 typedef enum {
-    map_string = 1,
-    map_integer = 2,
-    map_float = 4,
-    map_object = 8,
-    map_keyword = 16,
-    map_unary = 32,
-    map_binary = 64,
-    map_grammer = 128,
-    map_immutable = 256,
-    map_native = 512
+    map_string = 1<<0,
+    map_integer = 1<<1,
+    map_float = 1<<2,
+    map_object = 1<<3,
+    map_keyword = 1<<4,
+    map_unary = 1<<5,
+    map_binary = 1<<6,
+    map_grammer = 1<<7,
+    map_immutable = 1<<8,
+    map_native = 1<<9
 } map_flags;
 
 #define MAP map **
@@ -37,5 +37,5 @@ unsigned int hash(char*);
 int map_set(MAP, char*, void*, int);
 void map_del(MAP, char*, int);
 map * map_get(MAP, char*);
-//object * scope_get(scope *, char *);
+
 #endif

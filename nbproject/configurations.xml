@@ -39,6 +39,10 @@
           <itemPath>src/foom_classes/foom_obj.c</itemPath>
           <itemPath>src/foom_classes/foom_str.c</itemPath>
         </logicalFolder>
+        <logicalFolder name="foom_libs" displayName="foom_libs" projectFiles="true">
+          <itemPath>src/foom_libs/foom_lib.c</itemPath>
+          <itemPath>src/foom_libs/foom_sys.c</itemPath>
+        </logicalFolder>
         <itemPath>src/foom.c</itemPath>
         <itemPath>src/foom_ast.c</itemPath>
         <itemPath>src/foom_class.c</itemPath>
@@ -172,6 +176,12 @@
       <item path="src/foom_lex.c">
         <itemTool>0</itemTool>
       </item>
+      <item path="src/foom_libs/foom_lib.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_libs/foom_sys.c">
+        <itemTool>0</itemTool>
+      </item>
       <item path="src/foom_objects.c">
         <itemTool>0</itemTool>
       </item>
@@ -291,6 +301,12 @@
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_lex.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_libs/foom_lib.c">
+        <itemTool>0</itemTool>
+      </item>
+      <item path="src/foom_libs/foom_sys.c">
         <itemTool>0</itemTool>
       </item>
       <item path="src/foom_objects.c">
