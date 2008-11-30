@@ -56,12 +56,13 @@ typedef struct _str {
 typedef struct _class {
   bool native;
   Symbol native_type;
-  MAP static_members;
+  map * static_members;
 } class;
 
 typedef struct _object {
   char * name;
   Symbol type;
+  struct _object * parent;
   struct _object * class;
   bool ref;
   bool null;
@@ -71,12 +72,12 @@ typedef struct _object {
     double Dec;
     str * Str;
     bool Bool;
-    MAP Map;
+    map * Map;
     list * List;
     struct _func * Func;
     //struct _object Obj;
   } val;
-  MAP members;
+  map * members;
 } object;
 
 typedef struct _symbol {
@@ -87,7 +88,7 @@ typedef struct _symbol {
 
 typedef struct _scope {
   struct _scope *parent;
-  map** symbols;
+  map_node** symbols;
 } scope;
 typedef struct _ast {
   enum {

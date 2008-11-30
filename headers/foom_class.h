@@ -5,6 +5,7 @@
 #define __FOOM_CLASS__
 
 void add_member(object * c, object * o);
+void add_member_name(object * c, object * o, char *);
 
 object * get_member(object * o, char * n);
 object * set_member(object * o, char * n, object * arg);
@@ -24,4 +25,5 @@ void init_classes(scope * s);
 //class functions
 object * func_call(object *, object *, object *);
 list * list_node();
+bool bool_test(object * o);
 #endif

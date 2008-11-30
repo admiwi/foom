@@ -19,7 +19,7 @@ ast * make_int(scope *, char * n, long v);
 ast * make_dec(scope *, char * n, double v);
 ast * make_str(scope *, char * n, str * v);
 ast * make_bool(scope *, char * n, int v);
-ast * make_map(scope *, char * n, MAP v);
+ast * make_map(scope *, char * n, map * v);
 ast * make_list(scope *, char * n, list * v);
 ast * make_func(scope *, char * n, func * v);
 ast * make_closure(scope *, char * n, ast_list *);

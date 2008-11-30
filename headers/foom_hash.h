@@ -15,27 +15,39 @@ typedef enum {
     map_binary = 1<<6,
     map_grammer = 1<<7,
     map_immutable = 1<<8,
-    map_native = 1<<9
+    map_native = 1<<9,
+    map_member = 1<<10
 } map_flags;
 
-#define MAP map **
+#define MAP map_node **
 
-typedef struct _map {
+typedef struct _map_key {
+  char text[ARB_LEN];
+  struct _map_key * next;
+} map_key;
+
+typedef struct _map_node {
   struct _map * next;
-  char key[ARB_LEN];
+  map_key * key;
   void * data;
   map_flags flags;
+} map_node;
+
+typedef struct _map {
+  MAP nodes;
+  map_key * keys;
 } map;
+
 
 union charint {
   char c[INT_SZ];
   int i;
 };
 
-MAP map_new();
+map * map_new();
 unsigned int hash(char*);
-int map_set(MAP, char*, void*, int);
-void map_del(MAP, char*, int);
-map * map_get(MAP, char*);
+int map_set(map *, char*, void*, int);
+void map_del(map *, char*, int);
+map_node * map_get(map *, char*);
 
 #endif

@@ -1,3 +1,3 @@
-str test;
-test = "cat";
+str test = "cat\ndog\nhedgehog";
+sys.println(test);
 sys.println(test.length);

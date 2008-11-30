@@ -2,6 +2,15 @@
 #include "foom_class.h"
 SYMBOLS;
 
+bool bool_test(object * o) {
+  if(o->type == bool_sym)
+    return o->val.Bool;
+  else if(o->type == int_sym)
+    return o->val.Int?true:false;
+  else
+    return o->null?false:true;
+}
+
 object * bool_class() {
   object * o = new_object();
   o->val.Class = new_class(true);

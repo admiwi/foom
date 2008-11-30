@@ -1,9 +1,11 @@
 #include "foom.h"
 #include "foom_hash.h"
 
-map** map_new() {
-  map** m = malloc(sizeof(map)*HASH_SZ);
-  memset(m, 0, sizeof(map)*HASH_SZ);
+map * map_new() {
+  map * m = malloc(sizeof(map));
+  m->nodes = malloc(sizeof(map_node)*HASH_SZ);
+  memset(m->nodes, 0, sizeof(map_node)*HASH_SZ);
+  m->keys = NULL;
   return m;
 }
 
@@ -19,27 +21,32 @@ unsigned int hash(char* key) {
   return hv % HASH_SZ;
 }
 
-int map_set(map** mtab, char* key, void* data, int flags) {
-  unsigned int hv = hash(key);
-  map * m = malloc(sizeof(map));
-  map * cur;
+int map_set(map * mtab, char* k, void* data, int flags) {
+  unsigned int hv = hash(k);
+
+  map_node * m = malloc(sizeof(map_node));
+  map_node * cur;
+  map_key * key = malloc(sizeof(map_key));
   void* td;
   if(!mtab)
     mtab = map_new();
-  strcpy(m->key, key);
+  strcpy(key->text, k);
   m->data = data;
   m->flags = flags;
   m->next = 0;
-  if(!mtab[hv]) {
-    mtab[hv] = m;
+  m->key = key;
+  key->next = mtab->keys;
+  mtab->keys = key;
+  if(!mtab->nodes[hv]) {
+    mtab->nodes[hv] = m;
     return 0;
   }
   else {
-    cur = mtab[hv];
+    cur = mtab->nodes[hv];
     do {
-      if(!strcmp(cur->key, m->key)) {
+      if(!strcmp(cur->key->text, m->key->text)) {
         if(!flaged(cur->flags, map_immutable)) {
-          fprintf(stderr, "map_overwrite %s\n", m->key);
+          fprintf(stderr, "map_overwrite %s\n", m->key->text);
           td = cur->data;
           cur->data = m->data;
           cur->flags = m->flags;
@@ -55,41 +62,55 @@ int map_set(map** mtab, char* key, void* data, int flags) {
   return 1;
 }
 
-map* _map_del(map*,char*, int);
+map_node* _map_del(map*, map_node*,char*, bool);
 
-void map_del(map** mtab, char* key, int deldata) {
-  unsigned int hv = hash(key);
-  if(!mtab[hv])
+void map_del(map * mtab, char* k, int deldata) {
+  unsigned int hv = hash(k);
+  if(!mtab->nodes[hv])
     return;
-  mtab[hv] = _map_del(mtab[hv], key, deldata);
+  mtab->nodes[hv] = _map_del(mtab, mtab->nodes[hv], k, deldata);
 }
 
-map* _map_del(map* m, char * key, int deldata) {
-  map* t;
-  if(!strcmp(m->key, key)){
-    t = m->next;
+void free_key(map * m, map_key * k) {
+  map_key * tk, *ck;
+  ck = m->keys;
+  do {
+    if(ck->next == k) {
+      tk = ck->next;
+      ck->next = tk->next;
+      free(tk);
+      return;
+    }
+  } while(ck = ck->next);
+}
+
+map_node* _map_del(map * mp, map_node* m, char * key, bool deldata) {
+  map_node* tm;
+  if(!strcmp(m->key->text, key)){
+    tm = m->next;
     if(deldata)
       free(m->data);
+    free_key(mp, m->key);
     free(m);
-    return t;
+    return tm;
   }
   if(m->next)
-    m->next = _map_del(m->next, key, deldata);
+    m->next = _map_del(mp, m->next, key, deldata);
   return m;
 }
 
-map * map_get(map** mtab, char* key) {
-  unsigned int hv = hash(key);
-  map * cur;
+map_node * map_get(map * mtab, char* k) {
+  unsigned int hv = hash(k);
+  map_node * cur;
   if(!mtab) {
-    fprintf(stderr, "uninitialized map looking for key %s\n", key);
+    fprintf(stderr, "uninitialized map looking for key %s\n", k);
     return NULL;
   }
-  if(!mtab[hv])
+  if(!mtab->nodes[hv])
     return NULL;
-  cur = mtab[hv];
+  cur = mtab->nodes[hv];
   do {
-    if(!strcmp(cur->key, key))
+    if(!strcmp(cur->key->text, k))
       return cur;
     cur = cur->next;
   } while(cur->next);
@@ -97,10 +118,11 @@ map * map_get(map** mtab, char* key) {
 }
 
 object * scope_get(scope * s, char * key) {
-  map * v = map_get(s->symbols, key);
+  map_node * v = map_get(s->symbols, key);
   if(!v && s->parent)
       return scope_get(s->parent, key);
-  return v->data;
+  if(v) return v->data;
+  return NULL;
 }
 void scope_set(scope * s, object * o, map_flags f) {
   map_set(s->symbols, o->name, o, map_object|f);

@@ -8,7 +8,7 @@
 #define accept(A) _accept(__LINE__, A)
 
 extern char * _symbols_[];
-extern MAP native_classes;
+extern map * native_classes;
 
 token *prev_tok = NULL;
 token *cur_tok = NULL;
@@ -210,10 +210,10 @@ ast * sFor(scope * cscope) {
   printE(cur_tok->symbol,"("); indent++;
   accept(oparen_sym);
 
-  cural->node = gE(cscope);
+  cural->node = gS(cscope);
   cural->next = new_astlist();
   cural = cural->next;
-  accept(semi_sym);
+  //accept(semi_sym);
   cural->node = gE(cscope);
   cural->next = new_astlist();
   cural = cural->next;
@@ -232,14 +232,21 @@ ast * sFor(scope * cscope) {
 }
     // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..]
 ast * eSubscript(scope * cscope) {
+  ast_list * topal, *cural;
   ast * ret, * ua;
+  topal = cural = new_astlist();
   if(!expect( osquare_sym)) return NULL;
   printE(cur_tok->symbol,"-> subscript"); indent++;
   next();
-  ua = gE(cscope);
+  do {
+    cural->node = gE(cscope);
+    cural->next = new_astlist();
+    cural = cural->next;
+  } while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- subscript");
   accept(csquare_sym);
-  return ua;
+  return make_call_args(cscope, topal);
+  return topal;
 }
 
 ast * eFuncCall(scope * cscope) {
@@ -312,7 +319,7 @@ ast * sDeclare(scope * cscope) {
   */
   //accept(id_sym);
   var =  tId(cscope);
-  //map_set(cscope->symbols, var->op.Id, find_object(typ->op.obj->type), MAP_OBJECT);
+  //map_set(cscope->symbols, var->op.Id, find_object(typ->op.obj->type), map *_OBJECT);
 
   if(expect(assign_sym)) {
     accept(assign_sym);
@@ -408,7 +415,7 @@ ast * gS(scope * cscope) {
        a = sIf(cscope);
        break;
     case for_sym:
-       a = sFor(cscope);
+       a = sFor(new_scope(cscope));
        break;
     case while_sym:
     case switch_sym:

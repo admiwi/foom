@@ -1,0 +1,4 @@
+for(int i = 2; i; sys.println("inc")) {
+  sys.println(i);
+  i = 0;
+}

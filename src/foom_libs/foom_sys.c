@@ -4,7 +4,7 @@
 
 object * sys_println(object * self, object * args) {
   object * o;
-  if(args->type = list_sym)
+  if(args->type == list_sym)
     o = args->val.List->obj;
   else
     o = args;

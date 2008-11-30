@@ -138,10 +138,10 @@ char * _keywords[] = {
   "'"
 };
 
-MAP keywords = NULL;
-MAP init_keywords() {
+map * keywords = NULL;
+map * init_keywords() {
   extern char * _keywords[];
-  MAP _kws;
+  map * _kws;
   int i=0;
   if(!keywords) {
     keywords = map_new();

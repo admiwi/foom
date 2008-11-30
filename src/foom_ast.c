@@ -76,7 +76,7 @@ ast * make_bool(scope * cscope, char * n, int v) {
   map_set(cscope->symbols, a->op.obj->name, a->op.obj, map_object);
   return a;
 }
-ast * make_map(scope * cscope, char * n, MAP v) {
+ast * make_map(scope * cscope, char * n, map * v) {
   ast * a = new_astnode(cscope);
   a->tag = obj_ast;
   a->op.obj = new_map();
@@ -111,7 +111,7 @@ ast * make_call_args(scope * cscope, ast_list * al){
   a->tag = func_args_ast;
   a->op.call.args = al;
   a->scp = cscope;
-  //map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
+  //map_set(cscope->symbols, a->op.obj->name, a->op.obj, map *_OBJECT);
   return a;
 }
 //TODO  Need to make this different == it's not going to work very well as is.
@@ -120,7 +120,7 @@ ast * make_closure(scope * cscope, char * n, ast_list * v){
   a->tag = block_ast;
   a->op.block.stmts = v;
   a->scp = cscope;
-  //map_set(cscope->symbols, a->op.obj->name, a->op.obj, MAP_OBJECT);
+  //map_set(cscope->symbols, a->op.obj->name, a->op.obj, map *_OBJECT);
   return a;
 }
 
