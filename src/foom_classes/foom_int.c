@@ -5,25 +5,6 @@
 SYMBOLS;
 map * native_classes;
 
-object * int_minus(object * self, object * arg) {
-  object * tmp, * o;
-  if(self->type != arg->type) {
-    fprintf(stderr, "should deal with invalid types\n");
-    //mebbe an exception object?
-    /*
-    tmp = get_member(arg->members, "_to_int_");
-    if(tmp && tmp->type == func_sym) {
-      //list * args = new_list();
-
-    }else {
-
-    }*/
-  }
-  o = new_object();
-  o->type = int_sym;
-  o->val.Int = self->val.Int - arg->val.Int;
-  return o;
-}
 object * int_plus(object * self, object * arg) {
   object * tmp, * o;
   if(self->type != arg->type) {
@@ -38,9 +19,36 @@ object * int_plus(object * self, object * arg) {
 
     }*/
   }
-  o = new_object();
-  o->type = int_sym;
+  o = new_int();
+  //o->type = int_sym;
   o->val.Int = self->val.Int + arg->val.Int;
+  return o;
+}
+
+object * int_minus(object * self, object * arg) {
+  object * tmp, * o;
+  if(self->type != arg->type) {
+    fprintf(stderr, "should deal with invalid types\n");
+    //mebbe an exception object?
+    /*
+    tmp = get_member(arg->members, "_to_int_");
+    if(tmp && tmp->type == func_sym) {
+      //list * args = new_list();
+
+    }else {
+
+    }*/
+  }
+  o = new_int();
+  //o->type = int_sym;
+  o->val.Int = self->val.Int - arg->val.Int;
+  return o;
+}
+object * int_compare(object * self, object * arg) {
+  object * o = new_int();
+  if(self->val.Int < arg->val.Int) o->val.Int = -1;
+  else if(self->val.Int > arg->val.Int) o->val.Int = 1;
+  else o->val.Int = 0;
   return o;
 }
 
@@ -71,5 +79,6 @@ object * int_class() {
   add_member_name(o, native_wrapper(&int_plus, func_binary), _symbols_[plus_sym]);
   add_member_name(o, native_wrapper(&int_to_string, func_unary), "to_string");
   add_member_name(o, native_wrapper(&int_set_self, func_binary), "set_self");
+  add_member_name(o, native_wrapper(&int_compare, func_binary), "compare");
   return o;
 }

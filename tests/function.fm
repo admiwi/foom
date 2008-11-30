@@ -1,11 +1,17 @@
 func f = {
-  sys.println(args[3]);
+  str c = args[0];
+  func j = {
+    int k = args[0];
+    str v = c;
+    sys.println(v);
+    sys.println(k);
+  };
+  j;
 };
-f(1,2,3,4,5);
 
-if(0) {
-  f(5,6,7,8,9);
-} else {
-  f("cat","dog","rarr","foom","call");
-}
-int j = 0;
+func zoo = f("cat");
+func moo = f("dog");
+
+moo(33);
+zoo(10);
+

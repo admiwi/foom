@@ -45,12 +45,13 @@ object * get_member_getter(object * o, char * n) {
 }
 
 object * get_member_setter(object * o, char * n, object * arg) {
-  object * ro;
+  object * sf, *ro;
   char gn[ARB_LEN] = "set_";
   strcat(gn, n);
-  ro = get_member_object(o, gn);
-  if(!ro->null) {
-    return func_call(ro, o, arg);
+  sf = get_member_object(o, gn);
+  if(!sf->null) {
+    ro = func_call(sf, o, arg);
+    return ro;
   }
   return new_object();
 }

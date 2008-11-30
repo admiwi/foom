@@ -89,6 +89,7 @@ object * new_func() {
   o->type = func_sym;
   o->val.Func = malloc(sizeof(func));
   memset(o->val.Func, 0, sizeof(func));
+  o->val.Func->scp = new_scope(NULL);
   o->class = map_get(native_classes, "func")->data;
   clone_members(o, o->class);
   return o;

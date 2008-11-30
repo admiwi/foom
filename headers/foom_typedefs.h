@@ -129,6 +129,7 @@ typedef object * (*uFuncP)(object *);
 
 typedef struct _func {
   char * sig;
+  scope * scp;
   enum {
       func_foom,
       func_binary,

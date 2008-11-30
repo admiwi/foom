@@ -29,7 +29,9 @@ object * str_get_self(object * self) {
   return self;
 }
 object * str_set_self(object * self, object * arg) {
-  self->val.Str = arg->val.Str;
+  self->val.Str = malloc(sizeof(str));
+  self->val.Str->val = strdup(arg->val.Str->val);
+  self->val.Str->len = arg->val.Str->len;
   self->null = false;
   return self;
 }
