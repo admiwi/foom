@@ -296,7 +296,7 @@ ast * gT(scope * cscope) {
       eSubscript(cscope);
       break;
     case ocurly_sym:
-      a = sClosure(new_scope(cscope));
+      a = sClosure(cscope);
       //accept(ccurly_sym);
       break;
     default:

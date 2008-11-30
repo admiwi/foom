@@ -50,7 +50,7 @@ object * block_feval(ast * a) {
   ast_list * al;
   object * o;
   o = new_func();
-  o->val.Func = malloc(sizeof(func));
+  //o->val.Func = malloc(sizeof(func));
   o->val.Func->flags = func_foom;
   o->val.Func->f.acode = a;
   return o;
@@ -250,85 +250,82 @@ object * xor_feval(ast * op){
 //}
 //object * float_feval(ast * op){
 //}
-object * lt_feval(ast * op){
+
+object * compare_feval(ast * op) {
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  feval(l);
-  printf(" < ");
-  feval(r);
+  object * lo = feval(l);
+  object * ro = feval(r);
+  object * sf = get_member(lo, "compare");
+  return func_call(sf, lo, ro);
+}
+
+object * lt_feval(ast * op){
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int == -1 ? true : false);
+  return br;
 }
 object * gt_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" > ");
-  feval(r);
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int == 1 ? true : false);
+  return br;
 }
 object * le_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" <= ");
-  feval(r);
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int < 1 ? true : false);
+  return br;
 }
 object * ge_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" >= ");
-  feval(r);
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int > -1 ? true : false);
+  return br;
 }
 object * eq_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" == ");
-  feval(r);
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int == 0 ? true : false);
+  return br;
 }
 object * neq_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" <> ");
-  feval(r);
+  object * ro = compare_feval(op);
+  object * br = new_bool();
+  br->val.Bool =  (ro->val.Int != 0 ? true : false);
+  return br;
 }
 object * assign_feval(ast * op){
   object * o;
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-
   object * lo = feval(l);
   object * ro = feval(r);
   o = set_member(lo, "self", ro);
   return o;
 }
-object * plus_feval(ast * op){
+
+object * bop_feval(ast * op, Symbol s) {
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  feval(l);
-  printf(" + ");
-  feval(r);
+  object * lo = feval(l);
+  object * ro = feval(r);
+  object * sf = get_member(lo, _symbols_[s]);
+  return func_call(sf, lo, ro);
+}
+
+object * plus_feval(ast * op){
+  return bop_feval(op, plus_sym);
 }
 object * minus_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" - ");
-  feval(r);
+  return bop_feval(op, minus_sym);
 }
 object * star_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" * ");
-  feval(r);
+  return bop_feval(op, star_sym);
 }
 object * carrot_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(" ^ ");
-  feval(r);
+  return bop_feval(op, carrot_sym);
 }
 object * bang_feval(ast * op){
 }
@@ -337,11 +334,7 @@ object * andper_feval(ast * op){
 object * slash_feval(ast * op){
 }
 object * dot_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  feval(l);
-  printf(".");
-  feval(r);
+  return bop_feval(op, dot_sym);
 }
 object * at_feval(ast * op){
 }
@@ -362,14 +355,10 @@ object * dand_feval(ast * op){
 object * dor_feval(ast * op){
 }
 object * dotdot_feval(ast * op){
-  ast * l = op->op.binary.left;
-  ast * r = op->op.binary.right;
-  object * lo = feval(l);
-  object * ro = feval(r);
-  printf("..");
-
+  return bop_feval(op, dotdot_sym);
 }
 object * elipse_feval(ast * op){
+  return bop_feval(op, elipse_sym);
 }
 object * newline_feval(ast * op){
 }
@@ -388,6 +377,10 @@ object * subscript_feval(ast * op){
   ast * var = op->op.binary.left;
   ast * sub = op->op.binary.right;
   object * v = feval(var);
+  if(!v) {
+    fprintf(stderr, "symbol not found (%s)\n", var->tag == id_ast? var->op.Id : var->op.obj->name);
+    return new_object();
+  }
   object * s = feval(sub);
   object * sf = get_member(v, _symbols_[subscript_sym]);
   return func_call(sf, v, s);
