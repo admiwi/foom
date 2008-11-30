@@ -1,11 +1,15 @@
 #include "foom_class.h"
 #include "foom_ast.h"
 
-MAP native_classes;
+map * native_classes;
 extern char* _symbols_[];
 
-void add_member(object * c, object * o) {
-  map_set(c->members, o->name, o, map_object);
+void add_member(object * s, object * o) {
+  add_member_name(s, o, o->name);
+}
+
+void add_member_name(object * s, object * o, char * n) {
+  map_set(s->members, n, o, map_member);
 }
 
 object * native_wrapper(void * nf, int flags) {
@@ -19,19 +23,8 @@ object * native_wrapper(void * nf, int flags) {
   return f;
 }
 
-object * resolve_member_map(object * o, map * v, object * arg) {
-  if(flaged(v->flags, map_native|map_unary)) {
-    uFuncP ufp = v->data;
-    return ufp(o);
-  } else if(flaged(v->flags, map_native|map_binary) && arg) {
-    bFuncP bfp = v->data;
-    return bfp(o, arg);
-  }
-    return new_object();
-}
-
 object * get_member_object(object * o, char * n) {
-  map * v = map_get(o->members, n);
+  map_node * v = map_get(o->members, n);
   if(!v && o->class)
     v = map_get(o->class->members, n);
   if(!v) {
@@ -46,9 +39,9 @@ object * get_member_getter(object * o, char * n) {
   strcat(gn, n);
   ro = get_member_object(o, gn);
   if(!ro->null) {
-    return func_call(ro, o, NULL);
+    return func_call(ro, ro->parent, NULL);
   }
-  return ro;
+  return new_object();
 }
 
 object * get_member_setter(object * o, char * n, object * arg) {
@@ -59,9 +52,8 @@ object * get_member_setter(object * o, char * n, object * arg) {
   if(!ro->null) {
     return func_call(ro, o, arg);
   }
-  return ro;
+  return new_object();
 }
-
 
 object * get_member(object * o, char * n) {
   object * ro;
@@ -74,7 +66,8 @@ object * get_member(object * o, char * n) {
 object * set_member(object *o, char * n, object * arg) {
   object * ro;
   ro = get_member_setter(o, n, arg);
-  return ro;
+  if(!ro->null) return ro;
+  return new_object();
 }
 
 void add_static_member(object * c, object * o) {
@@ -85,7 +78,7 @@ void add_static_member(object * c, object * o) {
 
 object * get_static_member(object * c, char * n) {
   if(c->type == class_sym && c->val.Class) {
-    map * v = map_get(c->val.Class->static_members, n);
+    map_node * v = map_get(c->val.Class->static_members, n);
     if(v)
       return (object *)v->data;
     else
@@ -111,15 +104,13 @@ void init_classes(scope * s) {
   object * cls;
   //obj
   cls = obj_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
+
   map_set(s->symbols, cls->name, cls, map_object|map_immutable);
   //func
   cls = func_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
   map_set(s->symbols, cls->name, cls, map_object|map_immutable);
   //int
   cls = int_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
   map_set(s->symbols, cls->name, cls, map_object|map_immutable);
   //str
   cls = str_class();
@@ -144,8 +135,8 @@ void init_classes(scope * s) {
   //class
   /*
   cls = class_class();
-  map_set(native_classes, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
-  map_set(s->symbols, cls->name, cls, MAP_OBJECT|MAP_IMMUTABLE);
+  map_set(native_classes, cls->name, cls, map *_OBJECT|map *_IMMUTABLE);
+  map_set(s->symbols, cls->name, cls, map *_OBJECT|map *_IMMUTABLE);
   */
 
 }

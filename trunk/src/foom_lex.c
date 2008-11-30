@@ -65,10 +65,10 @@ token * get_string(parse_pkg * pp) {
     if(endc == '"' && pp->c == '\\') {
       switch(buf_getc(pp)) {
         case 'n':
-          len = add_char('n', i++, &buf, len);
+          len = add_char('\n', i++, &buf, len);
           break;
         case 't':
-          len = add_char('t', i++, &buf, len);
+          len = add_char('\t', i++, &buf, len);
           break;
         case '\\':
           len = add_char('\\', i++, &buf, len);
@@ -112,10 +112,10 @@ token * get_string(parse_pkg * pp) {
 token * get_symbol(parse_pkg * pp) {
   int i = 0;
   char *buf = malloc(ARB_LEN);
-  extern MAP keywords;
+  extern map * keywords;
   extern char * _keywords[];
   memset(buf, 0, ARB_LEN);
-  map * v;
+  map_node * v;
   Symbol sym = id_sym;
   do {
     if(is_char(pp->c))

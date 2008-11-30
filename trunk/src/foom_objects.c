@@ -1,8 +1,21 @@
 #include "foom.h"
 
-extern MAP native_classes;
+extern map * native_classes;
 SYMBOLS;
 
+
+void clone_members(object * to, object * from) {
+  map_key * ck = from->members->keys;
+  map_node * v;
+  object * o;
+  while(ck) {
+    v = map_get(from->members, ck->text);
+    o = v->data;
+    o->parent = to;
+    map_set(to->members, ck->text, o, v->flags);
+    ck = ck->next;
+  }
+}
 
 object * new_object() {
   object * o = malloc(sizeof(object));
@@ -23,6 +36,7 @@ object * new_int() {
   o->null = false;
   o->ref = false;
   o->val.Int = 0;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -30,6 +44,7 @@ object * new_str() {
   object * o = new_object();
   o->type = str_sym;
   o->class = map_get(native_classes, "str")->data;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -38,6 +53,7 @@ object * new_dec() {
   o->type = dec_sym;
   o->ref = false;
   o->class = map_get(native_classes, "dec")->data;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -45,6 +61,7 @@ object * new_map() {
   object * o = new_object();
   o->type = map_sym;
   o->class = map_get(native_classes, "map")->data;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -52,6 +69,7 @@ object * new_list() {
   object * o = new_object();
   o->type = list_sym;
   o->class = map_get(native_classes, "list")->data;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -62,6 +80,7 @@ object * new_bool() {
   o->null = false;
   o->ref = false;
   o->val.Bool = false;
+  clone_members(o, o->class);
   return o;
 }
 
@@ -71,6 +90,7 @@ object * new_func() {
   o->val.Func = malloc(sizeof(func));
   memset(o->val.Func, 0, sizeof(func));
   o->class = map_get(native_classes, "func")->data;
+  clone_members(o, o->class);
   return o;
 }
 

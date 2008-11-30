@@ -48,7 +48,13 @@ object * call_args_feval(ast *a) {
 }
 object * block_feval(ast * a) {
   ast_list * al;
-  object * ret;
+  object * o;
+  o = new_func();
+  o->val.Func = malloc(sizeof(func));
+  o->val.Func->flags = func_foom;
+  o->val.Func->f.acode = a;
+  return o;
+  /*
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
       ret = feval(al->node);
@@ -56,9 +62,11 @@ object * block_feval(ast * a) {
   else
     printf("**BLOCK ERROR**\n");
   return ret;
+  */
 }
 
 object * feval(ast * a) {
+  object *o;
   switch(a->tag) {
     case binary_ast:
       return feval_tbl[a->op.binary.oper](a);
@@ -94,16 +102,27 @@ object * if_feval(ast * op){
   ast * cond, * eval;
   cond = op->op.binary.left;
   eval = op->op.binary.right;
-  printf("\nif");
-  feval(cond);
-  printf("\n");
+  bool bc;
+  object * oc = feval(cond), *ro;
+  bc = bool_test(oc);
+
   if(eval->tag == binary_ast && eval->op.binary.oper == else_sym) {
-    feval(eval->op.binary.left);
-    printf("\nelse\n");
-    feval(eval->op.binary.right);
-  } else
-  feval(eval);
-  printf("\n");
+    if(bc) {
+      ro = feval(eval->op.binary.left);
+    } else {
+      ro = feval(eval->op.binary.right);
+    }
+    if(ro->type == func_sym)
+      ro = func_call(ro, NULL, NULL);
+    return ro;
+  }
+  if(bc) {
+    ro = feval(eval);
+    if(ro->type == func_sym)
+      ro = func_call(ro, NULL, NULL);
+    return ro;
+  }
+  return NULL;
 }
 object * switch_feval(ast * op){
 }
@@ -150,19 +169,26 @@ object * return_feval(ast * op){
 object * as_feval(ast * op){
 }
 object * for_feval(ast * op){
-  ast * init = op->op.binary.left;
-  ast_list * c = init->op.block.stmts;
+  ast * top = op->op.binary.left;
+  ast_list * c = top->op.block.stmts;
   ast * e = op->op.binary.right;
-  printf("for(");
+  ast * comp, * inc;
+  object * co, * io, * eo;
+
   feval(c->node);
   c = c->next;
-  printf("; ");
-  feval(c->node);
+  comp = c->node;
   c = c->next;
-  printf("; ");
-  feval(c->node);
-  printf(")\n");
-  feval(e);
+  inc = c->node;
+  co = feval(comp);
+  while(bool_test(co)) {
+    eo = feval(e);
+    if(eo->type == func_sym)
+      func_call(eo, NULL, NULL);
+    io = feval(inc);
+    co = feval(comp);
+  }
+
 }
 object * while_feval(ast * op){
 }
@@ -267,11 +293,14 @@ object * neq_feval(ast * op){
   feval(r);
 }
 object * assign_feval(ast * op){
+  object * o;
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
+
   object * lo = feval(l);
   object * ro = feval(r);
-  return set_member(lo, "self", ro);
+  o = set_member(lo, "self", ro);
+  return o;
 }
 object * plus_feval(ast * op){
   ast * l = op->op.binary.left;
@@ -353,21 +382,19 @@ object * funccall_feval(ast * op){
   ast * a = op->op.binary.right;
   object * of = feval(f);
   object * oa = feval(a);
-  return func_call(of, NULL, oa);
+  return func_call(of, of->parent, oa);
 }
 object * subscript_feval(ast * op){
   ast * var = op->op.binary.left;
   ast * sub = op->op.binary.right;
-  feval(var);
-  printf("[");
-  feval(sub);
-  printf("]");
+  object * v = feval(var);
+  object * s = feval(sub);
+  object * sf = get_member(v, _symbols_[subscript_sym]);
+  return func_call(sf, v, s);
 }
 
 object * group_feval(ast * op){
-  printf("(");
-  feval(op->op.unary.arg);
-  printf(")");
+  return feval(op->op.unary.arg);
 }
 object * declare_feval(ast * op){
   ast * l = op->op.binary.left;

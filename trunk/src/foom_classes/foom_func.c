@@ -2,8 +2,13 @@
 #include "foom_class.h"
 
 SYMBOLS;
+map * native_classes;
 
-
+object * func_set_self(object * self, object * arg) {
+  self->val.Func = arg->val.Func;
+  self->null = false;
+  return self;
+}
 
 object * func_class() {
   object * o = new_object();
@@ -12,19 +17,32 @@ object * func_class() {
   o->type = class_sym;
   o->null = false;
   o->name = "func";
+  map_set(native_classes, o->name, o, map_object|map_immutable);
+  add_member_name(o, native_wrapper(&func_set_self, func_binary), "set_self");
   return o;
 }
 
 object * func_call(object * fo, object * self, object * args) {
   func * f = fo->val.Func;
-  if(flaged(f->flags,func_binary)) {
+  ast_list * al;
+  object * o;
+  if(f->flags == func_binary) {
     bFuncP bfp = f->f.bfunc;
     return bfp(self, args);
   }
-  if(flaged(f->flags,func_unary)) {
+  if(f->flags == func_unary) {
     uFuncP ufp = f->f.ufunc;
     return ufp(self);
   }
-  printf("Not implemented yet %d\n",__LINE__);
-  return new_object(false);
+  if(args) {
+    args->name = strdup("args");
+    scope_set(f->f.acode->scp, args, map_object);
+  }
+  if(f->f.acode->op.block.stmts)
+    for(al = f->f.acode->op.block.stmts;al->node;al = al->next) {
+      o = feval(al->node);
+    }
+  else
+    printf("**BLOCK ERROR**\n");
+  return o;
 }

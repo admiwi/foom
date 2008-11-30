@@ -1,7 +1,9 @@
 #include "foom.h"
 #include "foom_class.h"
 #include "foom_objects.h"
+
 SYMBOLS;
+map * native_classes;
 
 object * int_minus(object * self, object * arg) {
   object * tmp, * o;
@@ -47,9 +49,14 @@ object * int_to_string(object * self){
   s->null = false;
   s->val.Str = malloc(sizeof(str));
   s->val.Str->val = malloc(33*sizeof(char));
-  ltoa(self->val.Int, s->val.Str->val, 10);
+  sprintf(s->val.Str->val, "%li",self->val.Int);
   s->val.Str->len = strlen(s->val.Str->val);
   return s;
+}
+
+object * int_set_self(object * self, object * arg) {
+  self->val.Int = arg->val.Int;
+  return self;
 }
 
 object * int_class() {
@@ -59,8 +66,10 @@ object * int_class() {
   o->type = class_sym;
   o->null = false;
   o->name = "int";
-  map_set(o->members, _symbols_[minus_sym], &int_minus, map_binary);
-  map_set(o->members, _symbols_[plus_sym], &int_plus, map_binary);
-  map_set(o->members, "to_string", native_wrapper(&int_to_string, func_unary), map_object);
+  map_set(native_classes, o->name, o, map_object|map_immutable);
+  add_member_name(o, native_wrapper(&int_minus, func_binary), _symbols_[minus_sym]);
+  add_member_name(o, native_wrapper(&int_plus, func_binary), _symbols_[plus_sym]);
+  add_member_name(o, native_wrapper(&int_to_string, func_unary), "to_string");
+  add_member_name(o, native_wrapper(&int_set_self, func_binary), "set_self");
   return o;
 }

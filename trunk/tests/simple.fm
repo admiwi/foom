@@ -1,0 +1,21 @@
+int foo = 1000;
+str test = 'rar';
+func println;
+if(foo>=102) {
+  int foo;
+  str cat = "dog";
+  obj bar = 55;
+  println(cat.name, "carr");
+  for(foo=10;foo<cat.length;foo=foo+1) {
+    println(foo);
+  }
+  if(test == 'rar')
+
+  if(test == "karma")
+    foo.copy.name.rarr[1..4] = "live long";
+  else
+    foo.copy = "bye";
+}
+
+
+println("Hi!",{int i=10;});
