@@ -34,10 +34,10 @@ void process_file(char *file_name) {
   init_classes(s);
   init_libs(s);
   tok = gen_token_chain(&pp);
-  pgm = gProgram(tok, s);
+  pgm = gProgram(tok);
   print_errors();
 
-  start_feval(pgm);
+  start_feval(pgm, s);
 
 
 }

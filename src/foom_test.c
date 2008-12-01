@@ -1,3 +1,4 @@
+#if 0
 #include "foom_test.h"
 extern FuncP func_tbl[100];
 extern char * _symbols_[];
@@ -85,7 +86,8 @@ void decend_ast(ast * a) {
     case unary_ast: return func_tbl[a->op.unary.oper](a);
     case id_ast: return da_id(a);
     case obj_ast: return da_object(a);
-    case func_args_ast: return da_call_args(a);
+    case list_ast: return da_call_args(a);
     case block_ast: return da_block(a);
   }
 }
+#endif

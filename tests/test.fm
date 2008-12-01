@@ -1,3 +1,6 @@
 str test = "cat\ndog\nhedgehog";
 sys.println(test);
 sys.println(test.length);
+list l = ["cat", [test, 1], 2, 3, 4];
+
+sys.println(l[1][0]);

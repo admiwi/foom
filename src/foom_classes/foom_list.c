@@ -24,10 +24,7 @@ object * list_subscript(object * self, object * subs) {
   list * rn = list_node();
   int ci = 0, cr = 0;
   long i = csub->obj->val.Int;
-
-
   rl->val.List = rn;
-
   while(cur->next && csub->next) {
     if(ci < csub->obj->val.Int) {
       ci++;
@@ -59,6 +56,12 @@ object * list_to_string(object * self) {
   return s;
 }
 
+object * list_set_self(object * self, object * args) {
+  self->val.List = args->val.List;
+  self->null = false;
+  return self;
+}
+
 object * list_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
@@ -67,6 +70,7 @@ object * list_class() {
   o->null = false;
   o->name = "list";
   add_member_name(o, native_wrapper(&list_to_string, func_unary), "to_string");
+  add_member_name(o, native_wrapper(&list_set_self, func_binary), "set_self");
   add_member_name(o, native_wrapper(&list_subscript, func_binary), _symbols_[subscript_sym]);
   return o;
 }

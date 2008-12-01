@@ -1,3 +1,4 @@
+#if 0
 #include "foom.h"
 #include "foom_test.h"
 SYMBOLS;
@@ -425,3 +426,4 @@ void init_funcs() {
 //  func_tbl[semi_sym] = &semi_func;
 
 }
+#endif
