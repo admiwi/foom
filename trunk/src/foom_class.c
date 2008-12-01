@@ -39,7 +39,7 @@ object * get_member_getter(object * o, char * n) {
   strcat(gn, n);
   ro = get_member_object(o, gn);
   if(!ro->null) {
-    return func_call(ro, ro->parent, NULL);
+    return func_call(ro, o, NULL);
   }
   return new_object();
 }

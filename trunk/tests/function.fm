@@ -3,7 +3,8 @@ func f = {
   func j = {
     int k = args[0];
     str v = c;
-    sys.println(v);
+    sys.print(v);
+    sys.print(": ");
     sys.println(k);
   };
   j;
