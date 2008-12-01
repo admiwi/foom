@@ -28,7 +28,7 @@ object * get_member_object(object * o, char * n) {
   if(!v && o->class)
     v = map_get(o->class->members, n);
   if(!v) {
-    fprintf(stderr,"member %s not found, returning null\n", n);
+    //fprintf(stderr,"member %s not found, returning null\n", n);
     return new_object();
   }
   return v->data;

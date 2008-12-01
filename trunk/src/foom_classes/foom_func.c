@@ -26,7 +26,7 @@ object * func_call(object * fo, object * self, object * args) {
   func * f = fo->val.Func;
   ast_list * al;
   object * o;
-  scope ** scp;
+  scope * cscope;
   if(f->flags == func_binary) {
     bFuncP bfp = f->f.bfunc;
     return bfp(self, args);
@@ -35,19 +35,17 @@ object * func_call(object * fo, object * self, object * args) {
     uFuncP ufp = f->f.ufunc;
     return ufp(self);
   }
-  scp = &(f->f.acode->scp);
-  f->scp->parent = scp->parent;
-  &(f->f.acode->scp) = &(f->scp);
+  cscope = new_scope(f->scp);
   if(args) {
     args->name = strdup("args");
-    scope_set(f->f.acode->scp, args, map_object);
+    scope_set(cscope, args, map_object);
   }
   if(f->f.acode->op.block.stmts)
     for(al = f->f.acode->op.block.stmts;al->node;al = al->next) {
-      o = feval(al->node);
+      o = feval(al->node, cscope);
     }
   else
     printf("**BLOCK ERROR**\n");
-  f->f.acode->scp = scp;
+
   return o;
 }

@@ -14,16 +14,17 @@ token *prev_tok = NULL;
 token *cur_tok = NULL;
 pStatus status;
 long serial;
-ast * gT(scope *);
-ast * gE(scope *);
-ast * gTE(scope *);
-ast * gS(scope *);
-ast * tMember(scope *);
-ast * tId(scope *);
-ast * tMid(scope *);
-ast * tM(ast *, scope *);
-ast * eSubscript(scope *);
-ast * eFuncCall(scope *);
+ast * gT();
+ast * gE();
+ast * gTE();
+ast * gS();
+ast * tMember();
+ast * tId();
+ast * tMid();
+ast * tM(ast *);
+ast * eSubscript();
+//ast * eFuncCall();
+ast * tList();
 
 int indent;
 
@@ -87,87 +88,93 @@ char * get_serial(char * t ) {
 
 //data
 
-ast * tFS(ast * l, scope * cscope) {
+ast * tF(ast * l) {
   ast *ret = l;
-  if(expect(osquare_sym))
-    ret = make_binary_op(subscript_sym, l, eSubscript(cscope));
-  else if(expect(oparen_sym))
-    ret = make_binary_op(funccall_sym, l, eFuncCall(cscope));
-  return tM(ret, cscope);
+  if(expect(oparen_sym)) {
+    accept(oparen_sym);
+    ret = make_binary_op(funccall_sym, l, tList(list_ast));
+    accept(cparen_sym);
+  }
+  return tM(ret);
+}
+ast * tS(ast * l) {
+  ast *ret = l;
+  if(expect(osquare_sym)) {
+    accept(osquare_sym);
+    ret = make_binary_op(subscript_sym, l, tList(list_ast));
+    accept(csquare_sym);
+  }
+  return tM(ret);
 }
 
-ast * tM(ast * r, scope * cscope) {
+ast * tFS(ast * l) {
+  ast *ret = l;
+  while(expect(osquare_sym) || expect(oparen_sym)) {
+    ret = tS(ret);
+    ret = tF(ret);
+  }
+  return tM(ret);
+}
+
+ast * tM(ast * r) {
   ast * l, *a;
   if(expect(dot_sym)) {
-    l = new_astnode(cscope);
+    l = new_astnode();
     accept(dot_sym);
     l->tag = mid_ast;
     l->op.Id = strdup(cur_tok->lexem);
     printE(cur_tok->symbol,"member");
     next();
     a = make_binary_op(member_sym, l, r);
-    return tM(a, cscope);
+    return tM(a);
   }
   return r;
 }
 
-ast * tId(scope * cscope) {
-  ast * l = new_astnode(cscope);
+ast * tId() {
+  ast * l = new_astnode();
   l->tag = id_ast;
   l->op.Id = strdup(cur_tok->lexem);
   printE(cur_tok->symbol,"id");
   next();
-  l = tM(l, cscope);
-  /*if(expect(dot_sym)) {
-    accept(dot_sym);
-    return make_binary_op(member_sym, l, tMid(cscope));
-  }*/
-  return tFS(l, cscope);
+  l = tM(l);
+  return tFS(l);
 }
-/*
-ast * tId(scope * cscope) {
-  ast *ret = NULL, * l = get_obj(cscope, cur_tok->lexem);
-  ret = l;
-  printE(cur_tok->symbol,"id");
-  next();
-  if(l) return tFS(l, cscope);
-  return l;
-}
-*/
-ast * tString(scope * cscope) {
+
+ast * tString() {
   ast * a;
   str * s = malloc(sizeof(str));
   printE(cur_tok->symbol,"string");
   s->val = strdup(cur_tok->lexem);
   s->len = strlen(s->val);
   accept(string_sym);
-  a = make_str(cscope, get_serial("Lstring"), s);
+  a = make_str(get_serial("Lstring"), s);
   return a;
 }
 
-ast * tInteger(scope * cscope){
+ast * tInteger(){
   long li = strtol(cur_tok->lexem, NULL, 10);
   printE(cur_tok->symbol,"number");
   accept(integer_sym);
-  return make_int(cscope, get_serial("Linteger"), li);
+  return make_int(get_serial("Linteger"), li);
 }
-ast * tDecimal(scope * cscope){
+ast * tDecimal(){
   double fl = strtod(cur_tok->lexem,NULL);
   printE(cur_tok->symbol,"number");
   accept(float_sym);
-  return make_dec(cscope, get_serial("Ldecimal"), fl);
+  return make_dec(get_serial("Ldecimal"), fl);
 }
 
-ast * tParens(scope * cscope) {
+ast * tParens() {
   ast * ret;
   printE(cur_tok->symbol,"("); indent++;
   accept(oparen_sym);
-  ret = make_unary_op(group_sym, gE(cscope));
+  ret = make_unary_op(group_sym, gE());
   accept(cparen_sym);
   indent--; printE(cur_tok->symbol,")");
   return ret;
 }
-ast * sClosure(scope * cscope) {
+ast * sClosure() {
   ast_list * topal, * cural;
   topal = cural = new_astlist();
   printE(cur_tok->symbol,"-> closure");
@@ -176,32 +183,32 @@ ast * sClosure(scope * cscope) {
   //if(expect(lt_sym) == pS_ok)
 
   while(cur_tok->symbol != ccurly_sym && !expect(end_sym)) {
-    cural->node = gS(cscope);
+    cural->node = gS();
     cural->next = new_astlist();
     cural = cural->next;
   }
   indent--;
   printE(cur_tok->symbol,"<- closure");
   accept(ccurly_sym);
-  return make_closure(cscope, get_serial("closure"), topal);
+  return make_closure(get_serial("closure"), topal);
 }
 
-ast * sIf(scope * cscope) {
+ast * sIf() {
   ast * ret, * e, *s;
   printE(cur_tok->symbol,"-> if"); indent++;
   accept(if_sym);
-  e = tParens(cscope);
+  e = tParens();
   if(status == pS_ok)
-    s = gS(cscope);
+    s = gS();
   indent--; printE(cur_tok->symbol,"<- if");
   if(expect(else_sym)) {
     accept(else_sym);
-    s = make_binary_op(else_sym, s, gS(cscope));
+    s = make_binary_op(else_sym, s, gS());
   }
   return make_binary_op(if_sym, e, s);
 }
 
-ast * sFor(scope * cscope) {
+ast * sFor() {
   ast * ret, * e, * s;
   ast_list * for_guts, * cural;
   for_guts = cural = new_astlist();
@@ -210,94 +217,92 @@ ast * sFor(scope * cscope) {
   printE(cur_tok->symbol,"("); indent++;
   accept(oparen_sym);
 
-  cural->node = gS(cscope);
+  cural->node = gS();
   cural->next = new_astlist();
   cural = cural->next;
   //accept(semi_sym);
-  cural->node = gE(cscope);
+  cural->node = gE();
   cural->next = new_astlist();
   cural = cural->next;
   accept(semi_sym);
-  cural->node = gE(cscope);
+  cural->node = gE();
   cural->next = new_astlist();
 
   indent--; printE(cur_tok->symbol,")");
   accept(cparen_sym);
-  s = gS(cscope);
-  e = new_astnode(cscope);
+  s = gS();
+  e = new_astnode();
   e->tag = block_ast;
   e->op.block.stmts = for_guts;
-  e->scp = cscope;
   return make_binary_op(for_sym, e, s);
 }
     // [1] [1..-1] [a] [a..b] [a,b,c..d] [..b] [a..]
-ast * eSubscript(scope * cscope) {
+ast * eSubscript() {
   ast_list * topal, *cural;
   ast * ret, * ua;
   topal = cural = new_astlist();
-  if(!expect( osquare_sym)) return NULL;
+  if(!expect(osquare_sym)) return NULL;
   printE(cur_tok->symbol,"-> subscript"); indent++;
   next();
   do {
-    cural->node = gE(cscope);
+    cural->node = gE();
     cural->next = new_astlist();
     cural = cural->next;
   } while(expect(comma_sym) && accept(comma_sym));
   indent--; printE(cur_tok->symbol,"<- subscript");
   accept(csquare_sym);
-  return make_call_args(cscope, topal);
-  return topal;
+  return ast_list_wrapper(topal);
 }
 
-ast * eFuncCall(scope * cscope) {
-  ast_list * topal, * cural;
+ast * tList() {
+  ast_list * topal, *cural;
   topal = cural = new_astlist();
-  if(!expect(oparen_sym)) return NULL;
-  char * fn = prev_tok->lexem;
-  printE(cur_tok->symbol,"-> func call"); indent++;
-  next();
-/*
-  if(expect(cparen_sym)) {
-    //topal->next = new_astlist();
-    accept(cparen_sym);
-    return make_call_args(cscope, topal);
-  }
-*/
+  //if(!expect(osquare_sym)) return NULL;
+  printE(cur_tok->symbol,"-> term list"); indent++;
   do {
-    cural->node = gE(cscope);
+    cural->node = gE();
     cural->next = new_astlist();
     cural = cural->next;
   } while(expect(comma_sym) && accept(comma_sym));
-  indent--; printE(cur_tok->symbol,"<- func call");
-  accept(cparen_sym);
-  return make_call_args(cscope, topal);
+  indent--; printE(cur_tok->symbol,"<- term list");
+  //accept(csquare_sym);
+  return ast_list_wrapper(topal);
 }
 
 //TODO: tVar and eSub may have to move
-ast * gT(scope * cscope) {
+ast * gT() {
   ast * a;
   switch(cur_tok->symbol) {
     case id_sym:
-      a = tId(cscope);
+      a = tId();
     break;
 
     case string_sym:
-      a = tString(cscope);
-      eSubscript(cscope);
+      a = tString();
+      if(expect(osquare_sym)) {
+        accept(osquare_sym);
+        tList();
+        accept(csquare_sym);
+      }
       break;
     case integer_sym:
-      a = tInteger(cscope);
+      a = tInteger();
       break;
     case float_sym:
-      a = tDecimal(cscope);
+      a = tDecimal();
       break;
     case oparen_sym:
-      a = tParens(cscope);
-      eSubscript(cscope);
+      a = tParens();
+      tList(list_ast);
       break;
     case ocurly_sym:
-      a = sClosure(cscope);
+      a = sClosure();
       //accept(ccurly_sym);
+      break;
+    case osquare_sym:
+      accept(osquare_sym);
+      a = tList();
+      accept(csquare_sym);
       break;
     default:
       printE(cur_tok->symbol,"error");
@@ -306,24 +311,16 @@ ast * gT(scope * cscope) {
   return a;
 }
 
-ast * sDeclare(scope * cscope) {
-  ast * ret = NULL, *typ = new_astnode(cscope), *var = new_astnode(cscope);
+ast * sDeclare() {
+  ast * ret = NULL, *typ = new_astnode(), *var = new_astnode();
   typ->op.obj = map_get(native_classes, cur_tok->lexem)->data;//find_obj(cur_tok->symbol);
   typ->tag = obj_ast;
-  //ao->op.obj->type = cur_tok->symbol;
   next();
   printE(cur_tok->symbol,"-> declare call"); indent++;
-  /*
-  if(expect(id_sym))
-    ao->op.obj->name = strdup(cur_tok->lexem);
-  */
-  //accept(id_sym);
-  var =  tId(cscope);
-  //map_set(cscope->symbols, var->op.Id, find_object(typ->op.obj->type), map *_OBJECT);
-
+  var =  tId();
   if(expect(assign_sym)) {
     accept(assign_sym);
-    ret = make_binary_op(assign_sym, make_binary_op(declare_sym, typ, var), gE(cscope));
+    ret = make_binary_op(assign_sym, make_binary_op(declare_sym, typ, var), gE());
   }
 
   accept(semi_sym);
@@ -362,15 +359,15 @@ int isBinaryOp() {
   }
 }
 
-ast * gE(scope * cscope) {
+ast * gE() {
   ast * ret, * l, * r;
   Symbol op;
   printE(cur_tok->symbol,"-> expression"); indent++;
-  ret = gT(cscope);
+  ret = gT();
   if(isBinaryOp()) {
     l = ret;
     op = next();//op
-    r = gE(cscope);
+    r = gE();
     ret = make_binary_op(op, l, r);
   } else if(expect(as_sym) || expect(was_sym) || expect(is_sym)) {
     printE(cur_tok->symbol,"class op");
@@ -396,7 +393,7 @@ ast * gE(scope * cscope) {
   return ret;
 }
 
-ast * gS(scope * cscope) {
+ast * gS() {
   ast * a;
   switch(cur_tok->symbol) {
     case obj_sym:
@@ -409,24 +406,24 @@ ast * gS(scope * cscope) {
     case map_sym:
     case str_sym:
       printE(cur_tok->symbol,"type");
-      a = sDeclare(cscope);
+      a = sDeclare();
       break;
     case if_sym:
-       a = sIf(cscope);
+       a = sIf();
        break;
     case for_sym:
-       a = sFor(new_scope(cscope));
+       a = sFor();
        break;
     case while_sym:
     case switch_sym:
     case ocurly_sym:
-      a = sClosure(new_scope(cscope));
+      a = sClosure();
       break;
     case id_sym:
     case string_sym:
     case integer_sym:
     case float_sym:
-      a = gE(cscope);
+      a = gE();
       accept(semi_sym);
       break;
     case end_sym:  //valid
@@ -440,9 +437,9 @@ ast * gS(scope * cscope) {
   return a;
 }
 
-ast * gProgram(token * t, scope * global) {
+ast * gProgram(token * t) {
   ast_list * cural;
-  ast * ret = new_astnode(global);
+  ast * ret = new_astnode();
   ret->tag = block_ast;
   ret->op.block.stmts = cural = new_astlist();
   serial = indent = 0;
@@ -451,7 +448,7 @@ ast * gProgram(token * t, scope * global) {
 
   fprintf(stderr,"-> program\n");
   while(!expect(end_sym)) {
-    cural->node = gS(global);
+    cural->node = gS();
     cural->next = new_astlist();
     cural = cural->next;
   }

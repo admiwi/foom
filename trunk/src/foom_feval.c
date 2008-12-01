@@ -6,39 +6,39 @@ FuncP feval_tbl[100] = {NULL};
 
 
 //_symbols_
-object * id_feval(ast * op){
-  object * o = scope_get(op->scp, op->op.Id);
+object * id_feval(ast * op, scope * cscope){
+  object * o = scope_get(cscope, op->op.Id);
   return o;
 }
 
-object * member_feval(ast * op){
+object * member_feval(ast * op, scope * cscope){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
   if(r->tag == binary_ast) {
-    object * ro = member_feval(r);
+    object * ro = member_feval(r, cscope);
     if(ro->null)
       return ro;
     else
       return get_member(ro, l->op.Id);
   }
   if(r->tag == id_ast) {
-    return get_member(id_feval(r), l->op.Id);
+    return get_member(id_feval(r, cscope), l->op.Id);
   }
   return new_object(false);
 }
 
-object * object_feval(ast * op){
+object * object_feval(ast * op, scope * cscope){
   return op->op.obj;
 }
 
-object * call_args_feval(ast *a) {
+object * list_feval(ast * a, scope * cscope) {
   ast_list * al;
   object * ret = new_list();
   list * l;
   l = ret->val.List = list_node();
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
-      l->obj = feval(al->node);
+      l->obj = feval(al->node, cscope);
       l->next = list_node();
       l = l->next;
     }
@@ -46,51 +46,40 @@ object * call_args_feval(ast *a) {
     printf("**BLOCK ERROR**\n");
   return ret;
 }
-object * block_feval(ast * a) {
-  ast_list * al;
-  object * o;
-  o = new_func();
-  //o->val.Func = malloc(sizeof(func));
+object * block_feval(ast * a, scope * cscope) {
+  object * o = new_func();
   o->val.Func->flags = func_foom;
   o->val.Func->f.acode = a;
+  o->val.Func->scp = cscope;
   return o;
-  /*
-  if(a->op.block.stmts)
-    for(al = a->op.block.stmts;al->node;al = al->next) {
-      ret = feval(al->node);
-    }
-  else
-    printf("**BLOCK ERROR**\n");
-  return ret;
-  */
 }
 
-object * feval(ast * a) {
+object * feval(ast * a, scope * cscope) {
   object *o;
   switch(a->tag) {
     case binary_ast:
-      return feval_tbl[a->op.binary.oper](a);
+      return feval_tbl[a->op.binary.oper](a, cscope);
     case unary_ast:
-      return feval_tbl[a->op.unary.oper](a);
+      return feval_tbl[a->op.unary.oper](a, cscope);
     case id_ast:
-      return id_feval(a);
+      return id_feval(a, cscope);
     case obj_ast:
-      return object_feval(a);
-    case func_args_ast:
-      return call_args_feval(a);
+      return object_feval(a, cscope);
+    case list_ast:
+      return list_feval(a, cscope);
     case block_ast:
-      return block_feval(a);
+      return block_feval(a, cscope);
     default:
       printf("ERROR in feval\n");
   }
 }
 
-void start_feval(ast * a){
+void start_feval(ast * a, scope * cscope){
   ast_list * al;
   object * o;
   if(a->op.block.stmts)
     for(al = a->op.block.stmts;al->node;al = al->next) {
-      o = feval(al->node);
+      o = feval(al->node, cscope);
     }
   else
     printf("**BLOCK ERROR**\n");
@@ -98,324 +87,324 @@ void start_feval(ast * a){
 
 
 
-object * if_feval(ast * op){
+object * if_feval(ast * op, scope * cscope){
   ast * cond, * eval;
   cond = op->op.binary.left;
   eval = op->op.binary.right;
   bool bc;
-  object * oc = feval(cond), *ro;
+  object * oc = feval(cond, cscope), *ro;
   bc = bool_test(oc);
 
   if(eval->tag == binary_ast && eval->op.binary.oper == else_sym) {
     if(bc) {
-      ro = feval(eval->op.binary.left);
+      ro = feval(eval->op.binary.left, cscope);
     } else {
-      ro = feval(eval->op.binary.right);
+      ro = feval(eval->op.binary.right, cscope);
     }
     if(ro->type == func_sym)
       ro = func_call(ro, NULL, NULL);
     return ro;
   }
   if(bc) {
-    ro = feval(eval);
+    ro = feval(eval, cscope);
     if(ro->type == func_sym)
-      ro = func_call(ro, NULL, NULL);
+      ro = func_call(ro, NULL, NULL, cscope);
     return ro;
   }
   return NULL;
 }
-object * switch_feval(ast * op){
+object * switch_feval(ast * op, scope * cscope){
 }
-object * case_feval(ast * op){
+object * case_feval(ast * op, scope * cscope){
 }
 /* not needed, handled in if
-object * else_feval(ast * op){
+object * else_feval(ast * op, scope * cscope){
 }
 */
-object * break_feval(ast * op){
+object * break_feval(ast * op, scope * cscope){
 }
-object * return_feval(ast * op){
+object * return_feval(ast * op, scope * cscope){
 }
 
-//object * try_feval(ast * op){
+//object * try_feval(ast * op, scope * cscope){
 //}
-//object * catch_feval(ast * op){
+//object * catch_feval(ast * op, scope * cscope){
 //}
-//object * finally_feval(ast * op){
+//object * finally_feval(ast * op, scope * cscope){
 //}
-//object * throw_feval(ast * op){
+//object * throw_feval(ast * op, scope * cscope){
 //}
-//object * assert_feval(ast * op){
+//object * assert_feval(ast * op, scope * cscope){
 //}
-//object * import_feval(ast * op){
+//object * import_feval(ast * op, scope * cscope){
 //}
-//object * namespace_feval(ast * op){
+//object * namespace_feval(ast * op, scope * cscope){
 //}
-//object * class_feval(ast * op){
+//object * class_feval(ast * op, scope * cscope){
 //}
-//object * extend_feval(ast * op){
+//object * extend_feval(ast * op, scope * cscope){
 //}
-//object * interface_feval(ast * op){
+//object * interface_feval(ast * op, scope * cscope){
 //}
-//object * mixin_feval(ast * op){
+//object * mixin_feval(ast * op, scope * cscope){
 //}
-//object * virtual_feval(ast * op){
+//object * virtual_feval(ast * op, scope * cscope){
 //}
-//object * is_feval(ast * op){
+//object * is_feval(ast * op, scope * cscope){
 //}
-//object * was_feval(ast * op){
+//object * was_feval(ast * op, scope * cscope){
 //}
 
-object * as_feval(ast * op){
+object * as_feval(ast * op, scope * cscope){
 }
-object * for_feval(ast * op){
+object * for_feval(ast * op, scope * pscope){
   ast * top = op->op.binary.left;
   ast_list * c = top->op.block.stmts;
   ast * e = op->op.binary.right;
   ast * comp, * inc;
   object * co, * io, * eo;
-
-  feval(c->node);
+  scope * cscope = new_scope(pscope);
+  feval(c->node, cscope);
   c = c->next;
   comp = c->node;
   c = c->next;
   inc = c->node;
-  co = feval(comp);
+  co = feval(comp, cscope);
   while(bool_test(co)) {
-    eo = feval(e);
+    eo = feval(e, cscope);
     if(eo->type == func_sym)
       func_call(eo, NULL, NULL);
-    io = feval(inc);
-    co = feval(comp);
+    io = feval(inc, cscope);
+    co = feval(comp, cscope);
   }
 
 }
-object * while_feval(ast * op){
+object * while_feval(ast * op, scope * cscope){
 }
-object * loop_feval(ast * op){
+object * loop_feval(ast * op, scope * cscope){
 }
-object * do_feval(ast * op){
+object * do_feval(ast * op, scope * cscope){
 }
-object * continue_feval(ast * op){
-}
-
-//object * obj_feval(ast * op){
-//}
-//object * int_feval(ast * op){
-//}
-//object * dec_feval(ast * op){
-//}
-//object * bool_feval(ast * op){
-//}
-//object * func_feval(ast * op){
-//}
-//object * bin_feval(ast * op){
-//}
-//object * list_feval(ast * op){
-//}
-//object * map_feval(ast * op){
-//}
-//object * str_feval(ast * op){
-//}
-
-object * and_feval(ast * op){
-}
-object * or_feval(ast * op){
-}
-object * not_feval(ast * op){
-}
-object * xor_feval(ast * op){
+object * continue_feval(ast * op, scope * cscope){
 }
 
-//object * oparen_feval(ast * op){
+//object * obj_feval(ast * op, scope * cscope){
 //}
-//object * cparen_feval(ast * op){
+//object * int_feval(ast * op, scope * cscope){
 //}
-//object * ocurly_feval(ast * op){
+//object * dec_feval(ast * op, scope * cscope){
 //}
-//object * ccurly_feval(ast * op){
+//object * bool_feval(ast * op, scope * cscope){
 //}
-//object * osquare_feval(ast * op){
+//object * func_feval(ast * op, scope * cscope){
 //}
-//object * csquare_feval(ast * op){
+//object * bin_feval(ast * op, scope * cscope){
 //}
-//object * dquote_feval(ast * op){
+//object * list_feval(ast * op, scope * cscope){
 //}
-//object * squote_feval(ast * op){
+//object * map_feval(ast * op, scope * cscope){
 //}
-
-//object * string_feval(ast * op){
-//}
-//object * integer_feval(ast * op){
-//}
-//object * float_feval(ast * op){
+//object * str_feval(ast * op, scope * cscope){
 //}
 
-object * compare_feval(ast * op) {
+object * and_feval(ast * op, scope * cscope){
+}
+object * or_feval(ast * op, scope * cscope){
+}
+object * not_feval(ast * op, scope * cscope){
+}
+object * xor_feval(ast * op, scope * cscope){
+}
+
+//object * oparen_feval(ast * op, scope * cscope){
+//}
+//object * cparen_feval(ast * op, scope * cscope){
+//}
+//object * ocurly_feval(ast * op, scope * cscope){
+//}
+//object * ccurly_feval(ast * op, scope * cscope){
+//}
+//object * osquare_feval(ast * op, scope * cscope){
+//}
+//object * csquare_feval(ast * op, scope * cscope){
+//}
+//object * dquote_feval(ast * op, scope * cscope){
+//}
+//object * squote_feval(ast * op, scope * cscope){
+//}
+
+//object * string_feval(ast * op, scope * cscope){
+//}
+//object * integer_feval(ast * op, scope * cscope){
+//}
+//object * float_feval(ast * op, scope * cscope){
+//}
+
+object * compare_feval(ast * op, scope * cscope) {
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  object * lo = feval(l);
-  object * ro = feval(r);
+  object * lo = feval(l, cscope);
+  object * ro = feval(r, cscope);
   object * sf = get_member(lo, "compare");
   return func_call(sf, lo, ro);
 }
 
-object * lt_feval(ast * op){
-  object * ro = compare_feval(op);
+object * lt_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int == -1 ? true : false);
   return br;
 }
-object * gt_feval(ast * op){
-  object * ro = compare_feval(op);
+object * gt_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int == 1 ? true : false);
   return br;
 }
-object * le_feval(ast * op){
-  object * ro = compare_feval(op);
+object * le_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int < 1 ? true : false);
   return br;
 }
-object * ge_feval(ast * op){
-  object * ro = compare_feval(op);
+object * ge_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int > -1 ? true : false);
   return br;
 }
-object * eq_feval(ast * op){
-  object * ro = compare_feval(op);
+object * eq_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int == 0 ? true : false);
   return br;
 }
-object * neq_feval(ast * op){
-  object * ro = compare_feval(op);
+object * neq_feval(ast * op, scope * cscope){
+  object * ro = compare_feval(op, cscope);
   object * br = new_bool();
   br->val.Bool =  (ro->val.Int != 0 ? true : false);
   return br;
 }
-object * assign_feval(ast * op){
+object * assign_feval(ast * op, scope * cscope){
   object * o;
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  object * lo = feval(l);
-  object * ro = feval(r);
+  object * lo = feval(l, cscope);
+  object * ro = feval(r, cscope);
   o = set_member(lo, "self", ro);
   return o;
 }
 
-object * bop_feval(ast * op, Symbol s) {
+object * bop_feval(ast * op, scope * cscope, Symbol s) {
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
-  object * lo = feval(l);
-  object * ro = feval(r);
+  object * lo = feval(l, cscope);
+  object * ro = feval(r, cscope);
   object * sf = get_member(lo, _symbols_[s]);
   return func_call(sf, lo, ro);
 }
 
-object * plus_feval(ast * op){
-  return bop_feval(op, plus_sym);
+object * plus_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, plus_sym);
 }
-object * minus_feval(ast * op){
-  return bop_feval(op, minus_sym);
+object * minus_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, minus_sym);
 }
-object * star_feval(ast * op){
-  return bop_feval(op, star_sym);
+object * star_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, star_sym);
 }
-object * carrot_feval(ast * op){
-  return bop_feval(op, carrot_sym);
+object * carrot_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, carrot_sym);
 }
-object * bang_feval(ast * op){
+object * bang_feval(ast * op, scope * cscope){
 }
-object * andper_feval(ast * op){
+object * andper_feval(ast * op, scope * cscope){
 }
-object * slash_feval(ast * op){
+object * slash_feval(ast * op, scope * cscope){
 }
-object * dot_feval(ast * op){
-  return bop_feval(op, dot_sym);
+object * dot_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, dot_sym);
 }
-object * at_feval(ast * op){
+object * at_feval(ast * op, scope * cscope){
 }
-object * dollar_feval(ast * op){
+object * dollar_feval(ast * op, scope * cscope){
 }
-object * colon_feval(ast * op){
+object * colon_feval(ast * op, scope * cscope){
 }
-object * grave_feval(ast * op){
+object * grave_feval(ast * op, scope * cscope){
 }
-object * tilda_feval(ast * op){
+object * tilda_feval(ast * op, scope * cscope){
 }
-object * bar_feval(ast * op){
+object * bar_feval(ast * op, scope * cscope){
 }
-object * comma_feval(ast * op){
+object * comma_feval(ast * op, scope * cscope){
 }
-object * dand_feval(ast * op){
+object * dand_feval(ast * op, scope * cscope){
 }
-object * dor_feval(ast * op){
+object * dor_feval(ast * op, scope * cscope){
 }
-object * dotdot_feval(ast * op){
-  return bop_feval(op, dotdot_sym);
+object * dotdot_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, dotdot_sym);
 }
-object * elipse_feval(ast * op){
-  return bop_feval(op, elipse_sym);
+object * elipse_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, elipse_sym);
 }
-object * newline_feval(ast * op){
+object * newline_feval(ast * op, scope * cscope){
 }
 
-//object * semi_feval(ast * op){
+//object * semi_feval(ast * op, scope * cscope){
 //}
 
-object * funccall_feval(ast * op){
+object * funccall_feval(ast * op, scope * cscope){
   ast * f = op->op.binary.left;
   ast * a = op->op.binary.right;
-  object * of = feval(f);
-  object * oa = feval(a);
+  object * of = feval(f, cscope);
+  object * oa = feval(a, cscope);
   return func_call(of, of->parent, oa);
 }
-object * subscript_feval(ast * op){
+object * subscript_feval(ast * op, scope * cscope){
   ast * var = op->op.binary.left;
   ast * sub = op->op.binary.right;
-  object * v = feval(var);
+  object * v = feval(var, cscope);
   if(!v) {
     fprintf(stderr, "symbol not found (%s)\n", var->tag == id_ast? var->op.Id : var->op.obj->name);
     return new_object();
   }
-  object * s = feval(sub);
+  object * s = feval(sub, cscope);
   object * sf = get_member(v, _symbols_[subscript_sym]);
   return func_call(sf, v, s);
 }
 
-object * group_feval(ast * op){
-  return feval(op->op.unary.arg);
+object * group_feval(ast * op, scope * cscope){
+  return feval(op->op.unary.arg, cscope);
 }
-object * declare_feval(ast * op){
+object * declare_feval(ast * op, scope * cscope){
   ast * l = op->op.binary.left;
   ast * r = op->op.binary.right;
   object * o = find_obj(l->op.obj->val.Class->native_type);
   o->name = strdup(r->op.Id);
-  scope_set(l->scp, o, map_object);
+  scope_set(cscope, o, map_object);
   return o;
 }
-object * generic_feval(ast * op) {
+object * generic_feval(ast * op, scope * cscope) {
   switch(op->tag) {
     case binary_ast:
       printf("(");
       printf("%s:", _symbols_[op->op.binary.oper]);
-      feval(op->op.binary.left);
+      feval(op->op.binary.left, cscope);
       printf(",");
-      feval(op->op.binary.right);
+      feval(op->op.binary.right, cscope);
       printf(")");
       break;
     case unary_ast:
       printf("(%s:", _symbols_[op->op.unary.oper]);
-      feval(op->op.unary.arg);
+      feval(op->op.unary.arg, cscope);
       break;
     default:
       printf("\n***error generic function***\n");
   }
 }
-//object * unknown_feval(ast * op){
+//object * unknown_feval(ast * op, scope * cscope){
 //}
 
 

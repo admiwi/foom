@@ -93,10 +93,10 @@ typedef struct _scope {
 typedef struct _ast {
   enum {
     binary_ast, unary_ast,
-    obj_ast, func_args_ast,
+    obj_ast, list_ast,
     block_ast, id_ast, mid_ast
   } tag;
-  scope * scp;
+  //scope * scp;
   union {
     object * obj;
     struct {
@@ -123,7 +123,7 @@ typedef struct _ast_list {
   struct _ast_list * next;
 } ast_list;
 
-typedef object *(*FuncP)(ast * op);
+typedef object *(*FuncP)(ast * op, scope *);
 typedef object * (*bFuncP)(object *, object *);
 typedef object * (*uFuncP)(object *);
 
