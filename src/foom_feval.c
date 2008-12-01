@@ -321,6 +321,7 @@ object * bang_feval(ast * op, scope * cscope){
 object * andper_feval(ast * op, scope * cscope){
 }
 object * slash_feval(ast * op, scope * cscope){
+  return bop_feval(op, cscope, slash_sym);
 }
 object * dot_feval(ast * op, scope * cscope){
   return bop_feval(op, cscope, dot_sym);
@@ -387,22 +388,8 @@ object * declare_feval(ast * op, scope * cscope){
   return o;
 }
 object * generic_feval(ast * op, scope * cscope) {
-  switch(op->tag) {
-    case binary_ast:
-      printf("(");
-      printf("%s:", _symbols_[op->op.binary.oper]);
-      feval(op->op.binary.left, cscope);
-      printf(",");
-      feval(op->op.binary.right, cscope);
-      printf(")");
-      break;
-    case unary_ast:
-      printf("(%s:", _symbols_[op->op.unary.oper]);
-      feval(op->op.unary.arg, cscope);
-      break;
-    default:
-      printf("\n***error generic function***\n");
-  }
+  fprintf(stderr,"***error generic function***\n");
+  return new_object();
 }
 //object * unknown_feval(ast * op, scope * cscope){
 //}
@@ -446,11 +433,11 @@ void init_fevals() {
   feval_tbl[plus_sym] = &plus_feval;
   feval_tbl[minus_sym] = &minus_feval;
   feval_tbl[star_sym] = &star_feval;
+  feval_tbl[slash_sym] = &slash_feval;
   feval_tbl[carrot_sym] = &carrot_feval;
   /*
   feval_tbl[bang_sym] = &bang_feval;
   feval_tbl[andper_sym] = &andper_feval;
-  feval_tbl[slash_sym] = &slash_feval;
   */
   feval_tbl[dot_sym] = &dot_feval;
   feval_tbl[dotdot_sym] = &dotdot_feval;
