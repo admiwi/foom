@@ -9,7 +9,7 @@
         <array_repeat_threshold>10</array_repeat_threshold>
       </gdbdebugger>
       <runprofile version="5">
-        <args>tests/test.fm</args>
+        <args>tests/qsort.fm</args>
         <rundir></rundir>
         <buildfirst>true</buildfirst>
         <console-type>0</console-type>

@@ -48,8 +48,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/foom_ast.o \
 	${OBJECTDIR}/src/foom_ops.o \
 	${OBJECTDIR}/src/foom_gram.o \
-	${OBJECTDIR}/src/foom_classes/foom_dec.o \
 	${OBJECTDIR}/src/foom_feval.o \
+	${OBJECTDIR}/src/foom_classes/foom_dec.o \
 	${OBJECTDIR}/src/foom_class.o
 
 # C Compiler Flags
@@ -173,15 +173,15 @@ ${OBJECTDIR}/src/foom_gram.o: src/foom_gram.c
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_gram.o src/foom_gram.c
 
-${OBJECTDIR}/src/foom_classes/foom_dec.o: src/foom_classes/foom_dec.c 
-	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
-	${RM} $@.d
-	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_dec.o src/foom_classes/foom_dec.c
-
 ${OBJECTDIR}/src/foom_feval.o: src/foom_feval.c 
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} $@.d
 	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_feval.o src/foom_feval.c
+
+${OBJECTDIR}/src/foom_classes/foom_dec.o: src/foom_classes/foom_dec.c 
+	${MKDIR} -p ${OBJECTDIR}/src/foom_classes
+	${RM} $@.d
+	$(COMPILE.c) -g -Wall -Iheaders -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/foom_classes/foom_dec.o src/foom_classes/foom_dec.c
 
 ${OBJECTDIR}/src/foom_class.o: src/foom_class.c 
 	${MKDIR} -p ${OBJECTDIR}/src

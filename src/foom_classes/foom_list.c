@@ -62,6 +62,17 @@ object * list_set_self(object * self, object * args) {
   return self;
 }
 
+object * list_get_length(object * self) {
+  object * l = new_int();
+  list * tl = self->val.List;
+  l->val.Int = 0;
+  while(tl->obj) {
+    l->val.Int++;
+    tl = tl->next;
+  }
+  return l;
+}
+
 object * list_class() {
   object * o = new_object();
   o->val.Class = new_class(true);
@@ -71,6 +82,7 @@ object * list_class() {
   o->name = "list";
   add_member_name(o, native_wrapper(&list_to_string, func_unary), "to_string");
   add_member_name(o, native_wrapper(&list_set_self, func_binary), "set_self");
+  add_member_name(o, native_wrapper(&list_get_length, func_binary), "get_length");
   add_member_name(o, native_wrapper(&list_subscript, func_binary), _symbols_[subscript_sym]);
   return o;
 }
