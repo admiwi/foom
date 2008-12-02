@@ -29,7 +29,7 @@ Currently, one declaration per statement.
 Currently nonexistent.  Planning on # to ignore rest of line. Maybe ## for blocks.
 
 == Functions ==
-Functions are declared using the `func` keyword, setting the variable to a block.  The block is only evaluated when the function is called so using the variable name in recursive function will behave as expected.  Arguments to the function are passed in as list called `args`.  All variables are currently passed by reference.  The last statement in a function is the function's return value.  Functions are assignment statements thus must end with a `;`.
+Functions are declared using the `func` keyword, setting the variable to a block.  The block is only evaluated when the function is called so using the function variable name in the block, thus a recursive function, will behave as expected.  Arguments to the function are passed in as list called `args`.  All variables are currently passed by reference.  The last statement in a function is the function's return value.  Functions are assignment statements thus must end with a `;`.
 (Per [http://code.google.com/p/foom/issues/detail?id=1 Bug 1], all functions require arguments.)
 
 The following function takes three arguments: a list L, integer A, and interger B.  It swaps position A in list L with position B and returns L at the end.
