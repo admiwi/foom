@@ -1,0 +1,49 @@
+#summary How Foom Works...
+
+= Foom =
+
+Foom is a dynamically typed, lazily interpreted language.  Most statement are terminated with a `;` with the exception of `for` and `if`/`else`.
+
+= Datatypes =
+
+There are five basic types in Foom:
+  * `int` -- integer, internally a double
+  * `str` -- string
+  * `list` -- an array list
+  * `func` -- function type
+  * `obj` -- base object
+
+= Variables =
+Variables are declared with a primary data type as such:
+{{{
+str s;
+int i = 10;
+list l = [2, i, 39];
+func f;
+f = { args[1]; };
+}}}
+
+= Comments =
+Currently nonexistent.  Planning on # to ignore rest of line. Maybe ## for blocks.
+
+= Function =
+Functions are declared using the `func` keyword, setting the variable to a block.  The block is only evaluated when the function is called so recursion is fine.  Arguments to the function are passed in as list called `args`.  All variables are currently passed by reference.  The last statement in a function is the function's return value.  Functions are assignment statements thus must end with a `;`.
+
+The following function takes three arguments: a list L, integer A, and interger B.  It swaps position A in list L with position B and returns L at the end.
+{{{
+func swap = {
+  list l = args[0];
+  int t = l[args[1]];
+  l[args[1]] = l[args[2]];
+  l[args[2]] = t;
+  l;
+};
+}}}
+
+= Libraries =
+Currently, only one library exists and it is imported automatically.
+
+= sys =
+sys has two fuctions:
+  * `sys.print()` -- prints argument
+  * `sys.println()` -- prints argument followed by a newline
