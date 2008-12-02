@@ -1,19 +1,20 @@
 #summary How Foom Works...
+#labels Featured,Phase-Implementation
 
 = Foom =
 
 Foom is a dynamically typed, lazily interpreted language.  Most statement are terminated with a `;` with the exception of `for` and `if`/`else`.
 
-= Datatypes =
+== Datatypes ==
 
 There are five basic types in Foom:
   * `int` -- integer, internally a double
-  * `str` -- string
-  * `list` -- an array list
-  * `func` -- function type
+  * `str` -- strings surrounded by `"` interpolate standard sprintf slash codes. `'` strings do not.
+  * `list` -- an array list --  a bare list is contained in `[]`
+  * `func` -- function type -- a raw function is contained in a `{}` block
   * `obj` -- base object
 
-= Variables =
+== Variables ==
 Variables are declared with a primary data type as such:
 {{{
 str s;
@@ -22,11 +23,12 @@ list l = [2, i, 39];
 func f;
 f = { args[1]; };
 }}}
+Currently, one declaration per statement.
 
-= Comments =
+== Comments ==
 Currently nonexistent.  Planning on # to ignore rest of line. Maybe ## for blocks.
 
-= Functions =
+== Functions ==
 Functions are declared using the `func` keyword, setting the variable to a block.  The block is only evaluated when the function is called so using the variable name in recursive function will behave as expected.  Arguments to the function are passed in as list called `args`.  All variables are currently passed by reference.  The last statement in a function is the function's return value.  Functions are assignment statements thus must end with a `;`.
 (Per [http://code.google.com/p/foom/issues/detail?id=1 Bug 1], all functions require arguments.)
 
@@ -41,10 +43,10 @@ func swap = {
 };
 }}}
 
-= Libraries =
+== Libraries ==
 Currently, only one library exists and it is imported automatically.
 
-= sys =
+=== sys ===
 sys has two fuctions:
   * `sys.print()` -- prints argument
   * `sys.println()` -- prints argument followed by a newline
