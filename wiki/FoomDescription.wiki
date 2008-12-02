@@ -1,5 +1,5 @@
 #summary What is foom?
-#labels Featured,Phase-Design
+#labels Phase-Design,Deprecated
 
 foom will be a lightweight, general purpose scripting language that is similar enough to C and Java that it should be fairly easy to learn.
 
@@ -110,5 +110,3 @@ Arguments to a lambda may be declared as a list, following a colon.
     return a+2
   }
 }}}
-
-
