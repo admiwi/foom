@@ -134,3 +134,17 @@ A bare list on the left would be treated as a tuple -- on the right, a list.
   a,b,c = c,a,b
 
 }}}
+
+=Update=
+
+First update of this document in a long time -- a tremendous amount of work done.  Most of the above is depreciated.
+
+Grammar changed a bit.  I am now requiring a semicolon at the end of a statement.
+See [Documentation].
+
+Some interesting points about foom so far:
+
+Foom performs lazy execution.  Functions are defined as variables of `func` type and are assigned a block.  But due to the lazy execution, you can refer to the variable name within the block, thus making the function recursive.  Check out `tests\qsort.fm`.  The `sort` function calls itself.  Oddly enough, this wasn't explicitly by design -- more of "it just worked" when I tried it.  I hope to expand this idea to list comprehensions such that they may refer to themselves and do functional style Fibonacci series.
+
+Call-back, or closures, as seen in `tests\functions.fm`, took complete refactoring of the scope system.  Originally, most AST nodes had an attached scope.  That appeared to work, however, functions retained their scope through multiple calls -- as if, let's say in C, everything was declared `static`.  This isn't what I wanted.  So I tried to attach a new scope to each function and changed the context when the function was called.  This approach failed miserably due to a scope pointer was attached to *each* AST node.  I would have had to descend the AST and replace the pointer on each node prior every function call.  It was obvious that I had to move the scope to the the functions that actually performed the evaluation.  Now every `*feval*` function takes a scope pointer as an argument.  The function call function creates a new scope tree for each call.  Probably not very space efficient, but it allows functions to return functions is a sane way.
+
