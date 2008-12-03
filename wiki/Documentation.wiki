@@ -14,7 +14,7 @@ There are five basic types in Foom:
   * `str` -- strings 
     *  two types:
       * interpolated strings surrounded by double quotes (`"`) interpolate standard sprintf slash codes
-      * raw strings surrounded by `'` only interpret `\'`
+      * raw strings surrounded by single quotes (`'`) only interpret the slash code `\'`
     * `length` member that returns the strings length
     * `to_string` method that returns itself
   * `list` -- an array list --  a bare list is contained in `[]`
