@@ -9,10 +9,23 @@ Foom is a dynamically typed, lazily interpreted language.  Most statement are te
 
 There are five basic types in Foom:
   * `int` -- integer, internally a double
-  * `str` -- strings surrounded by `"` interpolate standard sprintf slash codes. `'` strings do not.
+    * `to_string` method returns string representation of number
+  * `str` -- strings 
+    *  two types:
+      * interpolated strings surrounded by double quotes (`"`) interpolate standard sprintf slash codes
+      * raw strings surrounded by `'` only interpret `\'`
+    * `length` member that returns the strings length
+    * `to_string` method that returns itself
   * `list` -- an array list --  a bare list is contained in `[]`
-  * `func` -- function type -- a raw function is contained in a `{}` block
+    * `subscript` method allows indexing of lists using brackets and starting with 0
+      * `l[2]` retrieves the 3rd element
+      * a series of numbers separated by commas in brackets returns a subset of the list, e.g. `l[1,2,4]` returns a list containing the 2nd, 3rd, and 5th elements. (Currently, the series of numbers must be in ascending order).
+  * `func` -- function type
+    * raw function is contained in a `{}` block
+    * functions must have an argument regardless if it's used
   * `obj` -- base object
+    *  primarily used internally at this point
+
 
 == Variables ==
 Variables are declared with a primary data type as such:
