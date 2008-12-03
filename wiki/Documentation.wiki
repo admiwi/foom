@@ -21,6 +21,7 @@ There are five basic types in Foom:
     * `subscript` method allows indexing of lists using brackets and starting with 0
       * `l[2]` retrieves the 3rd element
       * a series of numbers separated by commas in brackets returns a subset of the list, e.g. `l[1,2,4]` returns a list containing the 2nd, 3rd, and 5th elements. (Currently, the series of numbers must be in ascending order).
+    * `length` member retrieves the number of elements in the list
   * `func` -- function type
     * raw function is contained in a `{}` block
     * functions must have an argument regardless if it's used
