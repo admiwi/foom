@@ -4,6 +4,7 @@
 = Foom =
 
 Foom is a dynamically typed, lazily interpreted language.  Most statement are terminated with a `;` with the exception of `for` and `if`/`else`.
+For examples, please take a look at the [http://code.google.com/p/foom/source/browse/#svn/trunk/tests tests] directory in the source.
 
 == Datatypes ==
 
