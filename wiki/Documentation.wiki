@@ -13,7 +13,7 @@ There are five basic types in Foom:
     * `to_string` method returns string representation of number
   * `str` -- strings 
     *  two types:
-      * interpolated strings surrounded by double quotes (`"`) interpolate standard sprintf slash codes
+      * interpolated strings surrounded by double quotes (`"`) interpolate standard C-sytle slash codes
       * raw strings surrounded by single quotes (`'`) only interpret the slash code `\'`
     * `length` member that returns the strings length
     * `to_string` method that returns itself
