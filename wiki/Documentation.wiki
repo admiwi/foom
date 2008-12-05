@@ -9,7 +9,7 @@ For examples, please take a look at the [http://code.google.com/p/foom/source/br
 == Datatypes ==
 
 There are five basic types in Foom:
-  * `int` -- integer, internally a double
+  * `int` -- integer, internally a long
     * `to_string` method returns string representation of number
   * `str` -- strings 
     *  two types:
