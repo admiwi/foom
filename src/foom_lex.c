@@ -265,7 +265,11 @@ token * get_token(parse_pkg * pp) {
     //  return new_token(pp->line, "<newline>", newline_sym);
     if(pp->c == ';')
       return new_token(pp->line, ";", semi_sym);
-    add_error(ERR_WARN, pp->filename, pp->line, "error in get_token unprocessed character", "");
+    {
+      char msg[255];
+      sprintf(msg, "get_token unprocessed character (%02x)", pp->c);
+      add_error(ERR_WARN, pp->filename, pp->line, msg, "");
+    }
   }
 
   return NULL;
