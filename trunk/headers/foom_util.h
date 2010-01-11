@@ -5,7 +5,7 @@
 #define is_uchar(A) ((A)>='A'&&(A)<='Z')
 #define is_char(A)  (is_lchar(A)||is_uchar(A)||A=='_')
 #define is_num(A)   ((A)>='0'&&(A)<='9')
-#define is_ws(A)    ((A)=='\n'||(A)=='\t'||(A)==' ')
+#define is_ws(A)    ((A)=='\n'||(A)=='\r'||(A)=='\t'||(A)==' ')
 #define is_irrel(A) ((A)=='\r'||(A)=='\0')
 #define is_op(A)  (((A)>='!'&&(A)<='/')||((A)>=':'&&(A)<='@')||((A)>='['&&(A)<='^')||((A)>='{'&&(A)<='~')||(A)=='`')
 
