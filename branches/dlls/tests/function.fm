@@ -1,0 +1,18 @@
+func f = {
+  str c = args[0];
+  func j = {
+    int k = args[0];
+    str v = c;
+    sys.print(v);
+    sys.print(": ");
+    sys.println(k);
+  };
+  j;
+};
+
+func zoo = f("cat");
+func moo = f("dog");
+
+moo(33);
+zoo(10);
+
