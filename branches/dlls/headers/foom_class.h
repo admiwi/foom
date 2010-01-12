@@ -9,7 +9,7 @@ void add_member_name(object * c, object * o, char *);
 
 object * get_member(object * o, char * n);
 object * set_member(object * o, char * n, object * arg);
-object * native_wrapper(void * f, int);
+object * native_wrapper(void * f, scope *, int);
 
 
 void add_static_member(object * c, object * o);

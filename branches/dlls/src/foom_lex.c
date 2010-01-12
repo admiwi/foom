@@ -2,6 +2,7 @@
 #include "foom_lex.h"
 #include "foom_hash.h"
 #include <ctype.h>
+#include <stdio.h>
 
 token * gen_token_chain(parse_pkg *pp) {
   token * tok, * t;
@@ -274,12 +275,3 @@ token * get_token(parse_pkg * pp) {
 
   return NULL;
 }
-
-scope * new_scope(scope *par) {
-  scope * s = malloc(sizeof(scope));
-  s->parent = par;
-  s->symbols = map_new();
-  return s;
-}
-
-

@@ -1,5 +1,6 @@
 #include "foom.h"
 #include "foom_class.h"
+#include "foom_objects.h"
 
 SYMBOLS;
 
@@ -20,7 +21,7 @@ list * push_list(list * l, object * o) {
 object * list_subscript(object * self, object * subs) {
   list * cur = self->val.List;
   list * csub = subs->val.List;
-  object * rl = new_list(), *ro;
+  object * rl = new_list(self->scp), *ro;
   list * rn = list_node();
   int ci = 0, cr = 0;
   long i = csub->obj->val.Int;
@@ -48,7 +49,7 @@ object * list_subscript(object * self, object * subs) {
 }
 
 object * list_to_string(object * self) {
-  object * s = new_str();
+  object * s = new_str(self->scp);
   list * tl, * l = self->val.List;
   s->val.Str = malloc(sizeof(str));
   s->val.Str->val = strdup(l->obj->name);
@@ -63,7 +64,7 @@ object * list_set_self(object * self, object * args) {
 }
 
 object * list_get_length(object * self) {
-  object * l = new_int();
+  object * l = new_int(self->scp);
   list * tl = self->val.List;
   l->val.Int = 0;
   while(tl->obj) {
@@ -73,16 +74,16 @@ object * list_get_length(object * self) {
   return l;
 }
 
-object * list_class() {
-  object * o = new_object();
+void init_list_class(scope * s) {
+  object * o = new_object(s);
   o->val.Class = new_class(true);
   o->val.Class->native_type = list_sym;
   o->type = class_sym;
   o->null = false;
   o->name = "list";
-  add_member_name(o, native_wrapper(&list_to_string, func_unary), "to_string");
-  add_member_name(o, native_wrapper(&list_set_self, func_binary), "set_self");
-  add_member_name(o, native_wrapper(&list_get_length, func_binary), "get_length");
-  add_member_name(o, native_wrapper(&list_subscript, func_binary), _symbols_[subscript_sym]);
-  return o;
+  add_member_name(o, native_wrapper(&list_to_string, s, func_unary), "to_string");
+  add_member_name(o, native_wrapper(&list_set_self, s, func_binary), "set_self");
+  add_member_name(o, native_wrapper(&list_get_length, s, func_binary), "get_length");
+  add_member_name(o, native_wrapper(&list_subscript, s, func_binary), _symbols_[subscript_sym]);
+ scope_set(s, o, map_class|map_immutable);
 }

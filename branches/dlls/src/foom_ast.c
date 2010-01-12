@@ -13,63 +13,63 @@ ast * new_astnode() {
   return a;
 }
 
-ast * make_obj(char * n) {
+ast * make_obj(char * n, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_object();
+  a->op.obj = new_object(s);
 
   return a;
 }
 
-ast * make_int(char * n, long v) {
+ast * make_int(char * n, long v, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_int();
+  a->op.obj = new_int(s);
   a->op.obj->name = n;
   a->op.obj->val.Int = v;
 
   return a;
 }
-ast * make_dec(char * n, double v) {
+ast * make_dec(char * n, double v, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_dec();
+  a->op.obj = new_dec(s);
   a->op.obj->name = n;
   a->op.obj->val.Dec = v;
 
   return a;
 }
-ast * make_str(char * n, str * v) {
+ast * make_str(char * n, str * v, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_str();
+  a->op.obj = new_str(s);
   a->op.obj->name = n;
   a->op.obj->val.Str = v;
 
   return a;
 }
-ast * make_bool(char * n, int v) {
+ast * make_bool(char * n, int v, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_bool();
+  a->op.obj = new_bool(s);
   a->op.obj->name = n;
   a->op.obj->val.Bool = v;
 
   return a;
 }
-ast * make_map(char * n, map * v) {
+ast * make_map(char * n, map * v, scope * s) {
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_map();
+  a->op.obj = new_map(s);
   a->op.obj->name = n;
   a->op.obj->val.Map = v;
 
   return a;
 }
-ast * make_list(char * n, list * v){
+ast * make_list(char * n, list * v, scope * s){
   ast * a = new_astnode();
   a->tag = obj_ast;
-  a->op.obj = new_list();
+  a->op.obj = new_list(s);
   a->op.obj->name = n;
   a->op.obj->val.List = v;
 
