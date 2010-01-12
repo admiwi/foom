@@ -1,18 +1,8 @@
 #include "foom.h"
 #include "foom_lib.h"
 
+extern map * native_classes;
 
-object * sys_println(object * self, object * args) {
-  object * o;
-  if(args->type == list_sym)
-    o = args->val.List->obj;
-  else
-    o = args;
-  object * tostr = get_member(o, "to_string");
-  object * os = func_call(tostr, o, NULL);
-  printf("%s\n", os->val.Str->val);
-  return os;
-}
 object * sys_print(object * self, object * args) {
   object * o;
   if(args->type == list_sym)
@@ -24,8 +14,16 @@ object * sys_print(object * self, object * args) {
   printf("%s", os->val.Str->val);
   return os;
 }
-void init_sys_lib(scope *cscope){
+
+object * sys_println(object * self, object * args) {
+  object * o = sys_print(self, args);
+  printf("\n");
+  return o;
+}
+
+void init_lib(scope *cscope, map* nc){
   object * sys = new_object();
+  native_classes = nc;
   sys->null = false;
   sys->name = strdup("sys");
   map_set(sys->members, "println", native_wrapper(&sys_println, func_binary), map_object);
