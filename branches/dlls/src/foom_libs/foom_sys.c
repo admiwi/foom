@@ -19,6 +19,16 @@ object * sys_println(object * self, object * args) {
   return o;
 }
 
+object * sys_import(object * self, object * args) {
+  object * o;
+  if(args->type == list_sym)
+    o = args->val.List->obj;
+  else
+    o = args;
+  init_native_lib(o->val.Str->val, o->scp);
+  return o;
+}
+
 void init_lib(scope *cscope){
   object * sys = new_object();
   sys->null = false;
