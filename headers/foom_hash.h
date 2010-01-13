@@ -51,4 +51,6 @@ int map_set(map *, char*, void*, int);
 void map_del(map *, char*, int);
 map_node * map_get(map *, char*);
 
+void print_map(map *);
+
 #endif

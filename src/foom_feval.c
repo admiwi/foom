@@ -393,7 +393,10 @@ object * funccall_feval(ast * op, scope * cscope){
   ast * a = op->op.binary.right;
   object * of = feval(f, cscope);
   object * oa = feval(a, cscope);
-  return func_call(of, of->parent, oa);
+  if(of)
+    return func_call(of, of->parent, oa);
+  fprintf(stderr, "error: can not call null function\n");
+  return NULL;
 }
 object * subscript_feval(ast * op, scope * cscope){
   ast * var = op->op.binary.left;

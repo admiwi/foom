@@ -25,6 +25,14 @@ object * func_call(object * fo, object * self, object * args) {
   ast_list * al;
   object * o;
   scope * cscope;
+  if(!fo) {
+    fprintf(stderr, "func_call on null object\n");
+    return NULL;
+  }
+  if(fo->type != func_sym) {
+    fprintf(stderr, "trying to execute a non-function\n");
+    return NULL;
+  }
   if(f->flags == func_binary) {
     bFuncP bfp = f->f.bfunc;
     return bfp(self, args);

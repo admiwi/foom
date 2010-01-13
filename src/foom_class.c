@@ -14,7 +14,14 @@ void add_member_name(object * s, object * o, char * n) {
 }
 
 object * native_wrapper(void * nf, scope * s, int flags) {
+  char n[ARB_LEN];
+  sprintf(n, "native_func%x", (int)nf);
+  return nnative_wrapper(nf, s, n, flags);
+}
+
+object * nnative_wrapper(void * nf, scope * s, const char * n, int flags) {
   object * f = new_func(s);
+  f->name = strdup(n);
   f->null = false;
   f->val.Func->flags = flags;
   if(flaged(flags, func_binary))
@@ -28,21 +35,17 @@ object * get_member_object(object * o, char * n) {
   map_node * v = map_get(o->members, n);
   if(!v && o->class)
     v = map_get(o->class->members, n);
-  if(!v) {
-    //fprintf(stderr,"member %s not found, returning null\n", n);
-    return new_object(o->scp);
-  }
-  return v->data;
+  return v ? v->data : NULL;
 }
 object * get_member_getter(object * o, char * n) {
   object * ro;
   char gn[ARB_LEN] = "get_";
   strcat(gn, n);
   ro = get_member_object(o, gn);
-  if(!ro->null) {
+  if(ro) {
     return func_call(ro, o, NULL);
   }
-  return new_object(o->scp);
+  return NULL;
 }
 
 object * get_member_setter(object * o, char * n, object * arg) {
@@ -50,7 +53,7 @@ object * get_member_setter(object * o, char * n, object * arg) {
   char gn[ARB_LEN] = "set_";
   strcat(gn, n);
   sf = get_member_object(o, gn);
-  if(!sf->null) {
+  if(sf) {
     ro = func_call(sf, o, arg);
     return ro;
   }
@@ -60,15 +63,17 @@ object * get_member_setter(object * o, char * n, object * arg) {
 object * get_member(object * o, char * n) {
   object * ro;
   ro = get_member_getter(o, n);
-  if(!ro->null) return ro;
-  free(ro);
-  return get_member_object(o,n);
+  if(ro) return ro;
+  ro = get_member_object(o, n);
+  if(ro) return ro;
+  fprintf(stderr,"error: '%s' is not a member of %s\n", n, o->name);
+  return NULL;
 }
 
 object * set_member(object *o, char * n, object * arg) {
   object * ro;
   ro = get_member_setter(o, n, arg);
-  if(!ro->null) return ro;
+  if(ro) return ro;
   return new_object(o->scp);
 }
 

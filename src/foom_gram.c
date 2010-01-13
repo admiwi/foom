@@ -29,9 +29,9 @@ ast * tList();
 int indent;
 
 void _printE(int line, Symbol sym, char * e){
+#ifdef DEBUG
   extern char * _keywords[];
   int i = indent;
-  //return;
   if(indent < 0) indent = 0;
   if(!cur_tok) return;
   while(i-- >= 0) { fprintf(stderr,"  "); }
@@ -42,6 +42,7 @@ void _printE(int line, Symbol sym, char * e){
     _symbols_[sym],
     line
   );
+#endif
 }
 
 int _expect(int line, Symbol sym) {
@@ -447,13 +448,17 @@ ast * gProgram(token * t, scope * s) {
   cur_tok = t;
   status = pS_ok;
 
+#ifdef DEBUG
   fprintf(stderr,"-> program\n");
+#endif
   while(!expect(end_sym)) {
     cural->node = gS();
     cural->next = new_astlist();
     cural = cural->next;
   }
+#ifdef DEBUG
   fprintf(stderr,"<- program\n");
+#endif
   return ret;
 }
 
