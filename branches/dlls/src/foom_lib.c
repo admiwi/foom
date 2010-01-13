@@ -1,23 +1,29 @@
 #include "foom.h"
 #include "foom_lib.h"
 #include <windows.h>
-typedef void (__cdecl *NATIVE_LIB)(scope*);
-void init_sys_lib(scope*);
+#include <sys/stat.h>
+typedef object * (__cdecl *NATIVE_LIB)(const char*, scope*);
 
-int init_native_lib(char * n, scope * scp){
+object * init_native_lib(const char * l, const char * n, scope * scp){
   HINSTANCE hinstLib; 
   NATIVE_LIB n_init; 
-  hinstLib = LoadLibrary(n); 
+  struct stat buf;
+  int i = stat(l, &buf);
+  if(i) {
+    fprintf(stderr, "Library (%s) does not exists! (%d)\n", l, i);
+    return NULL;
+  } 
+  
+  hinstLib = LoadLibrary(l); 
  
   if(hinstLib) { 
     n_init = (NATIVE_LIB) GetProcAddress(hinstLib, "init_lib"); 
     if(n_init) 
-       (n_init)(scp);
-    else return 0;
-  } else return 0;
-  return 1;
+       return (n_init)(n, scp);
+    else return NULL;
+  } else return NULL;
 }
 
 void init_libs(scope * cscope) {
-  printf("%d\n", init_native_lib("dlls\\foom_sys.dll", cscope));
+  init_native_lib("dlls\\foom_foom.dll", "foom", cscope);
 }

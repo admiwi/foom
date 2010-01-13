@@ -126,6 +126,18 @@ map_node * map_get(map * mtab, char* k) {
   return NULL;
 }
 
+void print_map(map * m) {
+  int i;
+  for(i=0;i<HASH_SZ;++i) {
+    map_node * n = m->nodes[i];
+    printf("box %d:\n", i);
+    while(n) {
+      printf("  %s -> %s\n", n->key->text, ((object*)(n->data))->name);
+      n=n->next;
+    }
+  }
+}
+
 scope * new_scope(scope *par) {
   scope * s = malloc(sizeof(scope));
   s->parent = par;

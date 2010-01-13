@@ -24,20 +24,6 @@ void print_toks(token * tok) {
   }
 }
 
-void print_map(map *m) {
-  int i = 0;
-  map_node * n;
-  for(i=0;i< HASH_SZ;++i) {
-    printf("map box %d:\n", i);
-    n = m->nodes[i];
-    while(n){
-      printf("  key %s\n", n->key->text);
-      n = n->next;
-    }
-
-  }
-}
-
 void process_file(char *file_name) {
   //        filename, file,  buf, backbuf,  i,    c, count, left, line
   parse_pkg pp = { "\0", NULL, "\0",    "\0",  0, '\0',     0,    0,   1};
@@ -69,12 +55,7 @@ int main(int argc, char** argv) {
     exit(EXIT_SUCCESS);
   }
   init_keywords();
-  //print_map(keywords);
-  //m = map_get(keywords, "str");
-  //if(m)
-  //printf("%s\n", m->key->text);
   init_fevals();
   process_file(argv[1]);
-  putc('\n', stdout);
 	return EXIT_SUCCESS;
 }
