@@ -1,3 +1,5 @@
+foom.import("sys");
+
 func f = {
   str c = args[0];
   func j = {
