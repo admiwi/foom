@@ -1,3 +1,5 @@
+foom.import("sys");
+
 list data = [3,1,20,4,7,2];
 
 func printlist = {

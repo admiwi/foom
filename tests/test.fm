@@ -1,3 +1,4 @@
+foom.import("sys");
 str test = "cat\ndog\nhedgehog";
 sys.println(test);
 sys.println(test.length);
