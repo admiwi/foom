@@ -59,9 +59,14 @@ func swap = {
 }}}
 
 == Libraries ==
-Currently, only one library exists and it is imported automatically.
+=== foom ===
+foom is imported automatically:
+  * `foom.import("lib")` -- imports library dlls/foom_lib.dll to name lib
+  * `foom.import("lib","alias")` -- imports library dlls/foom_lib.dll to name alias
 
 === sys ===
-sys has two fuctions:
+sys contains various systems functions:
   * `sys.print()` -- prints argument
   * `sys.println()` -- prints argument followed by a newline
+  * `sys.rand()` -- returns a random positive integer or zero
+  * `sys.rand(k)` -- returns a random integer from 0 to k
