@@ -13,6 +13,7 @@
 #include "foom_gram.h"
 #include "foom_feval.h"
 #include "foom_lib.h"
+#include "foom_hash.h"
 
 SYMBOLS;
 
@@ -34,16 +35,15 @@ void process_file(char *file_name) {
   init_classes(s);
   init_libs(s);
   tok = gen_token_chain(&pp);
-  pgm = gProgram(tok);
+  pgm = gProgram(tok, s);
   print_errors();
-
   start_feval(pgm, s);
-
-
 }
 
 int main(int argc, char** argv) {
   struct stat sb;
+  extern map * keywords;
+  map_node * m;
 
   if(argc < 2) {
     printf("Usage: %s <source file>\n", argv[0]);
@@ -57,6 +57,5 @@ int main(int argc, char** argv) {
   init_keywords();
   init_fevals();
   process_file(argv[1]);
-  putc('\n', stdout);
 	return EXIT_SUCCESS;
 }

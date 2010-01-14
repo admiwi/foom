@@ -15,14 +15,14 @@ ast * ast_list_wrapper(ast_list * al);
 //MAP Map;
 //list List;
 //func Func;
-ast * make_int(char * n, long v);
-ast * make_dec(char * n, double v);
-ast * make_str(char * n, str * v);
-ast * make_bool(char * n, int v);
-ast * make_map(char * n, map * v);
-ast * make_list(char * n, list * v);
-ast * make_func(char * n, func * v);
+ast * make_int(char * n, long v, scope *s);
+ast * make_dec(char * n, double v, scope *s);
+ast * make_str(char * n, str * v, scope *s);
+ast * make_bool(char * n, int v, scope *s);
+ast * make_map(char * n, map * v, scope *s);
+ast * make_list(char * n, list * v, scope *s);
+ast * make_func(char * n, func * v, scope *s);
+ast * make_obj(char * n, scope * s);
 ast * make_closure(char * n, ast_list *);
-ast * make_obj(char * n);
 
 #endif

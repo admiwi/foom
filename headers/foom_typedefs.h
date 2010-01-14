@@ -59,6 +59,11 @@ typedef struct _class {
   map * static_members;
 } class;
 
+typedef struct _scope {
+  struct _scope *parent;
+  map* symbols;
+} scope;
+
 typedef struct _object {
   char * name;
   Symbol type;
@@ -78,6 +83,7 @@ typedef struct _object {
     //struct _object Obj;
   } val;
   map * members;
+  scope * scp;
 } object;
 
 typedef struct _symbol {
@@ -86,10 +92,7 @@ typedef struct _symbol {
   struct _symbol * next;
 } symbol;
 
-typedef struct _scope {
-  struct _scope *parent;
-  map_node** symbols;
-} scope;
+
 typedef struct _ast {
   enum {
     binary_ast, unary_ast,

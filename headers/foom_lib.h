@@ -4,6 +4,7 @@
 #define	_FOOM_LIB_
 
 void init_libs();
+object * init_native_lib(const char *, const char *, scope * scp);
 
 
 #endif

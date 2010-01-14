@@ -3,9 +3,9 @@
 
 map * map_new() {
   map * m = malloc(sizeof(map));
+  memset(m, 0, sizeof(map));
   m->nodes = malloc(sizeof(map_node)*HASH_SZ);
   memset(m->nodes, 0, sizeof(map_node)*HASH_SZ);
-  m->keys = NULL;
   return m;
 }
 
@@ -25,8 +25,11 @@ int map_set(map * mtab, char* k, void* data, int flags) {
   unsigned int hv = hash(k);
 
   map_node * m = malloc(sizeof(map_node));
+  memset(m, 0, sizeof(map_node));
   map_node * cur;
   map_key * key = malloc(sizeof(map_key));
+  memset(key, 0, sizeof(map_key));
+  key->node = m;
   void* td;
   if(!mtab)
     mtab = map_new();
@@ -55,8 +58,12 @@ int map_set(map * mtab, char* k, void* data, int flags) {
         free(m);
         return 0;
       }
-      cur = cur->next;
-    }while(cur->next);
+      if(!cur->next) {
+        cur->next = m;
+        break;
+       }
+       cur = cur->next;
+    }while(true);
     cur->next = m;
   }
   return 1;
@@ -106,26 +113,46 @@ map_node * map_get(map * mtab, char* k) {
     fprintf(stderr, "uninitialized map looking for key %s\n", k);
     return NULL;
   }
-  if(!mtab->nodes[hv])
+  if(!mtab->nodes[hv]) {
+    //fprintf(stderr, "no nodes for hash %d, %s\n", hv, k);  may be in parent
     return NULL;
+  }
   cur = mtab->nodes[hv];
-  do {
+  while(cur) {
     if(!strcmp(cur->key->text, k))
       return cur;
     cur = cur->next;
-  } while(cur->next);
+  };
   return NULL;
+}
+
+void print_map(map * m) {
+  int i;
+  for(i=0;i<HASH_SZ;++i) {
+    map_node * n = m->nodes[i];
+    printf("box %d:\n", i);
+    while(n) {
+      printf("  %s -> %s\n", n->key->text, ((object*)(n->data))->name);
+      n=n->next;
+    }
+  }
+}
+
+scope * new_scope(scope *par) {
+  scope * s = malloc(sizeof(scope));
+  s->parent = par;
+  s->symbols = map_new();
+  return s;
 }
 
 object * scope_get(scope * s, char * key) {
   map_node * v = map_get(s->symbols, key);
   if(!v && s->parent)
       return scope_get(s->parent, key);
-  if(v) return v->data;
+  if(v) return (object *)v->data;
   return NULL;
 }
 void scope_set(scope * s, object * o, map_flags f) {
   map_set(s->symbols, o->name, o, map_object|f);
 }
-
 

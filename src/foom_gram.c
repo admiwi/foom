@@ -8,8 +8,8 @@
 #define accept(A) _accept(__LINE__, A)
 
 extern char * _symbols_[];
-extern map * native_classes;
 
+scope * global_scope = NULL;
 token *prev_tok = NULL;
 token *cur_tok = NULL;
 pStatus status;
@@ -29,9 +29,9 @@ ast * tList();
 int indent;
 
 void _printE(int line, Symbol sym, char * e){
+#ifdef DEBUG
   extern char * _keywords[];
   int i = indent;
-  //return;
   if(indent < 0) indent = 0;
   if(!cur_tok) return;
   while(i-- >= 0) { fprintf(stderr,"  "); }
@@ -42,6 +42,7 @@ void _printE(int line, Symbol sym, char * e){
     _symbols_[sym],
     line
   );
+#endif
 }
 
 int _expect(int line, Symbol sym) {
@@ -148,7 +149,7 @@ ast * tString() {
   s->val = strdup(cur_tok->lexem);
   s->len = strlen(s->val);
   accept(string_sym);
-  a = make_str(get_serial("Lstring"), s);
+  a = make_str(get_serial("Lstring"), s, global_scope);
   return a;
 }
 
@@ -156,13 +157,13 @@ ast * tInteger(){
   long li = strtol(cur_tok->lexem, NULL, 10);
   printE(cur_tok->symbol,"number");
   accept(integer_sym);
-  return make_int(get_serial("Linteger"), li);
+  return make_int(get_serial("Linteger"), li, global_scope);
 }
 ast * tDecimal(){
   double fl = strtod(cur_tok->lexem,NULL);
   printE(cur_tok->symbol,"number");
   accept(float_sym);
-  return make_dec(get_serial("Ldecimal"), fl);
+  return make_dec(get_serial("Ldecimal"), fl, global_scope);
 }
 
 ast * tParens() {
@@ -313,7 +314,7 @@ ast * gT() {
 
 ast * sDeclare() {
   ast * ret = NULL, *typ = new_astnode(), *var = new_astnode();
-  typ->op.obj = map_get(native_classes, cur_tok->lexem)->data;//find_obj(cur_tok->symbol);
+  typ->op.obj = scope_get(global_scope, cur_tok->lexem);
   typ->tag = obj_ast;
   next();
   printE(cur_tok->symbol,"-> declare call"); indent++;
@@ -437,22 +438,27 @@ ast * gS() {
   return a;
 }
 
-ast * gProgram(token * t) {
+ast * gProgram(token * t, scope * s) {
   ast_list * cural;
   ast * ret = new_astnode();
+  global_scope = s;
   ret->tag = block_ast;
   ret->op.block.stmts = cural = new_astlist();
   serial = indent = 0;
   cur_tok = t;
   status = pS_ok;
 
+#ifdef DEBUG
   fprintf(stderr,"-> program\n");
+#endif
   while(!expect(end_sym)) {
     cural->node = gS();
     cural->next = new_astlist();
     cural = cural->next;
   }
+#ifdef DEBUG
   fprintf(stderr,"<- program\n");
+#endif
   return ret;
 }
 
