@@ -2,7 +2,7 @@
 #ifndef _FOOM_MAP_
 #define _FOOM_MAP_
 
-#define HASH_SZ 2111
+#define HASH_SZ 16
 #define INT_SZ 4
 
 typedef enum {
@@ -16,18 +16,19 @@ typedef enum {
     map_grammer = 1<<7,
     map_immutable = 1<<8,
     map_native = 1<<9,
-    map_member = 1<<10
+    map_member = 1<<10,
+    map_class = 1<<11
 } map_flags;
 
 #define MAP map_node **
-
 typedef struct _map_key {
   char text[ARB_LEN];
   struct _map_key * next;
+  struct _map_node * node;
 } map_key;
 
 typedef struct _map_node {
-  struct _map * next;
+  struct _map_node * next;
   map_key * key;
   void * data;
   map_flags flags;
@@ -49,5 +50,7 @@ unsigned int hash(char*);
 int map_set(map *, char*, void*, int);
 void map_del(map *, char*, int);
 map_node * map_get(map *, char*);
+
+void print_map(map *);
 
 #endif

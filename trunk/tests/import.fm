@@ -1,0 +1,10 @@
+foom.import("hello", "hi");
+foom.import("sys");
+sys.println(hi.hello(1));
+sys.println(hi.again);
+sys.println(sys.rand(10));
+sys.println(sys.rand(10));
+sys.println(sys.rand(10));
+sys.println(sys.rand(10));
+sys.println(sys.rand(10));
+sys.println(sys.rand(10));

@@ -12,6 +12,6 @@ typedef enum {
 
 } pStatus;
 
-ast * gProgram(token *);
+ast * gProgram(token *, scope *);
 
 #endif

@@ -1,7 +1,8 @@
 #include "foom_class.h"
+#include "foom_objects.h"
 #include "foom_ast.h"
+#include "foom_classes.h"
 
-map * native_classes;
 extern char* _symbols_[];
 
 void add_member(object * s, object * o) {
@@ -12,8 +13,15 @@ void add_member_name(object * s, object * o, char * n) {
   map_set(s->members, n, o, map_member);
 }
 
-object * native_wrapper(void * nf, int flags) {
-  object * f = new_func();
+object * native_wrapper(void * nf, scope * s, int flags) {
+  char n[ARB_LEN];
+  sprintf(n, "native_func%x", (int)nf);
+  return nnative_wrapper(nf, s, n, flags);
+}
+
+object * nnative_wrapper(void * nf, scope * s, const char * n, int flags) {
+  object * f = new_func(s);
+  f->name = strdup(n);
   f->null = false;
   f->val.Func->flags = flags;
   if(flaged(flags, func_binary))
@@ -27,21 +35,17 @@ object * get_member_object(object * o, char * n) {
   map_node * v = map_get(o->members, n);
   if(!v && o->class)
     v = map_get(o->class->members, n);
-  if(!v) {
-    //fprintf(stderr,"member %s not found, returning null\n", n);
-    return new_object();
-  }
-  return v->data;
+  return v ? v->data : NULL;
 }
 object * get_member_getter(object * o, char * n) {
   object * ro;
   char gn[ARB_LEN] = "get_";
   strcat(gn, n);
   ro = get_member_object(o, gn);
-  if(!ro->null) {
+  if(ro) {
     return func_call(ro, o, NULL);
   }
-  return new_object();
+  return NULL;
 }
 
 object * get_member_setter(object * o, char * n, object * arg) {
@@ -49,26 +53,28 @@ object * get_member_setter(object * o, char * n, object * arg) {
   char gn[ARB_LEN] = "set_";
   strcat(gn, n);
   sf = get_member_object(o, gn);
-  if(!sf->null) {
+  if(sf) {
     ro = func_call(sf, o, arg);
     return ro;
   }
-  return new_object();
+  return new_object(o->scp);
 }
 
 object * get_member(object * o, char * n) {
   object * ro;
   ro = get_member_getter(o, n);
-  if(!ro->null) return ro;
-  free(ro);
-  return get_member_object(o,n);
+  if(ro) return ro;
+  ro = get_member_object(o, n);
+  if(ro) return ro;
+  fprintf(stderr,"error: '%s' is not a member of %s\n", n, o->name);
+  return NULL;
 }
 
 object * set_member(object *o, char * n, object * arg) {
   object * ro;
   ro = get_member_setter(o, n, arg);
-  if(!ro->null) return ro;
-  return new_object();
+  if(ro) return ro;
+  return new_object(o->scp);
 }
 
 void add_static_member(object * c, object * o) {
@@ -82,9 +88,8 @@ object * get_static_member(object * c, char * n) {
     map_node * v = map_get(c->val.Class->static_members, n);
     if(v)
       return (object *)v->data;
-    else
-      return new_object(true);
   }
+  return new_object(c->scp);
 }
 
 class * new_class(bool native) {
@@ -95,49 +100,19 @@ class * new_class(bool native) {
 }
 
 object * cast(object * a, object * b) {
-
+  return NULL;
 }
 
 //native classes
 
 void init_classes(scope * s) {
-  native_classes = map_new();
-  object * cls;
-  //obj
-  cls = obj_class();
-
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //func
-  cls = func_class();
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //int
-  cls = int_class();
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //str
-  cls = str_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //dec
-  cls = dec_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //bool
-  cls = bool_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //list
-  cls = list_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //map
-  cls = map_class();
-  map_set(native_classes, cls->name, cls, map_object|map_immutable);
-  map_set(s->symbols, cls->name, cls, map_object|map_immutable);
-  //class
-  /*
-  cls = class_class();
-  map_set(native_classes, cls->name, cls, map *_OBJECT|map *_IMMUTABLE);
-  map_set(s->symbols, cls->name, cls, map *_OBJECT|map *_IMMUTABLE);
-  */
-
+  init_obj_class(s);
+  init_func_class(s);
+  init_int_class(s);
+  init_str_class(s);
+  init_dec_class(s);
+  init_bool_class(s);
+  init_list_class(s);
+  init_map_class(s);
+  //init_class_class();
 }
